@@ -11,7 +11,7 @@ mod:SetMinSyncRevision(20241203000000)
 mod:RegisterCombat("combat")
 
 mod:RegisterEventsInCombat(
-	"SPELL_CAST_START 69649 71056 71057 71058 73061 73062 73063 73064 71077",
+	"SPELL_CAST_START 69649 71056 71057 71058 73061 73062 73063 73064 71077 70123 71047 71048 71049",
 	"SPELL_CAST_SUCCESS 70117 69762",
 	"SPELL_AURA_APPLIED 70126 69762 70106 69766 70127 72528 72529 72530",
 	"SPELL_AURA_APPLIED_DOSE 70106 69766 70127 72528 72529 72530",
@@ -53,7 +53,7 @@ local timerNextFrostBreath		= mod:NewNextTimer(22, 69649, nil, "Tank|Healer", ni
 local timerNextBlisteringCold	= mod:NewCDTimer(66, 70123, nil, nil, nil, 2, nil, DBM_COMMON_L.DEADLY_ICON, true, 2) -- Added "keep" arg
 local timerNextBeacon			= mod:NewNextCountTimer(16, 70126, nil, nil, nil, 3, nil, DBM_COMMON_L.DEADLY_ICON)
 local timerBeaconIncoming		= mod:NewTargetTimer("d7", 70126, nil, nil, nil, 3) -- One incoming timer for each target
-local timerBlisteringCold		= mod:NewCastTimer(6, 70123, nil, nil, nil, 2)
+local timerBlisteringCold		= mod:NewCastTimer(5, 70123, nil, nil, nil, 2)
 local timerUnchainedMagic		= mod:NewCDTimer(32, 69762, nil, nil, nil, 3) -- (25H Lordaeron 2022/07/09 || 10N Icecrown 2022/08/22 || 10N Icecrown 2022/08/25) - 32.0, 63.2, 32.1, 77.8, 32.1, 32.5, 31.9, 34.8 || 35.7, 58.4, 32.1, 77.9, 32.1, 78.6, 32.0, 32.0, 32.1 || 32.0, 62.1, 32.0, Stage 2/68.4, 9.9/78.3, 32.0
 local timerInstability			= mod:NewBuffFadesTimer(5, 69766, nil, nil, nil, 5)
 local timerChilledtotheBone		= mod:NewBuffFadesTimer(8, 70106, nil, nil, nil, 5)
@@ -205,7 +205,7 @@ function mod:OnCombatStart(delay)
 	self:SetStage(1)
 	berserkTimer:Start(-delay)
 	timerNextAirphase:Start(50-delay)
-	timerNextBlisteringCold:Start(31.6-delay) -- ~10s variance [31.6-40] (10H Lordaeron 2022/10/02 || 25H Lordaeron 2022/10/02) - 37.5; 34.9 || 31.6; 36.4; 34.9; 34.9
+	timerNextBlisteringCold:Start(33-delay) --wowcircle 25hc: 33.4 ?
 	timerTailSmash:Start(20-delay) -- (25H Lordaeron 2022/07/09 || 10N Icecrown 2022/08/22 || 10N Icecrown 2022/08/25 || 10H Lordaeron 2022/10/02 || 25H Lordaeron 2022/10/02) - 20.0 || 20.0 || 20.0 || 20.0; 20.0 || 20.0; 19.9; 20.0; 20.0
 	timerUnchainedMagic:Start(10-delay) -- (25H Lordaeron 2022/07/09 || 10N Icecrown 2022/08/22 || 10N Icecrown 2022/08/25) - 10.1 || 10.1 || 10.0
 	self.vb.warned_P2 = false
@@ -231,16 +231,29 @@ function mod:SPELL_CAST_START(args)
 		timerNextFrostBreath:Start()
 	elseif args.spellId == 71077 then
 		timerTailSmash:Start()
+	elseif args:IsSpellID(70123, 71047, 71048, 71049) then --wowcircle BlisteringCold cuz no SPELL_CAST_SUCCESS 70117 event
+		timerNextBlisteringCold:Cancel()
+		specWarnBlisteringCold:Show()
+		specWarnBlisteringCold:Play("runout")
+		timerBlisteringCold:Start()
+		timerNextBlisteringCold:Start()
+		if self.Options.RangeFrame then
+			DBM.RangeCheck:SetBossRange(25, self:GetBossUnitByCreatureId(36853))
+			self:Schedule(4.5, ResetRange, self)
+		end
 	end
 end
 
 function mod:SPELL_CAST_SUCCESS(args)
 	local spellId = args.spellId
-	if spellId == 70117 then--Icy Grip Cast, not blistering cold, but adds an extra 1sec to the warning
-		specWarnBlisteringCold:Show()
-		specWarnBlisteringCold:Play("runout")
-		timerBlisteringCold:Start()
-		timerNextBlisteringCold:Start()
+	if spellId == 70117 then --Icy Grip Cast, not blistering cold, but adds an extra 1sec to the warning --wowcircle doesnot have SPELL_CAST_SUCCESS 70117 event
+		print("WOWCIRCLE SPELL_CAST_SUCCESS 70117 DETECTED! Plz report")
+		DBM:AddMsg("1WOWCIRCLE SPELL_CAST_SUCCESS 70117 DETECTED! Plz report")
+		--timerNextBlisteringCold:Cancel()
+		--specWarnBlisteringCold:Show()
+		--specWarnBlisteringCold:Play("runout")
+		--timerBlisteringCold:Start()
+		--timerNextBlisteringCold:Start()
 
 		if self.Options.RangeFrame then
 			DBM.RangeCheck:SetBossRange(25, self:GetBossUnitByCreatureId(36853))

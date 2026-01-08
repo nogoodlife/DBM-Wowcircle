@@ -26,9 +26,9 @@ local warnImpale			= mod:NewTargetNoFilterAnnounce(72669, 3)
 local specWarnColdflame		= mod:NewSpecialWarningGTFO(69146, nil, nil, nil, 1, 8)
 local specWarnWhirlwind		= mod:NewSpecialWarningRun(69076, nil, nil, nil, 4, 2)
 
-local timerBoneSpike		= mod:NewVarTimer("v15-20", 69057, nil, nil, nil, 1, nil, DBM_COMMON_L.DAMAGE_ICON, true) -- Has two sets of spellIDs, one before bone storm and one during bone storm (both sets are separated below). Will use UNIT_SPELLCAST_START for calculations since it uses spellName and thus already groups them in the log. 5s variance [15-20]. Added "keep" arg (10N Icecrown 2022/08/25 || 25H Lordaeron 2022/09/14 || 25H Lordaeron 2022/11/17 || 25H Icecrown [2026-01-03]@[16:17:37]) - pull:15.0, 19.0, 15.2, 49.5 || pull:15.0, 17.3, 16.5, 18.7, 16.0, 19.6, 18.9, 18.7, 16.4, 19.3, 16.0 || pull:15.0, 19.7, 19.2, 19.6, 15.6, 18.9, 18.5, 16.4, 17.9, 18.4 || "Bone Spike Graveyard-npc:36612-61 = pull:14.99, 15.68, Bone Storm applied/17.40, 0.08/17.48, 16.36, Bone Storm removed/13.64, 4.63/18.27"
+local timerBoneSpike		= mod:NewCDTimer(18, 69057, nil, nil, nil, 1, nil, DBM_COMMON_L.DAMAGE_ICON, true) -- 25hc = 18s
 local timerWhirlwindCD		= mod:NewCDTimer(90, 69076, nil, nil, nil, 2, nil, DBM_COMMON_L.MYTHIC_ICON) -- As of 16/11/2022, Warmane fixed this timer. (25H Lordaeron 2022/11/16 || 25H Lordaeron 2022/11/17 || 25N Lordaeron 2023-02-10 || 25N Lordaeron [2023-02-14]@[20:08:16]) - Bone Storm-69076-npc:36612 = pull:45.0, 90.1 || pull:45.0, 90.0 || pull:45.0, 90.0 || pull:45.0, 90.1
-local timerWhirlwind		= mod:NewBuffActiveTimer(20, 69076, nil, nil, nil, 6)
+local timerWhirlwind		= mod:NewBuffActiveTimer(30, 69076, nil, nil, nil, 6) -- 25nm = 30s
 local timerBoned			= mod:NewAchievementTimer(8, 4610)
 local timerBoneSpikeUp		= mod:NewCastTimer(69057)
 local timerWhirlwindStart	= mod:NewCastTimer(69076)
@@ -44,7 +44,7 @@ mod.vb.impaleIcon = 8
 
 function mod:OnCombatStart(delay)
 	preWarnWhirlwind:Schedule(40-delay)
-	timerWhirlwindCD:Start(45-delay) -- After 16/11/2022, Warmane fixed this timer. (10N Icecrown 2022/08/25 || 25H Lordaeron 2022/09/08 || 25H Lordaeron 2022/09/14 || 25H Lordaeron 2022/09/23 || 25H Lordaeron 2022/11/16 || 25H Lordaeron 2022/11/17 || 25N Lordaeron 2023-02-10 || 25H Lordaeron [2023-02-14]@[19:45:48] || 25H Lordaeron [2023-02-14]@[19:53:17] || 25N Lordaeron [2023-02-14]@[20:08:16] || 25N Icecrown 2023-02-19) - pull:52.2 || pull:48.3 || pull:45.2 || pull:46.9 || 45.0 || 45.0 || 45.1 || 45.0 || 45.0
+	timerWhirlwindCD:Start(45-delay) -- 25nm = 45
 	timerBoneSpike:Start(15-delay) -- Fixed timer - 15.0
 	berserkTimer:Start(-delay)
 	self:RegisterShortTermEvents(

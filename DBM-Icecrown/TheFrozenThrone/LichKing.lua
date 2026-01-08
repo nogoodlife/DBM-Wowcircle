@@ -136,7 +136,7 @@ local specWarnSoulreaperOtr			= mod:NewSpecialWarningTaunt(69409, false, nil, ni
 local specWarnValkyrLow				= mod:NewSpecialWarning("SpecWarnValkyrLow", nil, nil, nil, 1, 2, nil, 71844, 69037)
 
 local timerSoulreaper				= mod:NewTargetTimer(5.1, 69409, nil, "Tank|Healer|TargetedCooldown")
-local timerSoulreaperCD				= mod:NewCDCountTimer(30.5, 69409, nil, "Tank|Healer|TargetedCooldown", nil, 5, nil, DBM_COMMON_L.TANK_ICON)
+local timerSoulreaperCD				= mod:NewCDCountTimer(34.0, 69409, nil, nil, nil, 5, nil, DBM_COMMON_L.TANK_ICON) -- 25hc = 34s
 local timerDefileCD					= mod:NewCDCountTimer(32, 72762, nil, nil, nil, 3, nil, DBM_COMMON_L.DEADLY_ICON, true, 1, 4) -- REVIEW! ~3s variance [32-34.7]. Added "keep" arg, but might need sync for Normal Harvest Soul since CLEU could be OOR - need Normal log from a harvested soul - (25H Lordaeron 2022/09/26_wipe1 || 25H Lordaeron 2022/09/26_wipe2 || 25H Lordaeron 2022/09/26_wipe3 || 25H Lordaeron 2022/09/26_wipe4 || 25H Lordaeron 2022/09/26_wipe5 || 25H Lordaeron 2022/09/26_wipe6 || 10N Lordaeron 2022/10/08) - 33.8, 34.2, 32.3, 34.0, 32.8 || 32.4, 34.5, 33.6, 34.4, 33.7 || 33.4, 32.1, 33.0, 32.5, 33.5, 33.3, 33.5 || 33.6, 33.4, 33.0 || Stage 2/37.5, 32.2, 32.0, 33.0, 33.5, 32.1, 32.1, 33.4, Stage 2.5/25.8, Stage 3/62.5, 64.0/126.6/152.4, 32.7, 73.6, 32.6, 74.5 || 32.6, 34.7, 32.5, 34.2, 33.7 || Stage 2/37.5, 32.1, 32.8, Stage 2.5/24.2, Stage 3/62.5, 32.9/95.5/119.6, 32.7, 32.7, 32.9
 local timerSummonValkyr				= mod:NewCDCountTimer(45.2, 69037, nil, nil, nil, 1, 71844, DBM_COMMON_L.DAMAGE_ICON, true, 2, 3) -- 5s variance [45-50]. Added "keep" arg (25H Lordaeron 2022/09/21_wipe1 || 25H Lordaeron 2022/09/21_wipe2 || 25H Lordaeron 2022/09/21_kill) - 46.5, 47.1, 45.2 || 50.0, 46.8, 46.2 || 47.8, 48.1, 47.8
 
@@ -181,7 +181,7 @@ local specWarnGTFO					= mod:NewSpecialWarningGTFO(68983, nil, nil, nil, 1, 8)
 
 local timerPhaseTransition			= mod:NewTimer(62.5, "PhaseTransition", 72262, nil, nil, 6)
 local timerRagingSpiritCD			= mod:NewNextCountTimer(20, 69200, nil, nil, nil, 1)
-local timerSoulShriekCD				= mod:NewVarTimer("v12-15", 69242, nil, nil, nil, 1) -- ~3s variance [12.4-15]. SPELL_CAST_START: (25H Lordaeron [2025-10-30]@[22:24:13]) - "Soul Shriek-73802-npc:36701-3660 = pull:439.27/[Stage 1/0.00, Stage 1.5/115.59, Stage 2/62.50, Stage 2.5/190.16, Stage 3/62.50] 8.53/71.03/261.19/323.69/439.27, Left Frostmourne/54.01, 9.04/63.04, 12.15, 13.16, 14.80, Left Frostmourne/57.22, 5.04/62.26, 14.29, 12.70, 12.13"
+local timerSoulShriekCD				= mod:NewCDTimer(12.5, 69242, nil, nil, nil, 1) -- 25hc = 0.5 cast time + 12s actual cd? or just 12s better?
 
 mod:AddRangeFrameOption(8, 72133)
 mod:AddSetIconOption("RagingSpiritIcon", 69200, false, 0, {6})
@@ -206,7 +206,7 @@ local plagueHop = DBM:GetSpellInfo(70338)--Hop spellID only, not cast one.
 -- local soulshriek = GetSpellInfo(69242)
 local plagueExpires = {}
 local grabIcon = 2
---	local lastValk = 0
+local lastValk = 0
 --	local maxValks = mod:IsDifficulty("normal25", "heroic25") and 3 or 1
 local warnedAchievement = false
 local lastPlague
@@ -289,12 +289,12 @@ local function NextPhase(self, delay)
 		if self.Options.ShowFrame then
 			self:CreateFrame()
 		end
-		timerSummonValkyr:Start(17, self.vb.valkyrWaveCount+1) -- (25H Lordaeron 2022/09/21_wipe1 || 25H Lordaeron 2022/09/21_wipe2 || 25H Lordaeron 2022/09/21_kill || 25H Lordaeron 2022/09/26_wipe3 || 25H Lordaeron 2022/09/26_wipe6) - 17.5 || 17.5 || 17.4 || 17.3 || 17.0
-		timerSoulreaperCD:Start(40, self.vb.soulReaperCount+1)
-		soundSoulReaperSoon:Schedule(40-2.5, "Interface\\AddOns\\DBM-Core\\sounds\\RaidAbilities\\soulreaperSoon.mp3")
-		timerDefileCD:Start(37.5, self.vb.defileCount+1)
-		timerInfestCD:Start(12.2, self.vb.infestCount+1) -- 0.3s variance [12.2-12.5] (10N Icecrown 2022/08/25 || 25H Lordaeron 2022/09/03) - 12.4 || 12.5; 12.5; 12.5; 12.2; 12.5; 12.5; 12.5
-		soundInfestSoon:Schedule(12.2-2, "Interface\\AddOns\\DBM-Core\\sounds\\RaidAbilities\\infestSoon.mp3")
+		timerSummonValkyr:Start(20, self.vb.valkyrWaveCount+1)
+		timerSoulreaperCD:Start(32, self.vb.soulReaperCount+1)
+		soundSoulReaperSoon:Schedule(32-2.5, "Interface\\AddOns\\DBM-Core\\sounds\\RaidAbilities\\soulreaperSoon.mp3")
+		timerDefileCD:Start(37, self.vb.defileCount+1) -- 2025.12.27 25hc 37? 37.5?
+		timerInfestCD:Start(14, self.vb.infestCount+1) -- wowcircle?
+		soundInfestSoon:Schedule(14-2, "Interface\\AddOns\\DBM-Core\\sounds\\RaidAbilities\\infestSoon.mp3")
 		warnDefileSoon:Schedule(33, self.vb.defileCount+1)
 		warnDefileSoon:ScheduleVoice(33, "scatter") -- Voice Pack - Scatter.ogg: "Spread!"
 		self:RegisterShortTermEvents(
@@ -304,13 +304,13 @@ local function NextPhase(self, delay)
 	elseif self.vb.phase == 3 then
 		warnPhase3:Show()
 		warnPhase3:Play("pthree")
-		timerVileSpirit:Start(17)
-		timerSoulreaperCD:Start(37.5, self.vb.soulReaperCount+1)
-		soundSoulReaperSoon:Schedule(37.5-2.5, "Interface\\AddOns\\DBM-Core\\sounds\\RaidAbilities\\soulreaperSoon.mp3")
-		timerDefileCD:Start(nil, self.vb.defileCount+1)
-		warnDefileSoon:Schedule(32-5, self.vb.defileCount+1)
-		warnDefileSoon:ScheduleVoice(32-5, "scatter")
-		timerHarvestSoulCD:Start(13.6) -- REVIEW! variance? (25H Lordaeron 2022/10/21 || 25H Lordaeron 2022/11/16) - 13.6 || 14.0
+		timerVileSpirit:Start(17) --delete ??
+		timerSoulreaperCD:Start(37.5, self.vb.soulReaperCount+1) --delete ??
+		soundSoulReaperSoon:Schedule(37.5-2.5, "Interface\\AddOns\\DBM-Core\\sounds\\RaidAbilities\\soulreaperSoon.mp3") --delete ??
+		timerDefileCD:Start(nil, self.vb.defileCount+1) --delete ??
+		warnDefileSoon:Schedule(32-5, self.vb.defileCount+1) --delete ??
+		warnDefileSoon:ScheduleVoice(32-5, "scatter") --delete ??
+		timerHarvestSoulCD:Start(11) -- 2025.12.27 25hc = 11.1?
 --		if self:IsHeroic() then
 --			self:RegisterShortTermEvents(
 --				"ZONE_CHANGED"
@@ -322,13 +322,13 @@ end
 local function leftFrostmourne(self)
 	DBM:Debug("Left Frostmourne")
 	DBM:AddSpecialEventToTranscriptorLog("Left Frostmourne")
-	timerHarvestSoulCD:Start(58.72) -- Subtract [58.72]s from Exit FM to next CAST_SUCCESS diff. Timestamps: Harvest cast success > Enter Frostmourne (SAA 73655) > Exit FM (SAR 73655) > Harvest cast. (25H Lordaeron [2023-08-23]@[22:14:48]) - "Harvest Souls-74297-npc:36597-3706 = pull:452.4/Stage 3/14.0, 107.3, 107.2" => '107.3 calculation as follows': 452.42 > 458.44 [6.02] > 500.97 [42.53/48.55] > 559.69 [58.72/101.25/107.27]
+	timerHarvestSoulCD:Start(56) -- 2025.12.27 25hc = 56?
 	timerDefileCD:Start(1.5, self.vb.defileCount+1) -- As soon as the group leaves FM
 	warnDefileSoon:Show(self.vb.defileCount+1)
 	warnDefileSoon:Play("scatter") -- Voice Pack - Scatter.ogg: "Spread!"
-	timerSoulreaperCD:Start(3.5, self.vb.soulReaperCount+1) -- After Defile cast (+2s)
-	soundSoulReaperSoon:Schedule(3.5-2.5, "Interface\\AddOns\\DBM-Core\\sounds\\RaidAbilities\\soulreaperSoon.mp3")
-	timerVileSpirit:Start(7.81) -- (25H Lordaeron [2023-09-13]@[22:13:36]) - "Vile Spirits-70498-npc:36597-4244 = pull:518.95/Left Frostmourne/7.81, 40.11, Left Frostmourne/59.17, 7.81/66.98, 39.97, Left Frostmourne/59.45"
+	timerSoulreaperCD:Start(17.5, self.vb.soulReaperCount+1) -- 25hc right after VileSpirit cast? (12+0.5+5s VileSpirit cd+cast_time+cast_duration)
+	soundSoulReaperSoon:Schedule(17.5-2.5, "Interface\\AddOns\\DBM-Core\\sounds\\RaidAbilities\\soulreaperSoon.mp3")
+	timerVileSpirit:Start(12) -- 2025.12.27 25hc = 12? 11.5?
 end
 
 local function RestoreWipeTime(self)
@@ -627,19 +627,15 @@ end
 function mod:SPELL_SUMMON(args)
 	local spellId = args.spellId
 	if spellId == 69037 then -- Summon Val'kyr
-		if self.Options.ShowFrame then
-			self:CreateFrame()
-		end
-		if self.Options.ValkyrIcon then
-			self:ScanForMobs(args.destGUID, 2, self.vb.valkIcon, 1, nil, 12, "ValkyrIcon")
-		end
-		self.vb.valkIcon = self.vb.valkIcon + 1
---[[		self.vb.valkyrWaveCount = self.vb.valkyrWaveCount + 1
 		if time() - lastValk > 15 then -- show the warning and timer just once for all three summon events
+			table.wipe(valkyrTargets)	-- reset valkyr cache for next round
+			grabIcon = 2
+			self.vb.valkIcon = 2
+			self.vb.valkyrWaveCount = self.vb.valkyrWaveCount + 1
 			warnSummonValkyr:Show(self.vb.valkyrWaveCount)
 			timerSummonValkyr:Start(nil, self.vb.valkyrWaveCount+1)
 			lastValk = time()
-			scanValkyrTargets(self)
+			------scanValkyrTargets(self)
 			--if self.Options.ValkyrIcon then
 			--	local cid = self:GetCIDFromGUID(args.destGUID)
 			--	if self:IsDifficulty("normal25", "heroic25") then
@@ -648,7 +644,16 @@ function mod:SPELL_SUMMON(args)
 			--		self:ScanForMobs(args.destGUID, 1, 2, 1, nil, 20, "ValkyrIcon")
 			--	end
 			--end
-		end--]]
+		end
+	
+		if self.Options.ShowFrame then
+			self:CreateFrame()
+		end
+		if self.Options.ValkyrIcon then
+			self:ScanForMobs(args.destGUID, 2, self.vb.valkIcon, 1, nil, 12, "ValkyrIcon") --12s scan time?
+		end
+		self.vb.valkIcon = self.vb.valkIcon + 1
+		
 	elseif spellId == 70372 then -- Shambling Horror
 		tinsert(shamblingHorrorsGUIDs, args.destGUID) -- Spawn order. Idea was to somehow distinguish shamblings, so let's do this on the assumption that it's visually easy to differentiate them due to HP diff.
 		local shamblingCount = DBM:tIndexOf(shamblingHorrorsGUIDs, args.destGUID)
@@ -841,12 +846,15 @@ function mod:UNIT_SPELLCAST_SUCCEEDED(_, spellName)
 --	if spellName == soulshriek and mod:LatencyCheck() then
 --		self:SendSync("SoulShriek", UnitGUID(uId))
 	if (spellName == GetSpellInfo(74361) or spellName == GetSpellInfo(69037)) and self:AntiSpam(5, 4) then -- Summon Val'kyr Periodic (10H, 25N, 25H) | Summon Val'kyr (10N)
+		print("WOWCIRCLE UNIT_SPELLCAST_SUCCEEDED 74361 69037 DETECTED! Plz report")
+		--[[
 		table.wipe(valkyrTargets)	-- reset valkyr cache for next round
 		grabIcon = 2
 		self.vb.valkIcon = 2
 		self.vb.valkyrWaveCount = self.vb.valkyrWaveCount + 1
 		warnSummonValkyr:Show(self.vb.valkyrWaveCount)
 		timerSummonValkyr:Start(nil, self.vb.valkyrWaveCount+1)
+		]]
 	--[[
 	elseif spellName == GetSpellInfo(73654) then -- Harvest Souls (Heroic)
 		specWarnHarvestSouls:Show()
