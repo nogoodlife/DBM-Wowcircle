@@ -41,7 +41,7 @@ local specWarnMeteorStrike			= mod:NewSpecialWarningMove(74648, nil, nil, nil, 1
 
 local timerFieryCombustionCD		= mod:NewNextTimer(20, 74562, nil, nil, nil, 3) -- 2025.12.28 25hc = 20s
 local timerMeteorCD					= mod:NewNextTimer(40, 74648, nil, nil, nil, 3, nil, DBM_COMMON_L.DEADLY_ICON)--Target or aoe? tough call. It's a targeted aoe! Even though on pull has variance, can't implement "keep" due to OnSync phasing, unless I sync schedule and end timer flag but that's a bit overkill
-local timerMeteorCast				= mod:NewCastTimer(7, 74648)--7-8 seconds from boss yell the meteor impacts.
+local timerMeteorCast				= mod:NewCastTimer(7, 74648)-- 6.5-7? seconds from boss yell the meteor impacts.
 local timerFieryBreathCD			= mod:NewCDTimer(19, 74525, nil, "Tank|Healer", nil, 5, nil, DBM_COMMON_L.TANK_ICON, true) -- 2025.12.28 25hc = 19s
 local timerTailLashCD				= mod:NewCDTimer(10, 74531, nil, nil, nil, 2) -- Almost a fixed timer, with very occasional delay, on both Physical and Shadow realms. (25H Lordaeron 2022/09/23) - pull:10.1/Stage 1/10.1, 10.0, 10.0, 10.0, 10.1, 10.5, 10.0, 10.1, 11.7, Stage 2/13.5, 10.1, 10.0, 10.0, 10.1, 10.0, 10.0, 10.0, Stage 3/10.0, 10.0, 11.2, 10.0, 10.0, 10.0, 10.1, 10.1, 10.0, 10.0, 10.0, 10.0, 10.0, 10.1, 10.0, 10.0, 10.0, 11.0, 10.0
 
@@ -223,6 +223,8 @@ function mod:UNIT_HEALTH(uId)
 		self.vb.warned_preP2 = true
 		warnPhase2Soon:Show()
 	elseif not self.vb.warned_preP3 and self:GetUnitCreatureId(uId) == 40142 and UnitHealth(uId) / UnitHealthMax(uId) <= 0.54 then
+		self.vb.warned_preP3 = true
+		warnPhase3Soon:Show()
 		self:SendSync("Phase3soon")
 	end
 end
@@ -353,21 +355,22 @@ function mod:OnSync(msg, target)
 		timerFieryCombustionCD:Cancel()
 		warnPhase2:Show()
 		warnPhase2:Play("ptwo")
-		timerShadowBreathCD:Start() -- ~5s variance [13.7-18.4] (25H Lordaeron 2022/09/21 wipe1 || 25H Lordaeron 2022/09/21 wipe2 || 25H Lordaeron 2022/09/21 wipe3 || 25H Lordaeron 2022/09/23) - 15.9 || 13.7 || 18.1 || 18.4
-		timerSoulConsumptionCD:Start(22.8)--Edited. not exact, 15 seconds from tank aggro, but easier to add 5 seconds to it as a estimate timer than trying to detect this. (25N Lordaeron 2022/10/09 || 25H Lordaeron 2022/10/15 || 25H Lordaeron 2022/10/30) - 23.8 || 23.4 || 22.8
+		timerShadowBreathCD:Start(30) -- 25 seconds from tank aggro, but easier to add 5 seconds to it as a estimate timer than trying to detect this.
+		timerSoulConsumptionCD:Start(25)-- 20 seconds from tank aggro, but easier to add 5 seconds to it as a estimate timer than trying to detect this.
 		if self.Options.TimerCutterSpawn then
 			timerTwilightCutterSpawn:Start(35)
 		else
 			timerTwilightCutterCD:Start(30) -- (25N Lordaeron 2022/09/20 || 25H Lordaeron 2022/09/21) - Stage 2/30.0 || Stage 2/30.0
 		end
-		self:Schedule(20, clearKeepTimers, self)
+		self:Schedule(31, clearKeepTimers, self)
 	elseif msg == "Phase3" and self:GetStage(3, 1) then
 		self:SetStage(3)
 		warnPhase3:Show()
 		warnPhase3:Play("pthree")
-		timerMeteorCD:Start(23.2) --These i'm not sure if they start regardless of drake aggro, or if it varies as well. (25H Lordaeron 2022/10/09 || 25H Lordaeron 2022/10/30) - Stage 3/25.8 || 23.2
-		timerFieryCombustionCD:Start(17.8) -- REVIEW! source of variance? (25N Lordaeron 2022/10/09 || 25H Lordaeron 2022/10/15 || 25N Lordaeron [2023-06-27]@[19:37:57]) - 18.5 || 19.4 || 17.8
-		self:Schedule(20, clearKeepTimers, self)
+		timerMeteorCD:Start(32)
+		timerFieryCombustionCD:Start(22.5)		
+		timerFieryBreathCD:Start(17.8)
+		self:Schedule(33, clearKeepTimers, self)
 	elseif msg == "Phase3soon" and not self.vb.warned_preP3 then
 		self.vb.warned_preP3 = true
 		warnPhase3Soon:Show()
