@@ -23,10 +23,10 @@ local specWarnTranq			= mod:NewSpecialWarningDispel(78722, "RemoveEnrage", nil, 
 
 local timerBeacon			= mod:NewBuffActiveTimer(5, 74453, nil, nil, nil, 3)
 local timerConflag			= mod:NewBuffActiveTimer(5, 74456, nil, nil, nil, 3)
-local timerConflagCD		= mod:NewCDTimer(63.8, 74452, nil, nil, nil, 3) -- Using UNIT_SPELLCAST_SUCCEEDED since it only fires once. Variance depends on travel time (25N Lordaeron 2022/09/19 || 25H Lordaeron 2022/09/23) -- 63.8 || 64.3
-local timerBreath			= mod:NewCDTimer(19.3, 74403, nil, "Tank|Healer", nil, 5, nil, DBM_COMMON_L.TANK_ICON, true) -- REVIEW! ~10s variance [19.3-29.5] Added "Keep" arg (25N Lordaeron 2022/09/19 || 25H Lordaeron 2022/09/23 || 25N Lordaeron [2023-06-27]@[19:12:05]) -- 38.8, 29.5, 34.2 || 38.4, 25.7 || 38.1, 22.1
+local timerConflagCD		= mod:NewCDTimer(50, 74452, nil, nil, nil, 3) -- old circle timer = 50
+local timerBreath			= mod:NewCDTimer(25, 74403, nil, "Tank|Healer", nil, 5, nil, DBM_COMMON_L.TANK_ICON, true) -- old circle timer = 25
 local timerEnrage			= mod:NewBuffActiveTimer(10, 78722, nil, "RemoveEnrage|Tank|Healer", nil, 5, nil, DBM_COMMON_L.ENRAGE_ICON..DBM_COMMON_L.TANK_ICON)
-local timerFlight			= mod:NewNextTimer(50, 34873, nil, nil, nil, 6, 54950)
+local timerFlight			= mod:NewNextTimer(38, 34873, nil, nil, nil, 6, 54950)
 local timerLanding			= mod:NewNextTimer(8, 30202, nil, nil, nil, 6, 54950)
 
 mod:AddRangeFrameOption(10, 74456)
@@ -59,23 +59,23 @@ local function savianaLanding(self)
 	self:SetStage(1)
 	timerFlight:Start()
 	timerBreath:Resume()
-	self:Schedule(49.5, savianaPhaseCatcher, self)
-	self:Schedule(50, savianaAirphase, self)
+	self:Schedule(41.5, savianaPhaseCatcher, self)
+	self:Schedule(42, savianaAirphase, self)
 	self:UnregisterShortTermEvents()
 end
 
 function mod:OnCombatStart(delay)
 	self:SetStage(1)
-	timerConflagCD:Start(30.1-delay) -- REVIEW! variance? (25N Lordaeron 2022/09/19 || 25H Lordaeron 2022/09/23) -- 30.1 || 30.2
-	timerBreath:Start(14-delay) -- (25N Lordaeron 2022/09/19 || 25H Lordaeron 2022/09/23 || 25N Lordaeron [2023-06-27]@[19:12:05]) - 14.0 || 14.0 || 14.0
-	timerFlight:Start(25-delay)
+	timerConflagCD:Start(27.5-delay) -- 2026.01.09 25hc = 27.5?
+	timerBreath:Start(12-delay) -- 2026.01.09 25hc = 12
+	timerFlight:Start(23.5-delay)
 	table.wipe(beaconTargets)
 	self.vb.beaconIcon = 8
 	if self.Options.RangeFrame then
 		DBM.RangeCheck:Show(12)
 	end
-	self:Schedule(24.5, savianaPhaseCatcher, self)
-	self:Schedule(25, savianaAirphase, self) -- Lowest 24.96
+	self:Schedule(23, savianaPhaseCatcher, self)
+	self:Schedule(23.5, savianaAirphase, self) -- Lowest 24.96
 end
 
 function mod:OnCombatEnd()
@@ -123,10 +123,11 @@ end
 
 function mod: UNIT_SPELLCAST_SUCCEEDED(_, spellName) -- UNIT_SPELLCAST_START/CLEU fires and stops right after, and only gets SUCCEEDED one second after, one time only, which is better to optimize some calls
 	if spellName == GetSpellInfo(74454) then -- Conflagration
+	print("UNIT_SPELLCAST_SUCCEEDED 74454 EVEN EXISTS ON CIRCLE?")
 		timerConflagCD:Restart() -- This will always be prone to bad timers, since it doesn't account for travel time, which can be different!
 		timerLanding:Start()
 		self:Schedule(7, savianaPhaseCatcher, self)
-		self:Schedule(7.89, savianaLanding, self) -- Lowest 7.88
+		self:Schedule(7.8, savianaLanding, self)
 	end
 end
 

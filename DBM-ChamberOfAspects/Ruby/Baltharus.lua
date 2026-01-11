@@ -25,7 +25,7 @@ local specWarnRepellingWave	= mod:NewSpecialWarningSpell(74509, nil, nil, nil, 2
 local timerWhirlwind		= mod:NewBuffActiveTimer(4, 75125, nil, "Tank|Healer", nil, 3)
 local timerRepellingWave	= mod:NewCastTimer(4, 74509, nil, nil, nil, 2)--1 second cast + 3 second stun
 local timerBrand			= mod:NewBuffActiveTimer(10, 74505, nil, nil, nil, 5)
-local timerBladeTempest		= mod:NewCDCountTimer("d24", 75125, nil, nil, 5) -- String timer starting with "d" means "allowDouble". REVIEW! ~1s variance? (boss1 timers: 25N Lordaeron 2022-09-19 || 25H Lordaeron 2022-09-23) - "Blade Tempest-75125-npc:39751-2 = pull:15.0, 25.2, 24.0, 25.2" || "Blade Tempest-75125-npc:39751-2 = pull:15.0, 25.2, 25.2"
+local timerBladeTempest		= mod:NewCDCountTimer("d28", 75125, nil, nil, 5) -- String timer starting with "d" means "allowDouble". 25hc = 28s?
 
 mod:AddRangeFrameOption(12, 74505)
 mod:AddSetIconOption("SetIconOnBrand", 74505, false, false, {1, 2, 3, 4, 5, 6, 7, 8})
@@ -52,7 +52,7 @@ function mod:OnCombatStart(delay)
 	table.wipe(bossGUIDs)
 	self.vb.brandIcon = 8
 	self.vb.allClonesSpawned = false
-	timerBladeTempest:Start(15-delay, 1, UnitGUID("boss1")) -- REVIEW! (25N Lordaeron 2022-09-19 || 25H Lordaeron 2022-09-23) - 15.0 || 15.0
+	timerBladeTempest:Start(17-delay, 1, UnitGUID("boss1")) -- REVIEW! 25hc = 16? 16.5? 16.7?
 	if self.Options.RangeFrame then
 		DBM.RangeCheck:Show(12)
 	end
@@ -98,7 +98,7 @@ function mod:SPELL_AURA_APPLIED(args)
 	end
 end
 
-function mod:INSTANCE_ENCOUNTER_ENGAGE_UNIT()
+function mod:INSTANCE_ENCOUNTER_ENGAGE_UNIT() -- there is no boss2/boss3 on circle
 	if self.vb.allClonesSpawned then return end
 	if UnitExists("boss3") then
 		self.vb.allClonesSpawned = true

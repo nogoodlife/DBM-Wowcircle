@@ -25,11 +25,10 @@ mod:RegisterEventsInCombat(
 
 --local canShadowmeld = select(2, UnitRace("player")) == "NightElf"
 --local canVanish = select(2, UnitClass("player")) == "ROGUE"
-local myRealm = select(3, DBM:GetMyPlayerInfo())
 
 -- General
-local timerCombatStart		= mod:NewCombatTimer(47.10)
-local enrageTimer			= mod:NewBerserkTimer((myRealm == "Lordaeron" or myRealm == "Frostmourne") and 420 or 480)
+local timerCombatStart		= mod:NewCombatTimer(100.30)
+local enrageTimer			= mod:NewBerserkTimer(480)
 
 mod:RemoveOption("HealthFrame")
 mod:AddBoolOption("RunePowerFrame", false, "misc")
@@ -264,7 +263,7 @@ function mod:CHAT_MSG_MONSTER_YELL(msg)
 			DBM.RangeCheck:Show(12)
 		end
 	elseif msg:find(L.PullHorde, 1, true) then
-		timerCombatStart:Start(98.72)
+		timerCombatStart:Start()
 		if self.Options.RangeFrame then
 			DBM.RangeCheck:Show(12)
 		end
