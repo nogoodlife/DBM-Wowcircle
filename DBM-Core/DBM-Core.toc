@@ -16,9 +16,9 @@
 ## SavedVariablesPerCharacter: DBM_UsedProfile, DBM_UseDualProfile, DBM_CharSavedRevision, DBM_SavedOptions
 ## LoadOnDemand: 0
 ## DefaultState: enabled
-## Author: Barsoom, Bunny67, Zidras, DBM-Frostmourne contributors, original DBM team
+## Author: Barsoom, Bunny67, Zidras, github contributors, original DBM team, Nogoodlife
 ## Version: 10.1.13_alpha
-## X-Website: https://github.com/Zidras/DBM-Warmane/
+## X-Website: https://github.com/nogoodlife/DBM-Wowcircle
 
 compat.lua
 

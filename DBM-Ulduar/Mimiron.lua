@@ -317,7 +317,7 @@ end
 
 function mod:SPELL_SUMMON(args)
 	if args.spellId == 63811 then -- Bomb Bot, never fired on Warmane
-		DBM:Debug("Bomb Bot unhidden from combat log. Notify Zidras on Discord or GitHub")
+		DBM:Debug("Bomb Bot unhidden from combat log. Notify Nogoodlife")
 		timerBombBotSpawn:Start()
 		warnBombBotSpawn:Show()
 	end

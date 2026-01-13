@@ -525,7 +525,7 @@ function mod:PLAYER_TARGET_CHANGED()
 		specWarnVengefulShadeOnYou:Show()
 		specWarnVengefulShadeOnYou:Play("runaway")
 --		yellVengefulShadeOnMe:Yell() -- disabled since live run proved to be ineffective to catch target without false positives
-		DBM:AddMsg("Experimental feature with spirit targeting. If you received a Special Announcement saying Summon Spirit - run away, but were NOT the real player targeted by the spirits, please share VOD/Transcriptor log with Zidras on Github or Discord.")
+		DBM:AddMsg("Experimental feature with spirit targeting. If you received a Special Announcement saying Summon Spirit - run away, but were NOT the real player targeted by the spirits, please share VOD/Transcriptor log with Nogoodlife")
 	end
 	self:Unschedule(unregisterShortTermEvents)
 	self:UnregisterShortTermEvents() -- outside the if check, since I only care about the first event, whether or not it targeted boss

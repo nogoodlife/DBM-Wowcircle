@@ -107,7 +107,7 @@ end
 
 function mod:UNIT_SPELLCAST_SUCCEEDED(_, spellName)
 	--[[if spellName == GetSpellInfo(28819) and self:AntiSpam(2, 1) then--Submerge Visual
-		DBM:AddMsg("Submerge Visual unhidden from event log. Notify Zidras on Discord or GitHub")
+		DBM:AddMsg("Submerge Visual unhidden from event log. Notify Nogoodlife")
 		self:SendSync("Submerge")]]
 	if spellName == whirlName and self:AntiSpam(2, 2) then
 		self:SendSync("Whirl")
@@ -117,7 +117,7 @@ end
 function mod:OnSync(msg)
 	if not self:IsInCombat() then return end
 	if msg == "Submerge" then
-		DBM:AddMsg("Submerge is being synced by something. Notify Zidras on Discord or GitHub with a Transcriptor log")
+		DBM:AddMsg("Submerge is being synced by something. Notify Nogoodlife with a Transcriptor log")
 --[[	self.vb.submerged = true
 		self.vb.guardianKill = 0
 		self.vb.ambusherKill = 0

@@ -211,7 +211,7 @@ end
 function mod:SPELL_CAST_SUCCESS(args)
 	local spellId = args.spellId
 	if spellId == 64144 and self:GetUnitCreatureId(args.sourceGUID) == 33966 then -- Never fires on Warmane
-		DBM:AddMsg("Erupt unhidden from combat log. Notify Zidras on Discord or GitHub")
+		DBM:AddMsg("Erupt unhidden from combat log. Notify Nogoodlife")
 		warnCrusherTentacleSpawned:Show()
 	elseif spellId == 64465 then -- Shadow Beacon
 		timerEmpower:Start()

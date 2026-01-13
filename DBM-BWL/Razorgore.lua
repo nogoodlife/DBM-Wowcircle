@@ -67,7 +67,7 @@ function mod:SPELL_CAST_SUCCESS(args)
 		self:SetStage(2)
 	--This may not be accurate, it depends on how large expanded combat log range is
 	elseif spellId == 19873 then
-		DBM:AddMsg("Destroy Egg SPELL_CAST_SUCCESS unhidden from combat log. Notify Zidras on Discord or GitHub")
+		DBM:AddMsg("Destroy Egg SPELL_CAST_SUCCESS unhidden from combat log. Notify Nogoodlife")
 --		self.vb.eggsLeft = self.vb.eggsLeft - 1
 --		warnEggsLeft:Show(string.format("%d/%d",30-self.vb.eggsLeft,30))
 	end

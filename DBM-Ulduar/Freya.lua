@@ -119,13 +119,13 @@ end
 function mod:SPELL_CAST_SUCCESS(args)
 	local spellId = args.spellId
 	if args:IsSpellID(62678, 62873) then -- REVIEW! Summon Allies of Nature, never fired on Warmane. Instead there are Summon Wave spells: 62688 (confirmed), 62685 and 62686. To be confirmed adequacy via logs
-		DBM:AddMsg("Summon Allies of Nature unhidden from combat log. Notify Zidras on Discord or GitHub")
+		DBM:AddMsg("Summon Allies of Nature unhidden from combat log. Notify Nogoodlife")
 		self.vb.waves = self.vb.waves + 1
 		if self.vb.waves < 6 then
 			timerAlliesOfNature:Start()
 		end
 	elseif args.spellId == 62619 and self:GetUnitCreatureId(args.sourceName) == 33228 then -- Pheromones spell, cast by newly spawned Eonar's Gift second they spawn to allow melee to dps them while protector is up.
-		DBM:AddMsg("Pheromones unhidden from combat log. Notify Zidras on Discord or GitHub") -- REVIEW! Pheromones never fired on Warmane. Instead there is only an emote event.
+		DBM:AddMsg("Pheromones unhidden from combat log. Notify Nogoodlife") -- REVIEW! Pheromones never fired on Warmane. Instead there is only an emote event.
 		specWarnLifebinder:Show()
 		specWarnLifebinder:Play("targetchange")
 		timerLifebinderCD:Start()
@@ -153,7 +153,7 @@ function mod:SPELL_CAST_SUCCESS(args)
 			timerNatureBombExplosion:Start()
 		end
 	elseif spellId == 63601 then -- Strengthened Iron Roots
-		DBM:AddMsg("Strengthened Iron Roots unhidden from combat log. Notify Zidras on Discord or GitHub") -- REVIEW! Strengthened Iron Roots never fired on Warmane. Instead there is only an emote event.
+		DBM:AddMsg("Strengthened Iron Roots unhidden from combat log. Notify Nogoodlife") -- REVIEW! Strengthened Iron Roots never fired on Warmane. Instead there is only an emote event.
 		--if self.vb.phase == 2 then
 			timerIronRootsCD:Start()
 		--end

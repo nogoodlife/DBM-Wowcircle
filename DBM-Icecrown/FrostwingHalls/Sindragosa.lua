@@ -21,10 +21,9 @@ mod:RegisterEventsInCombat(
 )
 
 local strupper = strupper
-local myRealm = select(3, DBM:GetMyPlayerInfo())
 
 -- General
-local berserkTimer				= mod:NewBerserkTimer(myRealm == "Frostmourne" and 420 or 600) -- Lordaeron hardcore berserk timer removed (Warmane Changelog November 15th 2023 )
+local berserkTimer				= mod:NewBerserkTimer(600)
 
 mod:AddBoolOption("RangeFrame", true) -- keep as BoolOption since the localization offers important information regarding boss ability and player debuff behaviour (Unchained Magic is Heroic only)
 mod:AddBoolOption("ClearIconsOnAirphase", true) -- don't group with any spellId, it applies to all raid icons
@@ -47,9 +46,14 @@ local specWarnInstability		= mod:NewSpecialWarningStack(69766, nil, mod:IsHeroic
 local specWarnChilledtotheBone	= mod:NewSpecialWarningStack(70106, nil, mod:IsHeroic() and 4 or 8, nil, nil, 1, 6)
 local specWarnBlisteringCold	= mod:NewSpecialWarningRun(70123, nil, nil, nil, 4, 2)
 
-local timerNextAirphase			= mod:NewTimer(110, "TimerNextAirphase", 43810, nil, nil, 6) -- Fixed timer on Air Yell: 110s
-local timerNextGroundphase		= mod:NewTimer(44.2, "TimerNextGroundphase", 43810, nil, nil, 6) -- 0.4s variance (10H Lordaeron 2022/10/02 || 25H Lordaeron 2022/10/02 || 25H Lordaeron 2022/10/06) - 44.2; 44.2 || 44.2; 44.3, 44.6; 44.2 || 45.1
-local timerNextFrostBreath		= mod:NewNextTimer(22, 69649, nil, "Tank|Healer", nil, 5, nil, DBM_COMMON_L.TANK_ICON)
+local timerNextAirphase			= mod:NewTimer(120, "TimerNextAirphase", 43810, nil, nil, 6) -- Fixed timer on Air Yell: 120s
+local timerNextGroundphase		= mod:NewTimer(44.2, "TimerNextGroundphase", 43810, nil, nil, 6)
+--local timerNextFrostBreath		= mod:NewNextTimer(20, 69649, nil, "Tank|Healer", nil, 5, nil, DBM_COMMON_L.TANK_ICON, true, 6.5) --circle 25hc 20.1/22.4/24.9 -- need KEEP arg +5s? 6.5s?
+local timerNextFrostBreath		= mod:NewVarTimer("v20-25", 69649, nil, "Tank|Healer", nil, 5, nil, DBM_COMMON_L.TANK_ICON, true, 6.5) --how NewVarTimer works with "keep" ?
+
+--NewTimer / NewVarTimer / NewNextTimer / NewCDTimer args
+--timer, spellId, timerText, optionDefault, optionName, colorType, texture, inlineIcon, keep, countdown, countdownMax, ...
+
 local timerNextBlisteringCold	= mod:NewCDTimer(66, 70123, nil, nil, nil, 2, nil, DBM_COMMON_L.DEADLY_ICON, true, 2) -- Added "keep" arg
 local timerNextBeacon			= mod:NewNextCountTimer(16, 70126, nil, nil, nil, 3, nil, DBM_COMMON_L.DEADLY_ICON)
 local timerBeaconIncoming		= mod:NewTargetTimer("d7", 70126, nil, nil, nil, 3) -- One incoming timer for each target
@@ -205,9 +209,9 @@ function mod:OnCombatStart(delay)
 	self:SetStage(1)
 	berserkTimer:Start(-delay)
 	timerNextAirphase:Start(50-delay)
-	timerNextBlisteringCold:Start(33-delay) --wowcircle 25hc: 33.4 ?
-	timerTailSmash:Start(20-delay) -- (25H Lordaeron 2022/07/09 || 10N Icecrown 2022/08/22 || 10N Icecrown 2022/08/25 || 10H Lordaeron 2022/10/02 || 25H Lordaeron 2022/10/02) - 20.0 || 20.0 || 20.0 || 20.0; 20.0 || 20.0; 19.9; 20.0; 20.0
-	timerUnchainedMagic:Start(10-delay) -- (25H Lordaeron 2022/07/09 || 10N Icecrown 2022/08/22 || 10N Icecrown 2022/08/25) - 10.1 || 10.1 || 10.0
+	timerNextBlisteringCold:Start(33.5-delay) -- icy grip (no event on circle) = 33? 33.4? 33.5? after ~1.5 = blistering cold spell_cast_start
+	timerTailSmash:Start(20-delay)
+	timerUnchainedMagic:Start(10-delay) -- 25hc = 10 / 13???
 	self.vb.warned_P2 = false
 	self.vb.warnedfailed = false
 	table.wipe(beaconTargets)
@@ -237,28 +241,30 @@ function mod:SPELL_CAST_START(args)
 		specWarnBlisteringCold:Play("runout")
 		timerBlisteringCold:Start()
 		timerNextBlisteringCold:Start()
+		
 		if self.Options.RangeFrame then
 			DBM.RangeCheck:SetBossRange(25, self:GetBossUnitByCreatureId(36853))
-			self:Schedule(4.5, ResetRange, self)
+			self:Schedule(5.5, ResetRange, self)
 		end
 	end
 end
 
 function mod:SPELL_CAST_SUCCESS(args)
 	local spellId = args.spellId
-	if spellId == 70117 then --Icy Grip Cast, not blistering cold, but adds an extra 1sec to the warning --wowcircle doesnot have SPELL_CAST_SUCCESS 70117 event
+	if spellId == 70117 then --Icy Grip Cast, not blistering cold, but adds an extra 1.5sec to the warning --wowcircle missing SPELL_CAST_SUCCESS 70117 event
 		print("WOWCIRCLE SPELL_CAST_SUCCESS 70117 DETECTED! Plz report")
 		DBM:AddMsg("1WOWCIRCLE SPELL_CAST_SUCCESS 70117 DETECTED! Plz report")
-		--timerNextBlisteringCold:Cancel()
-		--specWarnBlisteringCold:Show()
-		--specWarnBlisteringCold:Play("runout")
-		--timerBlisteringCold:Start()
-		--timerNextBlisteringCold:Start()
+		--[[
+		timerNextBlisteringCold:Cancel()
+		specWarnBlisteringCold:Show()
+		specWarnBlisteringCold:Play("runout")
+		timerBlisteringCold:Start()
+		timerNextBlisteringCold:Start()
 
 		if self.Options.RangeFrame then
 			DBM.RangeCheck:SetBossRange(25, self:GetBossUnitByCreatureId(36853))
 			self:Schedule(5.5, ResetRange, self)
-		end
+		end]]
 	elseif spellId == 69762 then	-- Unchained Magic
 		timerUnchainedMagic:Start()
 	end
@@ -442,7 +448,7 @@ function mod:CHAT_MSG_MONSTER_YELL(msg)
 		timerNextAirphase:Cancel()
 		timerNextGroundphase:Cancel()
 		warnGroundphaseSoon:Cancel()
-		timerNextBlisteringCold:Restart(35) -- Fixed timer: 35s (25H Lordaeron 2024/11/28) - 35.03
+		timerNextBlisteringCold:Restart(35.5)
 		timerNextMysticBuffet:Start()
 		self:Schedule(6, cycleMysticBuffet, self)
 		self:Unschedule(landingPhaseWorkaround)

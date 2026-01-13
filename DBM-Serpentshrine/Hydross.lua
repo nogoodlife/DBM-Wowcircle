@@ -94,7 +94,7 @@ function mod:SPELL_CAST_SUCCESS(args)
 		timerMark:Cancel()
 		timerMark:Show(args.spellName, damageNext[args.spellId] or "10%")
 	elseif args.spellId == 25035 and self:AntiSpam(2) then
-		DBM:Addsg("Elemental Spawn-in unhidden from combat log. Notify Zidras on Discord or GitHub")
+		DBM:Addsg("Elemental Spawn-in unhidden from combat log. Notify Nogoodlife")
 		timerMark:Cancel()
 		if args:GetSrcCreatureID() == 22035 then
 			warnPhase:Show(L.Frost)

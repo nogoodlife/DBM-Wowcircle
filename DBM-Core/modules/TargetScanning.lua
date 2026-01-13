@@ -4,7 +4,7 @@ local twipe = table.wipe
 local IsInGroup = private.IsInGroup
 local UnitExists, UnitPlayerOrPetInRaid, UnitGUID =
 	UnitExists, UnitPlayerOrPetInRaid, UnitGUID
-local C_NamePlate = C_NamePlate -- https://github.com/FrostAtom/awesome_wotlk
+local C_NamePlate = C_NamePlate -- https://github.com/someweirdhuman/awesome_wotlk
 
 local module = private:NewModule("TargetScanning")
 

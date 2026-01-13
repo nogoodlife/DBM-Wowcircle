@@ -384,7 +384,7 @@ do
 			if bgzone and currentBGzone ~= lastBGzone then
 				lastBGzone = GetCurrentMapAreaID()
 				if hasWarns then
-					DBM:AddMsg("DBM-PvP missing data, please report to our discord.")
+					DBM:AddMsg("DBM-PvP missing data, please report.")
 					DBM:AddMsg("Battleground: " .. (subscribedMapID or "Unknown"))
 					for k, v in pairs(warnAtEnd) do
 						DBM:AddMsg(v .. "x " .. k)
@@ -417,7 +417,7 @@ do
 		elseif bgzone then
 			bgzone = false
 			if hasWarns then
-				DBM:AddMsg("DBM-PvP missing data, please report to our discord.")
+				DBM:AddMsg("DBM-PvP missing data, please report.")
 				DBM:AddMsg("Battleground: " .. (subscribedMapID or "Unknown"))
 				for k, v in pairs(warnAtEnd) do
 					DBM:AddMsg(v .. "x " .. k)
@@ -542,7 +542,7 @@ do
 		local cId = DBM:GetCIDFromGUID(destGUID)
 		if not gatesHP[cId] then
 			DBM:Debug("SPELL_BUILDING_DAMAGE on ID: "..cId.." is not a tracked unit")
-			DBM:AddMsg("DBM-PvP missing gate data, please notify Zidras on Github or Discord - ID: "..cId.." and Name: "..destName)
+			DBM:AddMsg("DBM-PvP missing gate data, please notify Nogoodlife - ID: "..cId.." and Name: "..destName)
 			return
 		end
 		if gatesHP[cId][1] == nil then -- first hit

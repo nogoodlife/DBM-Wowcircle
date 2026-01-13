@@ -182,7 +182,7 @@ function mod:SPELL_CAST_SUCCESS(args)
 		warnDrainLifeSoon:Schedule(18.5)
 		timerDrainLife:Start()
 	elseif spellId == 28560 then
-		DBM:AddMsg("Sapphiron Blizzard SPELL_CAST_SUCCESS implemented on Warmane Onyxia server script. Notify Zidras on Discord or GitHub")
+		DBM:AddMsg("Sapphiron Blizzard SPELL_CAST_SUCCESS implemented on Wowcircle server script. Notify Nogoodlife")
 		warnBlizzard:Show()
 		timerBlizzard:Start()
 	elseif spellId == 55696 then
@@ -192,14 +192,14 @@ end
 
 function mod:CHAT_MSG_RAID_BOSS_EMOTE(msg)
 	if msg == L.EmoteBreath or msg:find(L.EmoteBreath) then
-		DBM:AddMsg("Sapphiron Breath emote implemented on Warmane Onyxia server script. Notify Zidras on Discord or GitHub")
+		DBM:AddMsg("Sapphiron Breath emote implemented on Wowcircle server script. Notify Nogoodlife")
 --		self:SendSync("DeepBreath") -- this does not need syncing and spam comms
 --		timerIceBlast:Start()
 --		timerLanding:Update(13.5) -- 8s until breath + 3.5s until emote + ~2s until UNIT_TARGET
 		specWarnDeepBreath:Show()
 		specWarnDeepBreath:Play("findshelter")
 	elseif msg == L.AirPhase or msg:find(L.AirPhase) then
-		DBM:AddMsg("Sapphiron Air Phase emote implemented on Warmane Onyxia server script. Notify Zidras on Discord or GitHub")
+		DBM:AddMsg("Sapphiron Air Phase emote implemented on Warmane Onyxia server script. Notify Nogoodlife")
 		self:SetStage(2)
 		self.vb.isFlying = true
 		timerDrainLife:Cancel()
@@ -207,7 +207,7 @@ function mod:CHAT_MSG_RAID_BOSS_EMOTE(msg)
 		warnAirPhaseNow:Show()
 		timerLanding:Start()
 	elseif msg == L.LandingPhase or msg:find(L.LandingPhase) then
-		DBM:AddMsg("Sapphiron Landing Phase emote implemented on Warmane Onyxia server script. Notify Zidras on Discord or GitHub")
+		DBM:AddMsg("Sapphiron Landing Phase emote implemented on Warmane Onyxia server script. Notify Nogoodlife")
 		self:SetStage(1)
 		self.vb.isFlying = false
 	end

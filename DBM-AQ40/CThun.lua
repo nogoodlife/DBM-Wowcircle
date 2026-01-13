@@ -151,7 +151,7 @@ end
 
 function mod:SPELL_CAST_SUCCESS(args)
 	if args.spellId == 26586 then
-		DBM:AddMsg("Birth 26586 SPELL_CAST_SUCCESS fixed on server script. Notify Zidras on Discord or GitHub")
+		DBM:AddMsg("Birth 26586 SPELL_CAST_SUCCESS fixed on server script. Notify Nogoodlife")
 		 local cid = self:GetCIDFromGUID(args.sourceGUID)
 		 if self:AntiSpam(5, cid) then--Throttle multiple spawn within 5 seconds
 			if cid == 15726 then--Eye Tentacle

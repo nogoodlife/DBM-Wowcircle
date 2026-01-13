@@ -6006,7 +6006,7 @@ do
 			else
 				PlaySound(path)
 				if not GetCVarBool("Sound_EnableSFX") then
-					self:AddMsg("No sound because SFX is disabled and DBM ingameSoundPath table does not have a sound path for " .. path .. ". Report the path (the numbers) to maintainer on Discord or Github.")
+					self:AddMsg("No sound because SFX is disabled and DBM ingameSoundPath table does not have a sound path for " .. path .. ". Report the path (the numbers) to maintainer.")
 				end
 			end
 		else

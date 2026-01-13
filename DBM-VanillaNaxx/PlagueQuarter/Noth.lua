@@ -125,10 +125,10 @@ end
 
 function mod:CHAT_MSG_RAID_BOSS_EMOTE(msg)
 	if msg == L.Adds or msg:find(L.Adds) then
-		DBM:AddMsg("Noth adds emote implemented on Warmane Onyxia server script. Notify Zidras on Discord or GitHub")
+		DBM:AddMsg("Noth adds emote implemented on Wowcircle server script. Notify Nogoodlife")
 --		self:SendSync("Adds")--Syncing to help unlocalized clients
 	elseif msg == L.AddsTwo or msg:find(L.AddsTwo) then
-		DBM:AddMsg("Noth adds2 emote implemented on Warmane Onyxia server script. Notify Zidras on Discord or GitHub")
+		DBM:AddMsg("Noth adds2 emote implemented on Wowcircle server script. Notify Nogoodlife")
 --		self:SendSync("AddsTwo")--Syncing to help unlocalized clients
 	end
 end

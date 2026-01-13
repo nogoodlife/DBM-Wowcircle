@@ -156,7 +156,7 @@ function mod:SPELL_CAST_SUCCESS(args)
 		warnDrainLifeSoon:Schedule(18.5)
 		timerDrainLife:Start()
 	elseif spellId == 28560 then
-		DBM:AddMsg("Sapphiron Blizzard SPELL_CAST_SUCCESS implemented on Warmane server script. Notify Zidras on Discord or GitHub")
+		DBM:AddMsg("Sapphiron Blizzard SPELL_CAST_SUCCESS implemented on Warmane server script. Notify Nogoodlife")
 		warnBlizzard:Show()
 		timerBlizzard:Start()
 	elseif spellId == 55696 then

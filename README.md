@@ -12,16 +12,94 @@
 По поводу остальных инстов и рейдов - пишите письма...  
 Накс ХМ и Санвел ХМ? Незнаю, не видел =_=
 
+> [!NOTE]
+> Вердикт на 2026.01.13 : +- играбельно
+
+# ФРОНТ РАБОТ
+### РС
+- Балтар
+  - изменить аннос разделения (specwarning ибо отброс в мили это ВАЖНО)
+  - кд BladeTempest +- чекнуть
+- Савиана +- ?
+- Генерал ?
+  - фир ?
+  - адды ?
+- Халион
+  - фазы +
+  - метеор +
+  - лезвия +
+  - дыхание свет +- чекнуть
+  - дыхание тьма +- чекнуть
+  - метки свет +- чекнуть
+  - метки тьма +- чекнуть
+
+### ЦЛК  
+- Ребро - вроде ок  
+  - Whirlwind: pull+45nm, cd=90 ?
+  - BoneSpike: pull+15 ? cd=18 ? check cd timer after whirlwind on nm/hc?
+- Леди - вроде ок  
+  - Adds: pull+7 ? cd=45 ? check if cd restart on phase2 needed ?
+  - DominateMind: pull+30 ? cd=40 always, no restart on phase2 ?
+  - TouchInsignificance: pull+6 ? cd=
+  - FrostboltVolley: phase2+20, cd=20
+  - SummonSpirit: phase2+12 ? cd=13 ? (circle missing UNIT_SPELLCAST_SUCCEEDED for spirits, use SPELL_SUMMON (sometimes missing 1 summon event)) *клоуны на разрабах ?*
+- Корабли +- ?
+  - Adds: pull+12 ? cd = 60 ? HUH ???
+  - BelowZero: pull+39(Alliance)/+37(Horde) < it autocirrects itself later
+- Сурок  
+  - CombatStart: Alliance=100.3, Horde=100.3 ?
+  - CallBloodBeast: pull+40, cd=40. Fix prewarning ? 10 rnow, but 5s much better ?
+  - RuneofBlood
+  - BoilingBlood
+  - BloodNova
+- Гнилой(право) - вроде ок
+  - лужи по краям +- ?
+  - дыхание +- ?
+  - контроль +- ?
+  - куда прикрутить отображение ренжи до боя ?
+- Тухлый(лево) - вроде ок
+  - пельмени ?
+  - стаки ??
+  - контроль ?
+  - куда прикрутить отображение ренжи до боя ?
+- Проф - проверить ВСЕ...
+  - фазы +
+  - чума ?
+  - слизни ?
+  - колбы ?
+  - пельмени ?
+  - стаки 3й фазы ?
+- Принцы - ой ляяяяя...... 
+  - добавить сендсинх на EmpoweredFlames? (CHAT_MSG_RAID_BOSS_EMOTE дохнет после вайпа? особенно если шар летит в игрока? это просто цирк какой-то)
+- Лана - вроде ок
+- Валя - угх =_=
+  - подавление ?
+  - разгром ?
+  - пуджи ?
+  - порталы ?
+- Синдра - +-
+  - полет +-
+  - приземление +-
+  - стяжка - на цирке нет ивента
+  - блистеринг +- ? чекнуть
+  - освобожденка -
+  - Ледяное дыхание: кд20-25 / хз тайминги на старте боя/при приземлении/фазе2?
+  - удар хвостом ??? зочем
+- Лич - *более лимение*
+  - чекнуть все...
+  - вали (цирк как обычно без ивентов на каст, + от 3х валь периодически отваливается 1 spell_summon? *клоуны на разрабах?*)
+
 # ПЕРВАЯ УСТАНОВКА
-**Предупреждение:  
-Если вы использовали DBM раньше, или если вы хотите сохранить ваши старые профили, сделайте бэкап папки WTF.  
-Эта версия аддона НЕСОВМЕСТИМА со старыми настройками, вам нужно произвести чистую установку.**
+> [!WARNING]  
+> Если вы хотите сохранить ваши старые профили, сделайте бэкап папки WTF.  
+> **Эта версия аддона НЕСОВМЕСТИМА со старыми настройками, вам нужно произвести чистую установку.**
 
 1. В папке аддонов `Interface/Addons` **удалите каждую папку DBM** (все, что начинается с **DBM-**).
 2. В папке `WTF/Account/[AccountName]/SavedVariables` **удалите каждый файл DBM** (все, что начинается с **DBM-**).
 3. В **каждой** папке `WTF/Account/[AccountName]/[ServerName]/[CharacterName]/SavedVariables` **удалите каждый файл DBM** (все, что начинается с **DBM-**).
 
-**Только удалив все файлы и настройки старого DBM можно приступать к установке.**
+> [!CAUTION]  
+> **Только удалив все файлы и настройки старого DBM можно приступать к установке.**
 
 1. Скачайте аддон из основного репозитория **main** (https://github.com/nogoodlife/DBM-Wowcircle/archive/refs/heads/main.zip).
 2. Внутри .zip файла откройте папку DBM-Circle-main, и скопируйте все папки (DBM-Core, DBM-GUI, и т.д.) в папку аддонов (Interface/Addons).
@@ -38,12 +116,12 @@ Updating DBM follows the standard procedure that applies to any addon installati
 
 *To know when there are changes, you can Star/Watch this repository on GitHub (this requires a GitHub account) to receive notifications.
 
-# QUICK START
+# SETTINGS
 Чтобы открыть окно настроек, введите в чат `/dbm` и нажмите ентер, или кликните по иконке DBM у миникарты. Для просмотра дополнительных комманд введите `/dbm help`
 
 # CREDITS
-Первый бэкпорт, и предыдущая wowcircle версия от Barsoomx:  
+Первый бэкпорт, и предыдущая Wowcircle версия от Barsoomx:  
 https://github.com/Barsoomx/DBM-wowcircle
 
-Неповторимое продолжение, и версия для warmane серверов от Zidras:  
+Неповторимое продолжение, и версия для Warmane серверов от Zidras:  
 https://github.com/Zidras/DBM-Warmane

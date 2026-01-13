@@ -184,7 +184,7 @@ end
 
 function mod:UNIT_SPELLCAST_SUCCEEDED(_, spellName)
 	if spellName == GetSpellInfo(72299) then -- Malleable Goo Summon Trigger (10 player normal) (the other 3 spell ids are not needed here since all spells have the same name)
-		DBM:AddMsg("Malleable Goo Summon Trigger UNIT_SPELLCAST_SUCCEEDED unhidden from combat log. Notify Zidras on Discord or GitHub")
+		DBM:AddMsg("Malleable Goo Summon Trigger UNIT_SPELLCAST_SUCCEEDED unhidden from combat log. Notify Nogoodlife")
 		specWarnGoo:Show()
 		specWarnGoo:Play("watchstep")
 		if self:IsDifficulty("heroic25") then

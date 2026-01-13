@@ -596,7 +596,7 @@ function mod:SPELL_AURA_APPLIED(args)
 		soundDefileOnYou:Play("Interface\\AddOns\\DBM-Core\\sounds\\RaidAbilities\\defileOnYou.mp3")
 --[[ -- no longer needed since we use SPELL_CAST_START scheduling for leftFrostmourne. Unsure as to when this
 	elseif spellId == 73650 and self:AntiSpam(3, 2) then		-- Restore Soul (Heroic)
-		-- DBM:AddMsg("Restore Soul SPELL_AURA_APPLIED unhidden from combat log. Notify Zidras on Discord or GitHub") -- no longer valid, at least from 18/04/2025 on Warmane.
+		-- DBM:AddMsg("Restore Soul SPELL_AURA_APPLIED unhidden from combat log. Notify Nogoodlife") -- no longer valid, at least from 18/04/2025 on Warmane.
 		timerHarvestSoulCD:Start(60) -- this is slighly innacurate
 		timerVileSpirit:Start(10)--May be wrong too but we'll see, didn't have enough log for this one.
 ]]

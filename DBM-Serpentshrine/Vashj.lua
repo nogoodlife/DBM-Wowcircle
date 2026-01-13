@@ -146,7 +146,7 @@ function mod:SPELL_AURA_REMOVED(args)
 			self:SetIcon(args.destName, 0)
 		end
 	elseif spellId == 38112 then--and not self:IsTrivial()
-		DBM:AddMsg("Magic Barrier unhidden from combat log. Notify Zidras on Discord or GitHub")
+		DBM:AddMsg("Magic Barrier unhidden from combat log. Notify Nogoodlife")
 		self.vb.shieldLeft = self.vb.shieldLeft - 1
 		warnShield:Show(self.vb.shieldLeft)
 	end

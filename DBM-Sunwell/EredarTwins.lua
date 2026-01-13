@@ -157,7 +157,7 @@ end
 -- CHAT_MSG_RAID_BOSS_EMOTE bugged on Warmane: https://www.warmane.com/bugtracker/report/106891
 function mod:CHAT_MSG_RAID_BOSS_EMOTE(msg, _, _, _, target)
 	if (msg == L.Nova or msg:find(L.Nova)) and target then
-		DBM:AddMsg("Nova emote is working again. Notify me (Zidras) on discord or open a bug report.")
+		DBM:AddMsg("Nova emote is working again. Notify me (Nogoodlife) or open a bug report.")
 		target = DBM:GetUnitFullName(target)
 		timerNova:Start()
 		timerNovaCD:Start()
@@ -175,7 +175,7 @@ function mod:CHAT_MSG_RAID_BOSS_EMOTE(msg, _, _, _, target)
 			self:SetIcon(target, 7, 5)
 		end
 	elseif (msg == L.Conflag or msg:find(L.Conflag)) and target then
-		DBM:AddMsg("Conflagration emote is working again. Notify me (Zidras) on discord or open a bug report.")
+		DBM:AddMsg("Conflagration emote is working again. Notify me (Nogoodlife) or open a bug report.")
 		target = DBM:GetUnitFullName(target)
 		timerConflag:Start()
 		timerConflagCD:Start()
