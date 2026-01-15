@@ -81,7 +81,7 @@ local specWarnVengefulShade			= mod:NewSpecialWarning("SpecWarnVengefulShade", t
 local specWarnVengefulShadeOnYou	= mod:NewSpecialWarningRun(71426, nil, nil, nil, 4, 2)
 --local yellVengefulShadeOnMe			= mod:NewYellMe(71426)
 
-local timerSummonSpiritCD			= mod:NewCDTimer(13, 71426, nil, true, nil, 3, nil, nil, true) -- 25nm = 14.4/14.7 between 1st SPELL_SUMMON in a wave (first wave missing 1 SPELL_SUMMON VERY OFTEN)
+local timerSummonSpiritCD			= mod:NewCDTimer(13.5, 71426, nil, true, nil, 3, nil, nil, true) -- 25nm = 14.4/14.7 between 1st SPELL_SUMMON in a wave (first wave missing 1 SPELL_SUMMON VERY OFTEN)
 local timerFrostboltCast			= mod:NewCastTimer(2, 72007, nil, "HasInterrupt")
 local timerFrostboltVolleyCD		= mod:NewCDTimer(20, 72905, nil, nil, nil, 2) -- 25hc = 20s
 local timerTouchInsignificance		= mod:NewTargetTimer(30, 71204, nil, "Tank|Healer", nil, 5)
@@ -269,7 +269,7 @@ local function addsTimer(self)
 		warnAddsSoon:Schedule(40)	-- 5 secs prewarning
 		self:Schedule(45, addsTimer, self)
 		timerAdds:Start(45)
-	else
+	else -- check adds cd on normals?
 		warnAddsSoon:Schedule(40)	-- 5 secs prewarning
 		self:Schedule(45, addsTimer, self)
 		timerAdds:Start()
@@ -322,9 +322,9 @@ function mod:OnCombatStart(delay)
 		self:ScheduleMethod(0.5, "CreateShildHPFrame")
 	end
 	berserkTimer:Start(-delay)
-	timerAdds:Start(7-delay)
-	warnAddsSoon:Schedule(4-delay)
-	self:Schedule(7-delay, addsTimer, self)
+	timerAdds:Start(9-delay)
+	warnAddsSoon:Schedule(6-delay)
+	self:Schedule(9-delay, addsTimer, self)
 	if not self:IsDifficulty("normal10") then
 		timerDominateMindCD:Start(30-delay)	-- 25mn = 33???
 		specWarnWeapons:Show(checkWeaponRemovalSetting(self) and ENABLE or ADDON_DISABLED, (self.Options.EqUneqWeapons and self.Options.EqUneqTimer and (SLASH_STOPWATCH2):sub(2)) or (self.Options.EqUneqWeapons and COMBAT_LOG) or NONE, self.Options.EqUneqFilter)
@@ -447,19 +447,9 @@ function mod:SPELL_AURA_REMOVED(args)
 		self:SetStage(2)
 		warnPhase2:Show()
 		warnPhase2:Play("ptwo")
---		timerDominateMindCD:Restart(30) -- wowcircle 25nm ALWAYS 40s CD INSTEAD OF 30s restart on phase2!
---		self:Unschedule(UnW)
 		timerSummonSpiritCD:Start(12) -- 25nm = 12s after phase2 start?
 		timerTouchInsignificanceCD:Start(6) -- 3.4s variance [6.0-9.4] (25H Lordaeron [2022-09-23]@[20:40:18] || 25H Lordaeron [2022-10-05]@[20:21:27]) - Stage 2/6.0 || Stage 2/9.4
 		timerFrostboltVolleyCD:Start(20) -- 25hc = 20s
-		timerAdds:Cancel()			--check this start if same shit like with dominatemind
-		warnAddsSoon:Cancel()		--check this start if same shit like with dominatemind
-		self:Unschedule(addsTimer)	--check this start if same shit like with dominatemind
-		if self:IsHeroic() then	-- Edited from retail
-			timerAdds:Start(45)	--check this start if same shit like with dominatemind
-			warnAddsSoon:Schedule(40)	--check this start if same shit like with dominatemind
-			self:Schedule(45, addsTimer, self)	--check this start if same shit like with dominatemind
-		end
 		if self.Options.InfoFrame then
 			DBM.InfoFrame:Hide()
 		end
@@ -484,6 +474,7 @@ function mod:SPELL_INTERRUPT(args)
 end
 
 --very inconsistent timer due to spirit travel distance until spawn. Moved to UNIT_SPELLCAST_SUCCEEDED
+--nah, circus server can't afford UNIT_SPELLCAST_SUCCEEDED events
 function mod:SPELL_SUMMON(args)
 	if args.spellId == 71426 and self:AntiSpam(5, 1) then -- Summon Vengeful Shade
 		playerHadTarget = UnitGUID("target") and true
@@ -536,8 +527,8 @@ function mod:UNIT_SPELLCAST_SUCCEEDED(_, spellName)
 		print("WOWCIRCLE UNIT_SPELLCAST_SUCCEEDED 71426 DETECTED! Plz report")
 		DBM:AddMsg("1WOWCIRCLE UNIT_SPELLCAST_SUCCEEDED 71426 DETECTED! Plz report")
 		playerHadTarget = UnitGUID("target") and true
-		warnSummonSpirit:Show()
-		timerSummonSpiritCD:Start()
+		--warnSummonSpirit:Show()
+		--timerSummonSpiritCD:Start()
 		soundWarnSpirit:Play("Interface\\AddOns\\DBM-Core\\sounds\\RaidAbilities\\spirits.mp3")
 		if not playerHadTarget then
 			self:RegisterShortTermEvents(

@@ -67,7 +67,7 @@ mod:RegisterEventsInCombat(
 local myRealm = select(3, DBM:GetMyPlayerInfo())
 
 -- General
-local timerCombatStart		= mod:NewCombatTimer(55)
+local timerCombatStart		= mod:NewCombatTimer(54.5)
 local berserkTimer			= mod:NewBerserkTimer(myRealm == "Lordaeron" and mod:IsNormal() and 720 or 900)
 
 mod:AddBoolOption("RemoveImmunes")

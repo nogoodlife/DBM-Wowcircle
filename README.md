@@ -35,23 +35,24 @@
 
 ### ЦЛК  
 - Ребро - вроде ок  
-  - Whirlwind: pull+45nm, cd=90 ?
-  - BoneSpike: pull+15 ? cd=18 ? check cd timer after whirlwind on nm/hc?
+  - [ ] BoneSpike: pull+15 ? cd=18 ? check cd timer after whirlwind on nm/hc?
+  - [ ] Whirlwind: pull+45nm, cd=90 ?
 - Леди - вроде ок  
-  - Adds: pull+7 ? cd=45 ? check if cd restart on phase2 needed ?
-  - DominateMind: pull+30 ? cd=40 always, no restart on phase2 ?
-  - TouchInsignificance: pull+6 ? cd=
-  - FrostboltVolley: phase2+20, cd=20
-  - SummonSpirit: phase2+12 ? cd=13 ? (circle missing UNIT_SPELLCAST_SUCCEEDED for spirits, use SPELL_SUMMON (sometimes missing 1 summon event)) *клоуны на разрабах ?*
+  - [ ] Adds: pull+9 ? cd=45 always, no restart on phase2, check adds cd on normals ?
+  - [ ] DominateMind: pull+30 ? cd=40 always, no restart on phase2
+  - [ ] TouchInsignificance: phase2+6 ? cd=
+  - [x] SummonSpirit: phase2+13 /13.5-15.0/, cd=13.5 /13.5-15.7/ 
+      - missing UNIT_SPELLCAST_SUCCEEDED, use SPELL_SUMMON (missing first phase2 spell_summon event)
+  - [x] FrostboltVolley: phase2+20, cd=20
 - Корабли +- ?
-  - Adds: pull+12 ? cd = 60 ? HUH ???
-  - BelowZero: pull+39(Alliance)/+37(Horde) < it autocirrects itself later
+  - [ ] Adds: pull+12 ? cd = 60 ? HUH ?
+  - [ ] BelowZero: pull+39(Alliance)/+37(Horde) ? < it autocirrects itself later
 - Сурок  
-  - CombatStart: Alliance=100.3, Horde=100.3 ?
-  - CallBloodBeast: pull+40, cd=40. Fix prewarning ? 10 rnow, but 5s much better ?
-  - RuneofBlood
-  - BoilingBlood
-  - BloodNova
+  - [ ] CombatStart: Alliance=100.3, Horde=100.3 ?
+  - [ ] CallBloodBeast: pull+40, cd=40. Fix prewarning ? 10 rnow, but 5s much better ?
+  - [x] RuneofBlood: pull+19.1 /19.177/ ? cd=19.5
+  - [x] BoilingBlood: pull+19, cd=15.5  /15.7-19.6/
+  - [x] BloodNova: pull+20, cd=20
 - Гнилой(право) - вроде ок
   - лужи по краям +- ?
   - дыхание +- ?
@@ -71,8 +72,8 @@
   - стаки 3й фазы ?
 - Принцы - ой ляяяяя...... 
   - добавить сендсинх на EmpoweredFlames? (CHAT_MSG_RAID_BOSS_EMOTE дохнет после вайпа? особенно если шар летит в игрока? это просто цирк какой-то)
-- Лана - вроде ок
-- Валя - угх =_=
+- Лана - ?
+- Валя - угх... красное бей, зеленое хиль =_=
   - подавление ?
   - разгром ?
   - пуджи ?
@@ -80,14 +81,15 @@
 - Синдра - +-
   - полет +-
   - приземление +-
-  - стяжка - на цирке нет ивента
-  - блистеринг +- ? чекнуть
+  - стяжка - no event on circus
+  - блистеринг +- ? check how varCD works with keep arg
   - освобожденка -
-  - Ледяное дыхание: кд20-25 / хз тайминги на старте боя/при приземлении/фазе2?
+  - Ледяное дыхание: varCD=20-25 / хз тайминги на старте боя/при приземлении/фазе2?
   - удар хвостом ??? зочем
 - Лич - *более лимение*
   - чекнуть все...
-  - вали (цирк как обычно без ивентов на каст, + от 3х валь периодически отваливается 1 spell_summon? *клоуны на разрабах?*)
+  - вали
+    - missing UNIT_SPELLCAST_SUCCEEDED, use SPELL_SUMMON (missing first phase2 spell_summon event?)
 
 # ПЕРВАЯ УСТАНОВКА
 > [!WARNING]  
