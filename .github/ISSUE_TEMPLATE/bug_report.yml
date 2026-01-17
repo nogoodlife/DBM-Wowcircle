@@ -5,7 +5,7 @@ labels: [bug]
 body:
 - type: checkboxes
   attributes:
-    label: Are you using the latest DBM version in a Warmane 3.3.5a realm (Icecrown, Lordaeron or Frostmourne)?
+    label: Are you using the latest DBM version in a Wowcircle 3.3.5a realm (x1, x4, x100, Fun)?
     options:
     - label: "Yes"
       required: true
@@ -41,8 +41,8 @@ body:
     required: true
 - type: textarea
   attributes:
-    label: Transcriptor log
-    description: If bug is related to a raid mechanic/timer, attaching a Transcriptor log is mandatory (https://github.com/Zidras/Transcriptor-WOTLK#how-to-use). Otherwise, type "NA"
+    label: Transcriptor log / Combatlog
+    description: If bug is related to a raid mechanic/timer, attach a Transcriptor log (https://github.com/Zidras/Transcriptor-WOTLK#how-to-use) or Combatlog. Otherwise, type "NA"
   validations:
     required: true
 - type: textarea
