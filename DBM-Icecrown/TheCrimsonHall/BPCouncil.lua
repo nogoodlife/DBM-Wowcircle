@@ -286,9 +286,16 @@ function mod:SPELL_SUMMON(args)
 	end
 end
 
+local EmpoweredFlamesCheck = false
 function mod:CHAT_MSG_RAID_BOSS_EMOTE(msg, _, _, _, target)
 	if msg:match(L.EmpoweredFlames) and target then
 		target = DBM:GetUnitFullName(target)
+		
+		EmpoweredFlamesCheck = true
+		if self:LatencyCheck() then
+			self:SendSync("EmpoweredFlamesTarget", target)
+		end
+		
 		if target == UnitName("player") then
 			specWarnEmpoweredFlames:Show()
 			if not self.Options.Sound72040 then
@@ -307,6 +314,29 @@ function mod:CHAT_MSG_RAID_BOSS_EMOTE(msg, _, _, _, target)
 		end
 	end
 end
+
+function mod:OnSync(msg, target)
+	if msg == "EmpoweredFlamesTarget" and target and not EmpoweredFlamesCheck then
+		EmpoweredFlamesCheck = false
+		if target == UnitName("player") then
+			specWarnEmpoweredFlames:Show()
+			if not self.Options.Sound72040 then
+				specWarnEmpoweredFlames:Play("justrun")
+			end
+			soundEmpoweredFlames:Play("Interface\\AddOns\\DBM-Core\\sounds\\RaidAbilities\\EmpoweredOrbOnYou.mp3")
+			yellEmpoweredFlames:Yell()
+		else
+			warnEmpoweredFlames:Show(target)
+		end
+		if self.Options.EmpoweredFlameIcon then
+			self:SetIcon(target, 1, 10)
+		end
+		if self.Options.EmpoweredFlameArrow then
+			DBM.Arrow:ShowRunTo(target, 0, 0, 10) -- 0 distance (so it doesn't hide with proximity) and 10s hideTime
+		end
+	end
+end
+
 
 function mod:UNIT_SPELLCAST_SUCCEEDED(_, spellName)
 	if spellName == GetSpellInfo(72080) then -- Kinetic Bomb
@@ -329,6 +359,6 @@ end
 
 function mod:CHAT_MSG_MONSTER_YELL(msg)
 	if msg == L.FirstPull or msg:find(L.FirstPull) then
-		timerCombatStart:Start()
+		--timerCombatStart:Start()
 	end
 end
