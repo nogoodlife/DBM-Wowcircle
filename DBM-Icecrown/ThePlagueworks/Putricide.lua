@@ -75,7 +75,7 @@ local specWarnMalleableGooCast		= mod:NewSpecialWarningSpell(72295, "Ranged", ni
 
 local timerChokingGasBombCD			= mod:NewCDTimer(36, 71255, nil, nil, nil, 3, nil, nil, true) -- 2025.12.27 25hc = 36?
 local timerChokingGasBombExplosion	= mod:NewCastTimer(12, 71279, nil, nil, nil, 2)
-local timerMalleableGooCD			= mod:NewNextTimer(25, 72295, nil, nil, nil, 3) -- 25nm = 25
+local timerMalleableGooCD			= mod:NewNextTimer(20, 72295, nil, nil, nil, 3) -- 25nm = 25
 
 local soundSpecWarnMalleableGoo		= mod:NewSound(72295, nil, "Ranged")
 local soundMalleableGooSoon			= mod:NewSoundSoon(72295, nil, "Ranged")
@@ -125,9 +125,9 @@ local function NextPhase(self)
 		warnUnstableExperimentSoon:Schedule(25.5-5)
 		timerMalleableGooCD:Start(10.5)
 		soundMalleableGooSoon:Schedule(10.5-3, "Interface\\AddOns\\DBM-Core\\sounds\\RaidAbilities\\malleable_soon.mp3")
-		timerChokingGasBombCD:Start(20)
-		soundChokingGasSoon:Schedule(20-3, "Interface\\AddOns\\DBM-Core\\sounds\\RaidAbilities\\choking_soon.mp3")
-		warnChokingGasBombSoon:Schedule(20-5)
+		timerChokingGasBombCD:Start(20.5)
+		soundChokingGasSoon:Schedule(20.5-3, "Interface\\AddOns\\DBM-Core\\sounds\\RaidAbilities\\choking_soon.mp3")
+		warnChokingGasBombSoon:Schedule(20.5-5)
 		timerSlimePuddleCD:Start(15.5)
 		if self:IsHeroic() then
 			timerUnboundPlagueCD:Start(55.5) --wowcircle?
@@ -137,9 +137,9 @@ local function NextPhase(self)
 		warnPhase3:Play("pthree")
 		timerMalleableGooCD:Start(17.5)
 		soundMalleableGooSoon:Schedule(17.5-3, "Interface\\AddOns\\DBM-Core\\sounds\\RaidAbilities\\malleable_soon.mp3")
-		timerChokingGasBombCD:Start(20)
-		soundChokingGasSoon:Schedule(20-3, "Interface\\AddOns\\DBM-Core\\sounds\\RaidAbilities\\choking_soon.mp3")
-		warnChokingGasBombSoon:Schedule(20-5)
+		timerChokingGasBombCD:Start(20.5)
+		soundChokingGasSoon:Schedule(20.5-3, "Interface\\AddOns\\DBM-Core\\sounds\\RaidAbilities\\choking_soon.mp3")
+		warnChokingGasBombSoon:Schedule(20.5-5)
 		timerSlimePuddleCD:Start(23.5)
 		if self:IsHeroic() then
 			timerUnboundPlagueCD:Start(58.5) --wowcircle?
@@ -159,7 +159,7 @@ function mod:OnCombatStart(delay)
 	self.vb.warned_preP3 = false
 	self.vb.unboundCount = 0
 	if self:IsHeroic() then
-		timerUnboundPlagueCD:Start(10-delay) --wowcircle?
+		timerUnboundPlagueCD:Start(10-delay)
 	end
 end
 

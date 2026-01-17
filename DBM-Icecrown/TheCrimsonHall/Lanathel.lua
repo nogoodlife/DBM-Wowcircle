@@ -21,8 +21,6 @@ mod:RegisterEventsInCombat(
 	"CHAT_MSG_RAID_BOSS_EMOTE"
 )
 
-local myRealm = select(3, DBM:GetMyPlayerInfo())
-
 local warnPactDarkfallen			= mod:NewTargetAnnounce(71340, 4)
 local warnPactDarkfallenSoon		= mod:NewSoonAnnounce(71340, 4, nil, nil, nil, nil, nil, 2)
 local warnBloodMirror				= mod:NewTargetNoFilterAnnounce(71510, 3, nil, "Tank|Healer")
@@ -46,7 +44,7 @@ local specWarnGTFO					= mod:NewSpecialWarningGTFO(71266, nil, nil, nil, 1, 8)
 
 local timerNextInciteTerror			= mod:NewNextTimer(100, 73070, nil, nil, nil, 6)
 local timerFirstBite				= mod:NewNextTimer(15, 70946, nil, "Dps", nil, 5)
-local timerNextPactDarkfallen		= mod:NewNextTimer(30, 71340, nil, nil, nil, 3)
+local timerNextPactDarkfallen		= mod:NewNextTimer(30.5, 71340, nil, nil, nil, 3)
 local timerNextSwarmingShadows		= mod:NewNextTimer(30.5, 71266, nil, nil, nil, 3)
 local timerInciteTerror				= mod:NewBuffActiveTimer(4, 73070)
 local timerBloodBolt				= mod:NewBuffActiveTimer(6, 71772, nil, nil, nil, 2, nil, DBM_COMMON_L.HEALER_ICON)
@@ -54,7 +52,7 @@ local timerBloodBoltCD				= mod:NewVarTimer("v10-15", 71818, nil, false, nil, 2)
 local timerBloodThirst				= mod:NewBuffFadesTimer(10, 70877, nil, nil, nil, 5)
 local timerEssenceoftheBloodQueen	= mod:NewBuffFadesTimer(60, 70867, nil, nil, nil, 5, nil, DBM_COMMON_L.DAMAGE_ICON)
 
-local berserkTimer					= mod:NewBerserkTimer((myRealm == "Lordaeron" or myRealm == "Frostmourne") and 300 or 330)
+local berserkTimer					= mod:NewBerserkTimer(330)
 
 mod:AddRangeFrameOption(8, 71446)
 mod:AddInfoFrameOption(70867, true)
@@ -192,12 +190,16 @@ function mod:SPELL_CAST_SUCCESS(args)
 	if args.spellId == 73070 then				--Incite Terror (fear before air phase)
 		warnInciteTerror:Show()
 		timerInciteTerror:Start()
+		
+		warnPactDarkfallenSoon:Cancel()
+		warnSwarmingShadowsSoon:Cancel()
+		
 		timerNextSwarmingShadows:Restart()--This resets the swarming shadows timer
-		warnSwarmingShadowsSoon:Schedule(25.5)
-		warnSwarmingShadowsSoon:ScheduleVoice(25.5, "flamessoon")
-		timerNextPactDarkfallen:Restart(25)--and the Pact timer also reset -5 seconds
-		warnPactDarkfallenSoon:Schedule(20)
-		warnPactDarkfallenSoon:ScheduleVoice(20, "linesoon")
+		warnSwarmingShadowsSoon:Schedule(26.5)
+		warnSwarmingShadowsSoon:ScheduleVoice(26.5, "flamessoon")
+		timerNextPactDarkfallen:Restart(25.5)--and the Pact timer also reset -5 seconds
+		warnPactDarkfallenSoon:Schedule(20.5)
+		warnPactDarkfallenSoon:ScheduleVoice(20.5, "linesoon")
 		if self:IsDifficulty("normal10", "heroic10") then
 			timerNextInciteTerror:Start(120)--120 seconds in between first and second on 10 man
 			warnInciteTerrorSoon:Schedule(115)

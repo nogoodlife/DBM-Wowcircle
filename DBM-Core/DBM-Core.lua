@@ -7637,6 +7637,11 @@ do
 	--checkCooldown should always be passed true except for special rotations like count warnings when you should be alerted it's your turn even if you dropped ball and put it on CD at wrong time
 	--ignoreTandF is passed usually when interrupt is on a main boss or event that is global to entire raid and should always be alerted regardless of targetting.
 	function bossModPrototype:CheckInterruptFilter(sourceGUID, checkOnlyTandF, checkCooldown, ignoreTandF)
+		--add proper check if player has no interrupts one day
+		if playerClass == "PRIEST" or playerClass == "WARLOCK" or playerClass == "PALADIN" or playerClass == "DRUID" then
+			return false
+		end
+		
 		--Check healer spec filter
 		if self:IsHealer() and (self.isTrashMod and DBM.Options.FilterTInterruptHealer or not self.isTrashMod and DBM.Options.FilterBInterruptHealer) then
 			return false

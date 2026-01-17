@@ -58,7 +58,7 @@ local function Adds(self) -- no longer on a timed loop, since YELL event is avai
 --	timerAdds:Stop()
 	timerAdds:Start()
 	warnAddsSoon:Cancel()
-	warnAddsSoon:Schedule(55)
+	warnAddsSoon:Schedule(57)
 --	self:Unschedule(Adds)
 --	self:Schedule(60, Adds, self)
 end
@@ -66,7 +66,7 @@ end
 function mod:OnCombatStart(delay)
 	DBM.BossHealth:Clear()
 	timerAdds:Start(12-delay)
-	warnAddsSoon:Schedule(7-delay)
+	warnAddsSoon:Schedule(9-delay)
 --	self:Schedule(12-delay, Adds, self)
 	self.vb.firstMage = false
 	if UnitFactionGroup("player") == "Alliance" then
