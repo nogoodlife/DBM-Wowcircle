@@ -20,30 +20,30 @@
 ### ЦЛК  
 - LordMarrowgar
   - [x] BoneSpike: pull+15, cd=18
-    - add +3sec to cd after whirlwind cast start or how tf this sht works ?
+    - [ ] add +3sec to cd after whirlwind cast start or how tf this sht works ?
   - [x] Whirlwind: pull+45nm, cd=90 ?
-    - I've never seen 2 Whirlwinds, so... Plz report CD
+    - I've never seen 2 Whirlwinds, so... plz report CD
 - LadyDeathwhisper
   - [x] Adds: pull+9, cd=45 always, no restart on phase2
     - check adds cd on normals ?
   - [x] DominateMind: pull+30, cd=40 always, no restart on phase2
-    - add 3s prewarning when people should use their fears, ams, etc. ?
+    - [ ] add 3s prewarning when people should use their fears, ams, etc. ?
   - [ ] TouchInsignificance: phase2+[6.5-...], cd=[6.38-9.85] - need var timer?
   - [x] SummonSpirit: phase2+13 /13.5-15.0/, cd=13.5 /13.5-15.7/ 
-      - missing UNIT_SPELLCAST_SUCCEEDED, use SPELL_SUMMON
+      - [x] missing UNIT_SPELLCAST_SUCCEEDED, use SPELL_SUMMON
       - missing first phase2 SPELL_SUMMON event
   - [x] FrostboltVolley: phase2+20, cd=20
   - [x] Frostbolt
     - [x] filter specWarnFrostbolt when interrupt on cd
     - [ ] filter players without interrupts - dbm-core.lua/CheckInterruptFilter
-      - full ignore for PRIEST, WARLOCK, PALADIN, DRUID for now
+      - [x] full ignore for PRIEST, WARLOCK, PALADIN, DRUID for now
 - GunshipBattle
   - [X] Adds: pull+12, cd = 60 ?
   - [x] BelowZero: pull+39(Alliance)/+37(Horde) ? < it autocorrects itself later
 - Deathbringer  
   - [ ] CombatStart: Alliance=100.3, Horde=100.3 ?
   - [x] CallBloodBeast: pull+40, cd=40
-    - fix prewarning ? 10 rnow, but 5s much better ?
+    - [ ] fix prewarning ? 10 rnow, but 5s much better ?
     - missing SPELL_SUMMON events for full 1rst pack
   - [x] RuneofBlood: pull+19.1 /19.177/ ? cd=19.5
   - [x] BoilingBlood: pull+19, cd=15.5  /15.7-19.6/ - need var timer?
@@ -73,7 +73,7 @@
   - check everything =_=
   - EmpoweredFlames
     - [x] added SendSync, no idea if it works xD
-      - CHAT_MSG_RAID_BOSS_EMOTE иногда дохнет после вайпа? особенно если шар летит в игрока? это просто цирк какой-то
+      - missing CHAT_MSG_RAID_BOSS_EMOTE sometimes, это просто цирк какой-то
 - Lanathel - ?
   - [x] FirstBite: pull+15
   - [x] PactDarkfallen: pull+15, InciteTerror+25.5, cd=30.5

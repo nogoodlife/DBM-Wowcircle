@@ -106,7 +106,13 @@ mod.vb.kineticIcon = 7
 mod.vb.kineticCount = 0
 local personalNucleusCount = 0
 
+local EmpoweredFlamesCheck = false
+local function clearEmpoweredFlamesCheck(self) -- add to shedule to clear EmpoweredFlamesCheck after EmpoweredFlames cast
+	EmpoweredFlamesCheck = false
+end
+
 function mod:OnCombatStart(delay)
+	EmpoweredFlamesCheck = false
 	self.vb.kineticIcon = 7
 	self.vb.kineticCount = 0
 	personalNucleusCount = 0
@@ -181,6 +187,7 @@ function mod:SPELL_CAST_START(args)
 	elseif spellId == 72040 then	-- Conjure Empowered Flames
 		warnEmpoweredFlamesCast:Show()
 		timerConjureFlamesCD:Start()
+		self:Schedule(5, clearEmpoweredFlamesCheck, self)
 	end
 end
 
@@ -286,7 +293,6 @@ function mod:SPELL_SUMMON(args)
 	end
 end
 
-local EmpoweredFlamesCheck = false
 function mod:CHAT_MSG_RAID_BOSS_EMOTE(msg, _, _, _, target)
 	if msg:match(L.EmpoweredFlames) and target then
 		target = DBM:GetUnitFullName(target)
@@ -336,7 +342,6 @@ function mod:OnSync(msg, target)
 		end
 	end
 end
-
 
 function mod:UNIT_SPELLCAST_SUCCEEDED(_, spellName)
 	if spellName == GetSpellInfo(72080) then -- Kinetic Bomb
