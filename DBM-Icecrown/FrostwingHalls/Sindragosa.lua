@@ -48,20 +48,19 @@ local specWarnBlisteringCold	= mod:NewSpecialWarningRun(70123, nil, nil, nil, 4,
 
 local timerNextAirphase			= mod:NewTimer(120, "TimerNextAirphase", 43810, nil, nil, 6) -- Fixed timer on Air Yell: 120s
 local timerNextGroundphase		= mod:NewTimer(44.2, "TimerNextGroundphase", 43810, nil, nil, 6)
---local timerNextFrostBreath		= mod:NewNextTimer(20, 69649, nil, "Tank|Healer", nil, 5, nil, DBM_COMMON_L.TANK_ICON, true, 6.5) --circle 25hc 20.1/22.4/24.9 -- need KEEP arg +5s? 6.5s?
-local timerNextFrostBreath		= mod:NewVarTimer("v20-25", 69649, nil, "Tank|Healer", nil, 5, nil, DBM_COMMON_L.TANK_ICON, true, 6.5) --how NewVarTimer works with "keep" ?
+local timerNextFrostBreath		= mod:NewVarTimer("v20-25", 69649, nil, "Tank|Healer", nil, 5, nil, DBM_COMMON_L.TANK_ICON, true) --circle 25hc 20.1/22.4/24.9 also can be delayed by IcyGrip+BlistreingCold
 
 --NewTimer / NewVarTimer / NewNextTimer / NewCDTimer args
 --timer, spellId, timerText, optionDefault, optionName, colorType, texture, inlineIcon, keep, countdown, countdownMax, ...
 
-local timerNextBlisteringCold	= mod:NewCDTimer(66, 70123, nil, nil, nil, 2, nil, DBM_COMMON_L.DEADLY_ICON, true, 2) -- Added "keep" arg
+local timerNextBlisteringCold	= mod:NewVarTimer("v66-67.5", 70123, nil, nil, nil, 2, nil, DBM_COMMON_L.DEADLY_ICON, true, 2) -- keep=true, contdown=voice2 ?
 local timerNextBeacon			= mod:NewNextCountTimer(16, 70126, nil, nil, nil, 3, nil, DBM_COMMON_L.DEADLY_ICON)
 local timerBeaconIncoming		= mod:NewTargetTimer("d7", 70126, nil, nil, nil, 3) -- One incoming timer for each target
 local timerBlisteringCold		= mod:NewCastTimer(5, 70123, nil, nil, nil, 2)
-local timerUnchainedMagic		= mod:NewCDTimer(32, 69762, nil, nil, nil, 3) -- (25H Lordaeron 2022/07/09 || 10N Icecrown 2022/08/22 || 10N Icecrown 2022/08/25) - 32.0, 63.2, 32.1, 77.8, 32.1, 32.5, 31.9, 34.8 || 35.7, 58.4, 32.1, 77.9, 32.1, 78.6, 32.0, 32.0, 32.1 || 32.0, 62.1, 32.0, Stage 2/68.4, 9.9/78.3, 32.0
+local timerUnchainedMagic		= mod:NewCDTimer(33.5, 69762, nil, nil, nil, 3) -- 33.5
 local timerInstability			= mod:NewBuffFadesTimer(5, 69766, nil, nil, nil, 5)
 local timerChilledtotheBone		= mod:NewBuffFadesTimer(8, 70106, nil, nil, nil, 5)
-local timerTailSmash			= mod:NewCDTimer(27.1, 71077, nil, nil, nil, 2, nil, nil, true) -- ~7s variance [27-34]? Added "keep" arg. (25H Lordaeron 2022/07/09 || 10N Icecrown 2022/08/25 || 25H Lordaeron 2022/10/14) - 28.7; 93.3, 30.6, 83.1, 29.2, 29.6, 29.6, 33.8; 29.2, 65.7, 30.8, 79.1, 27.9, 31.1, 27.9, 27.4; 29.7; 28.9, 64.7, 27.4, 84.3, 32.4, 30.0, 29.2 || 94.0, 31.5, Stage 2/59.0, 19.1/78.0, 31.9 || Stage 1/20.0, 28.9, Stage 1.5/1.1, Stage 1/44.3, 21.5/65.7/66.8, 28.7, Stage 1.5/15.6, Stage 1/45.0, Stage 2/20.0, 2.1/22.1/67.1/82.8, 27.2, 31.6, 29.6, 31.4
+local timerTailSmash			= mod:NewCDTimer(29, 71077, nil, nil, nil, 2, nil, nil, true) -- cd 29.19 29.18 | phase2 cd 32.00 ? check if var timer needed ?
 
 local soundUnchainedMagic		= mod:NewSoundYou(69762, nil, "SpellCaster")
 
@@ -188,9 +187,10 @@ end
 local function landingPhaseWorkaround(self, timeOffset)
 	DBM:Debug("UNIT_TARGET boss1 didn't fire. Landing Phase scheduled")
 	self:SetStage(1)
-	timerUnchainedMagic:Start(10-timeOffset)
-	timerTailSmash:Start(19-timeOffset)
-	timerNextBlisteringCold:Start(34-timeOffset)
+	if timeOffset then print("timeOffset = "..timeOffset) end
+	timerUnchainedMagic:Start(11-timeOffset) -- 13.84
+	timerTailSmash:Start(20-timeOffset) -- 20.09
+	timerNextBlisteringCold:Start(34-timeOffset) -- SindragosaLanded+38.74 | -1.5=37.24 --is it always borked by first FrostBreath or just random?
 	self:UnregisterShortTermEvents()
 end
 
@@ -209,9 +209,10 @@ function mod:OnCombatStart(delay)
 	self:SetStage(1)
 	berserkTimer:Start(-delay)
 	timerNextAirphase:Start(50-delay)
-	timerNextBlisteringCold:Start(33.5-delay) -- icy grip (no event on circle) = 33? 33.4? 33.5? after ~1.5 = blistering cold spell_cast_start
+	if delay then print("delay = "..delay) end
+	timerNextBlisteringCold:Start(33.5-delay) -- blistering cold spell_cast_start = pull+36.42 | -1.5=34.92  = IcyGrip (no event on circle)
 	timerTailSmash:Start(20-delay)
-	timerUnchainedMagic:Start(10-delay) -- 25hc = 10 / 13???
+	timerUnchainedMagic:Start(9.2-delay) -- 11.18
 	self.vb.warned_P2 = false
 	self.vb.warnedfailed = false
 	table.wipe(beaconTargets)
@@ -435,8 +436,8 @@ function mod:CHAT_MSG_MONSTER_YELL(msg)
 		timerTailSmash:Cancel()
 		timerNextAirphase:Start()
 		timerNextGroundphase:Start()
-		warnGroundphaseSoon:Schedule(37.5)
-		self:Schedule(45.2, landingPhaseWorkaround, self, 1) -- giving a 0.2s cushion from 45s (max I have on logs is 45.1s). 1s comes from 45.2-44.2s from ground timer
+		warnGroundphaseSoon:Schedule(40.5)
+		self:Schedule(45.2, landingPhaseWorkaround, self, 1) -- make bigger shedule to check if "UNIT_TARGET boss1" even works --giving a 0.2s cushion from 45s (max I have on logs is 45.1s). 1s comes from 45.2-44.2s from ground timer
 		self:RegisterShortTermEvents(
 			"UNIT_TARGET boss1"
 		)
@@ -448,7 +449,7 @@ function mod:CHAT_MSG_MONSTER_YELL(msg)
 		timerNextAirphase:Cancel()
 		timerNextGroundphase:Cancel()
 		warnGroundphaseSoon:Cancel()
-		timerNextBlisteringCold:Restart(35.5)
+		timerNextBlisteringCold:Restart("v35-36.5") -- check if Restart("v ") works with varTimer or just Cancel() + Start("v ")
 		timerNextMysticBuffet:Start()
 		self:Schedule(6, cycleMysticBuffet, self)
 		self:Unschedule(landingPhaseWorkaround)
@@ -461,9 +462,9 @@ function mod:OnSync(msg)
 	if msg == "SindragosaLanded" and self:GetStage(1.5) then
 		self:Unschedule(landingPhaseWorkaround)
 		self:SetStage(1)
-		timerUnchainedMagic:Start(10) -- (10H Lordaeron 2022/10/02 || 25H Lordaeron 2022/10/02) - 10.0; 10.0 || 10.0; 10.0, 10.0; 10.0
-		timerTailSmash:Start(19) -- ~5s variance [19-23.8]? (10N Icecrown 2022/08/25 || 10H Lordaeron 2022/10/02 || 25H Lordaeron 2022/10/02) - 19.0 || 21.4; 21.9 || 21.4; 23.8, 22.6; 22.2
-		timerNextBlisteringCold:Start(34) -- 6s variance [34-40]? (10H Lordaeron 2022/10/02 || 25H Lordaeron 2022/10/02) - 34.0; 34.0 || 34.0; 34.0; 34.0
+		timerUnchainedMagic:Start(11) -- 13.84
+		timerTailSmash:Start(20) -- 20.09
+		timerNextBlisteringCold:Start("v34-35.5") -- SindragosaLanded+38.74 | -1.5=37.24 --is it always borked by first FrostBreath or just random?
 		self:UnregisterShortTermEvents()
 	end
 end

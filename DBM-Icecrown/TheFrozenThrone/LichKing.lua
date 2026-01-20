@@ -101,13 +101,16 @@ local specWarnTrapNear				= mod:NewSpecialWarningClose(73539, nil, nil, nil, 3, 
 local specWarnEnrage				= mod:NewSpecialWarningSpell(72143, "Tank")
 local specWarnEnrageLow				= mod:NewSpecialWarningSpell(28747, false)
 
-local timerInfestCD					= mod:NewCDCountTimer(21.2, 70541, nil, "Healer|RaidCooldown", nil, 5, nil, DBM_COMMON_L.HEALER_ICON, true) -- 4s variance [21-25] Added "keep" arg. (10N Icecrown 2022/08/25 || 25H Lordaeron 2022/09/03) - 23.1, 22.9, 22.8, Stage 2/84.3, 12.4/96.8, 23.6, 22.2, 21.7, 22.1, 22.7, 22.0, 23.5, 22.0 || 23.0, 21.2, 24.5, 22.8, 22.1, Stage 2/72.4, 12.5/84.9, 22.1, 21.2, 23.9, 23.3, 22.7, 23.1, 22.9, 23.5 ; 22.6, 21.2, 24.8, 22.9, 22.5, Stage 2/72.4, 12.5/84.9, 21.3, 21.6, 22.4, 21.5
+--NewTimer / NewVarTimer / NewNextTimer / NewCDTimer args
+--timer, spellId, timerText, optionDefault, optionName, colorType, texture, inlineIcon, keep, countdown, countdownMax, ...
+
+local timerInfestCD					= mod:NewVarCountTimer("v21-24", 70541, nil, "Healer|RaidCooldown", nil, 5, nil, DBM_COMMON_L.HEALER_ICON, true) -- NewVarCountTimer "v21-24" ? stage1 cd 23.88, 23.35, 23.71, 21.66 | stage2 cd 22.61, 22.05, 23.89, 21.05
 local timerNecroticPlagueCleanse	= mod:NewTimer(5, "TimerNecroticPlagueCleanse", 70337, "Healer", nil, 5, DBM_COMMON_L.HEALER_ICON, nil, nil, nil, nil, nil, nil, 70337)
 local timerNecroticPlagueCD			= mod:NewCDTimer(30, 70337, nil, nil, nil, 3, nil, DBM_COMMON_L.DISEASE_ICON, true) -- 3s variance [30.1-32.9] Added "keep" arg. (10N Icecrown 2022/08/20 || 10N Icecrown 2022/08/25 || 25H Lordaeron 2022/09/03) - 32.8, 31.6 ; 32.7 ; 31.2;  31.7, 32.7 || 30.2 || 32.3, 32.9 ; 31.3, 31.9 ; 32.9, 30.4 ; 30.7, 31.7 ; 30.1, 30.2 ; 32.6, 31.2 ; 31.1 ; 32.5, 30.3, 31.7
 local timerEnrageCD					= mod:NewCDCountTimer("d20", 72143, nil, "Tank|RemoveEnrage", nil, 5, nil, DBM_COMMON_L.ENRAGE_ICON--[[, true]]) -- String timer starting with "d" means "allowDouble". 5s variance [20.1-24.7]. Disabled "keep" arg since cast can be stun-skipped. (25H Lordaeron 2022/09/03) - 20.5, 24.7
 local timerShamblingHorror			= mod:NewNextTimer(60, 70372, nil, nil, nil, 1)
 local timerDrudgeGhouls				= mod:NewNextTimer(30, 70358, nil, nil, nil, 1)
-local timerTrapCD					= mod:NewNextTimer(15.5, 73539, nil, nil, nil, 3, nil, DBM_COMMON_L.DEADLY_ICON, nil, 1, 4) -- Fixed timer, confirmed on log review 2022/09/03
+local timerTrapCD					= mod:NewNextTimer(15, 73539, nil, nil, nil, 3, nil, DBM_COMMON_L.DEADLY_ICON, nil, 1, 4) -- 16.03, 15.08, 15.09, 16.81, 15.02
 
 local soundInfestSoon				= mod:NewSoundSoon(70541, nil, "Healer|RaidCooldown")
 local soundNecroticOnYou			= mod:NewSoundYou(70337)
@@ -137,8 +140,8 @@ local specWarnValkyrLow				= mod:NewSpecialWarning("SpecWarnValkyrLow", nil, nil
 
 local timerSoulreaper				= mod:NewTargetTimer(5.1, 69409, nil, "Tank|Healer|TargetedCooldown")
 local timerSoulreaperCD				= mod:NewCDCountTimer(34.0, 69409, nil, nil, nil, 5, nil, DBM_COMMON_L.TANK_ICON) -- 25hc = 34s
-local timerDefileCD					= mod:NewCDCountTimer(32, 72762, nil, nil, nil, 3, nil, DBM_COMMON_L.DEADLY_ICON, true, 1, 4) -- REVIEW! ~3s variance [32-34.7]. Added "keep" arg, but might need sync for Normal Harvest Soul since CLEU could be OOR - need Normal log from a harvested soul - (25H Lordaeron 2022/09/26_wipe1 || 25H Lordaeron 2022/09/26_wipe2 || 25H Lordaeron 2022/09/26_wipe3 || 25H Lordaeron 2022/09/26_wipe4 || 25H Lordaeron 2022/09/26_wipe5 || 25H Lordaeron 2022/09/26_wipe6 || 10N Lordaeron 2022/10/08) - 33.8, 34.2, 32.3, 34.0, 32.8 || 32.4, 34.5, 33.6, 34.4, 33.7 || 33.4, 32.1, 33.0, 32.5, 33.5, 33.3, 33.5 || 33.6, 33.4, 33.0 || Stage 2/37.5, 32.2, 32.0, 33.0, 33.5, 32.1, 32.1, 33.4, Stage 2.5/25.8, Stage 3/62.5, 64.0/126.6/152.4, 32.7, 73.6, 32.6, 74.5 || 32.6, 34.7, 32.5, 34.2, 33.7 || Stage 2/37.5, 32.1, 32.8, Stage 2.5/24.2, Stage 3/62.5, 32.9/95.5/119.6, 32.7, 32.7, 32.9
-local timerSummonValkyr				= mod:NewCDCountTimer(45.2, 69037, nil, nil, nil, 1, 71844, DBM_COMMON_L.DAMAGE_ICON, true, 2, 3) -- 5s variance [45-50]. Added "keep" arg (25H Lordaeron 2022/09/21_wipe1 || 25H Lordaeron 2022/09/21_wipe2 || 25H Lordaeron 2022/09/21_kill) - 46.5, 47.1, 45.2 || 50.0, 46.8, 46.2 || 47.8, 48.1, 47.8
+local timerDefileCD					= mod:NewCDCountTimer(32, 72762, nil, nil, nil, 3, nil, DBM_COMMON_L.DEADLY_ICON, true, 1, 4) -- ~3s variance [32.83-35.03]. Added "keep" arg, but might need sync for Normal Harvest Soul since CLEU could be OOR
+local timerSummonValkyr				= mod:NewCDCountTimer(48.5, 69037, nil, nil, nil, 1, 71844, DBM_COMMON_L.DAMAGE_ICON, true, 2, 3) -- Added "keep" arg, countdown voice2, countdownMax3 ?
 
 local soundDefileOnYou				= mod:NewSoundYou(72762)
 local soundSoulReaperSoon			= mod:NewSoundSoon(69409, nil, "Tank|Healer|TargetedCooldown")
@@ -160,7 +163,7 @@ local specWarnHarvestSouls			= mod:NewSpecialWarningSpell(73654, nil, nil, nil, 
 
 local timerHarvestSoul				= mod:NewTargetTimer(6, 68980)
 local timerHarvestSoulCD			= mod:NewNextTimer(75, 68980, nil, nil, nil, 6)
-local timerVileSpirit				= mod:NewNextTimer(30.5, 70498, nil, nil, nil, 1)
+local timerVileSpirit				= mod:NewNextTimer(30.5, 70498, nil, nil, nil, 1) -- 30.71 30.99
 local timerRestoreSoul				= mod:NewCastTimer(40, 73650, nil, nil, nil, 6)
 local timerRoleplay					= mod:NewTimer(162, "TimerRoleplay", 72350, nil, nil, 6)
 
@@ -180,8 +183,8 @@ local specWarnIceSpheresYou			= mod:NewSpecialWarningMoveAway(69103, nil, 69090,
 local specWarnGTFO					= mod:NewSpecialWarningGTFO(68983, nil, nil, nil, 1, 8)
 
 local timerPhaseTransition			= mod:NewTimer(62.5, "PhaseTransition", 72262, nil, nil, 6)
-local timerRagingSpiritCD			= mod:NewNextCountTimer(20, 69200, nil, nil, nil, 1)
-local timerSoulShriekCD				= mod:NewCDTimer(12.5, 69242, nil, nil, nil, 1) -- 25hc = 0.5 cast time + 12s actual cd? or just 12s better?
+local timerRagingSpiritCD			= mod:NewNextCountTimer(22, 69200, nil, nil, nil, 1) -- cd phase1.5 22.02, 22.12
+local timerSoulShriekCD				= mod:NewCDTimer(12, 69242, nil, nil, nil, 1) -- 12.24
 
 mod:AddRangeFrameOption(8, 72133)
 mod:AddSetIconOption("RagingSpiritIcon", 69200, false, 0, {6})
@@ -279,9 +282,9 @@ local function NextPhase(self, delay)
 		timerShamblingHorror:Start(20-delay)
 		timerDrudgeGhouls:Start(10-delay)
 		if self:IsHeroic() then
-			timerTrapCD:Start(-delay)
+			timerTrapCD:Start(15-delay) -- 15.08
 		end
-		timerNecroticPlagueCD:Start(-delay) -- no difference between N and H. (10N Icecrown 2022/08/20 || 10N Icecrown 2022/08/25 || 25H Lordaeron 2022/09/03) - 31.1; 32.6 || 31.6 || 30.7; 32.1; 31.0; 32.7; 30.4; 31.7; 31.5; 32.8; 30.8
+		timerNecroticPlagueCD:Start(-delay)
 		timerInfestCD:Start(5.0-delay, self.vb.infestCount+1) -- Fixed timer, confirmed on log review 2022/09/03
 	elseif self.vb.phase == 2 then
 		warnPhase2:Show()
@@ -289,14 +292,14 @@ local function NextPhase(self, delay)
 		if self.Options.ShowFrame then
 			self:CreateFrame()
 		end
-		timerSummonValkyr:Start(20, self.vb.valkyrWaveCount+1)
+		timerSummonValkyr:Start(16.5, self.vb.valkyrWaveCount+1) --16.50
 		timerSoulreaperCD:Start(32, self.vb.soulReaperCount+1)
 		soundSoulReaperSoon:Schedule(32-2.5, "Interface\\AddOns\\DBM-Core\\sounds\\RaidAbilities\\soulreaperSoon.mp3")
 		timerDefileCD:Start(37, self.vb.defileCount+1) -- 2025.12.27 25hc 37? 37.5?
+		warnDefileSoon:Schedule(34, self.vb.defileCount+1)
+		warnDefileSoon:ScheduleVoice(34, "scatter") -- Voice Pack - Scatter.ogg: "Spread!"
 		timerInfestCD:Start(14, self.vb.infestCount+1) -- wowcircle?
 		soundInfestSoon:Schedule(14-2, "Interface\\AddOns\\DBM-Core\\sounds\\RaidAbilities\\infestSoon.mp3")
-		warnDefileSoon:Schedule(33, self.vb.defileCount+1)
-		warnDefileSoon:ScheduleVoice(33, "scatter") -- Voice Pack - Scatter.ogg: "Spread!"
 		self:RegisterShortTermEvents(
 			"UNIT_ENTERING_VEHICLE",
 			"UNIT_EXITING_VEHICLE"
@@ -304,12 +307,12 @@ local function NextPhase(self, delay)
 	elseif self.vb.phase == 3 then
 		warnPhase3:Show()
 		warnPhase3:Play("pthree")
-		timerVileSpirit:Start(17) --delete ??
-		timerSoulreaperCD:Start(37.5, self.vb.soulReaperCount+1) --delete ??
-		soundSoulReaperSoon:Schedule(37.5-2.5, "Interface\\AddOns\\DBM-Core\\sounds\\RaidAbilities\\soulreaperSoon.mp3") --delete ??
-		timerDefileCD:Start(nil, self.vb.defileCount+1) --delete ??
-		warnDefileSoon:Schedule(32-5, self.vb.defileCount+1) --delete ??
-		warnDefileSoon:ScheduleVoice(32-5, "scatter") --delete ??
+		timerVileSpirit:Start(17) --delete or 10hc or what???
+		timerSoulreaperCD:Start(37.5, self.vb.soulReaperCount+1) --delete or 10hc or what???
+		soundSoulReaperSoon:Schedule(37.5-2.5, "Interface\\AddOns\\DBM-Core\\sounds\\RaidAbilities\\soulreaperSoon.mp3") --delete or 10hc or what???
+		timerDefileCD:Start(nil, self.vb.defileCount+1) --delete or 10hc or what???
+		warnDefileSoon:Schedule(32-3, self.vb.defileCount+1) --delete or 10hc or what???
+		warnDefileSoon:ScheduleVoice(32-3, "scatter") --delete or 10hc or what???
 		timerHarvestSoulCD:Start(11) -- 2025.12.27 25hc = 11.1?
 --		if self:IsHeroic() then
 --			self:RegisterShortTermEvents(
@@ -322,13 +325,13 @@ end
 local function leftFrostmourne(self)
 	DBM:Debug("Left Frostmourne")
 	DBM:AddSpecialEventToTranscriptorLog("Left Frostmourne")
-	timerHarvestSoulCD:Start(56) -- 2025.12.27 25hc = 56?
-	timerDefileCD:Start(1.5, self.vb.defileCount+1) -- As soon as the group leaves FM
+	timerHarvestSoulCD:Start(56) -- 56.47
+	timerDefileCD:Start(1.4, self.vb.defileCount+1) -- As soon as the group leaves FM -- 1.40 1.39
 	warnDefileSoon:Show(self.vb.defileCount+1)
 	warnDefileSoon:Play("scatter") -- Voice Pack - Scatter.ogg: "Spread!"
-	timerSoulreaperCD:Start(17.5, self.vb.soulReaperCount+1) -- 25hc right after VileSpirit cast? (12+0.5+5s VileSpirit cd+cast_time+cast_duration)
-	soundSoulReaperSoon:Schedule(17.5-2.5, "Interface\\AddOns\\DBM-Core\\sounds\\RaidAbilities\\soulreaperSoon.mp3")
-	timerVileSpirit:Start(12) -- 2025.12.27 25hc = 12? 11.5?
+	timerSoulreaperCD:Start(12.4, self.vb.soulReaperCount+1) -- 12.71 | 12.44 -- but can be delayed by VileSpirit cast? (~17.5=12+0.5+5s VileSpirit cd+cast_time+cast_duration)
+	soundSoulReaperSoon:Schedule(12.4-2.5, "Interface\\AddOns\\DBM-Core\\sounds\\RaidAbilities\\soulreaperSoon.mp3")
+	timerVileSpirit:Start(12) -- 12.73 | 12.56
 end
 
 local function RestoreWipeTime(self)
@@ -414,9 +417,9 @@ function mod:SPELL_CAST_START(args)
 		warnRemorselessWinter:Show()
 		timerPhaseTransition:Start()
 		if self.vb.phase == 1.5 then
-			timerRagingSpiritCD:Start(6, self.vb.ragingSpiritCount) -- Fixed timer, confirmed after log review 2022/09/26: 6.0 for first intermission
+			timerRagingSpiritCD:Start(3, self.vb.ragingSpiritCount) -- 3.14
 		else
-			timerRagingSpiritCD:Start(5, self.vb.ragingSpiritCount) -- Fixed timer, confirmed after log review 2022/09/26: 5.0 for second intermission
+			timerRagingSpiritCD:Start(5, self.vb.ragingSpiritCount) -- 4.91
 		end
 		warnShamblingSoon:Cancel()
 		timerShamblingHorror:Cancel()
@@ -475,8 +478,8 @@ function mod:SPELL_CAST_START(args)
 		self:BossTargetScanner(36597, "DefileTarget", 0.02, 15)
 		warnDefileSoon:Cancel()
 		warnDefileSoon:CancelVoice()
-		warnDefileSoon:Schedule(27, self.vb.defileCount+1)
-		warnDefileSoon:ScheduleVoice(27, "scatter")
+		warnDefileSoon:Schedule(29, self.vb.defileCount+1)
+		warnDefileSoon:ScheduleVoice(29, "scatter")
 		timerDefileCD:Start(nil, self.vb.defileCount+1)
 	elseif spellId == 73539 then -- Shadow Trap (Heroic)
 		self:BossTargetScanner(36597, "TrapTarget", 0.02, 10)
@@ -519,7 +522,7 @@ function mod:SPELL_CAST_SUCCESS(args)
 		specwarnSoulreaper:Show(args.destName)
 		timerSoulreaper:Start(args.destName)
 		timerSoulreaperCD:Start(nil, self.vb.soulReaperCount+1)
-		soundSoulReaperSoon:Schedule(30.5-2.5, "Interface\\AddOns\\DBM-Core\\sounds\\RaidAbilities\\soulreaperSoon.mp3")
+		soundSoulReaperSoon:Schedule(34.0-2.5, "Interface\\AddOns\\DBM-Core\\sounds\\RaidAbilities\\soulreaperSoon.mp3")
 		if args:IsPlayer() then
 			specWarnSoulreaper:Show()
 			specWarnSoulreaper:Play("defensive")
@@ -530,7 +533,7 @@ function mod:SPELL_CAST_SUCCESS(args)
 	elseif spellId == 69200 then -- Raging Spirit
 		self.vb.ragingSpiritCount = self.vb.ragingSpiritCount + 1
 		tinsert(ragingSpiritsGUIDs, "unknownSpiritGUID")
-		timerSoulShriekCD:Start("v18-20", "unknownSpiritGUID") -- spirit GUID is unknown, and it would be expensive to both retrieve it later and to manipulate the timer, so we just use a dummy GUID to cancel later
+		timerSoulShriekCD:Start("v21-23.5", "unknownSpiritGUID") -- spirit GUID is unknown, and it would be expensive to both retrieve it later and to manipulate the timer, so we just use a dummy GUID to cancel later
 		if args:IsPlayer() then
 			specWarnRagingSpirit:Show()
 			specWarnRagingSpirit:Play("targetyou")
@@ -538,9 +541,9 @@ function mod:SPELL_CAST_SUCCESS(args)
 			warnRagingSpirit:Show(args.destName)
 		end
 		if self.vb.phase == 1.5 then
-			timerRagingSpiritCD:Start(nil, self.vb.ragingSpiritCount) -- Fixed timer, confirmed after log review 2022/09/03: 20.0 for first intermission
+			timerRagingSpiritCD:Start(nil, self.vb.ragingSpiritCount) -- cd phase1.5 22.02, 22.12
 		else
-			timerRagingSpiritCD:Start(15.0, self.vb.ragingSpiritCount) -- Fixed timer, confirmed after log review 2022/09/03: 15.0 for second intermission
+			timerRagingSpiritCD:Start(17.0, self.vb.ragingSpiritCount) -- cd phase2.5 17.06, 17.10, 17.03
 		end
 		if self.Options.RagingSpiritIcon then
 			self:SetIcon(args.destName, 6, 5)
@@ -594,12 +597,6 @@ function mod:SPELL_AURA_APPLIED(args)
 		specWarnGTFO:Show(args.spellName)
 		specWarnGTFO:Play("watchfeet")
 		soundDefileOnYou:Play("Interface\\AddOns\\DBM-Core\\sounds\\RaidAbilities\\defileOnYou.mp3")
---[[ -- no longer needed since we use SPELL_CAST_START scheduling for leftFrostmourne. Unsure as to when this
-	elseif spellId == 73650 and self:AntiSpam(3, 2) then		-- Restore Soul (Heroic)
-		-- DBM:AddMsg("Restore Soul SPELL_AURA_APPLIED unhidden from combat log. Notify Nogoodlife") -- no longer valid, at least from 18/04/2025 on Warmane.
-		timerHarvestSoulCD:Start(60) -- this is slighly innacurate
-		timerVileSpirit:Start(10)--May be wrong too but we'll see, didn't have enough log for this one.
-]]
 	end
 end
 
@@ -615,14 +612,6 @@ function mod:SPELL_AURA_APPLIED_DOSE(args)
 		end
 	end
 end
-
---[[ This would probably fail on early UNIT_DIED, so schedule it instead
-function mod:SPELL_AURA_REMOVED(args)
-	if args.spellId == 73655 and args:IsPlayer() then -- Harvest Soul (25H)
-		timerHarvestSoulCD:Start(57.5) -- Subtract [48.56]s to CAST_SUCCESS diff. Timestamps: Harvest cast > Enter Frostmourne > Exit FM > Harvest cast. (25H Lordaeron [2023-08-23]@[22:14:48]) - "Harvest Souls-74297-npc:36597-3706 = pull:452.4/Stage 3/14.0, 107.3, 107.2" => '107.3 calculation as follows': 452.42 > 458.87 [6.45] > 500.98 > 501.39 [0.41/42.52/48.97] > 559.69 [58.30/58.71/100.82/107.27]
-	end
-end
-]]
 
 function mod:SPELL_SUMMON(args)
 	local spellId = args.spellId
@@ -766,81 +755,6 @@ function mod:UNIT_EXITING_VEHICLE(uId)
 		self:RemoveEntry(unitName)
 	end
 end
---[[
-function mod:UNIT_SPELLCAST_START(_, spellName)
-	if spellName == GetSpellInfo(68981) then -- Remorseless Winter (phase transition start)
-		self:SetStage(self.vb.phase + 0.5) -- Intermission. Use + 0.5 workaround to differentiate between intermissions.
-		self.vb.ragingSpiritCount = 1
-		warnRemorselessWinter:Show()
-		timerPhaseTransition:Start()
-		if self.vb.phase == 1.5 then
-			timerRagingSpiritCD:Start(6, self.vb.ragingSpiritCount) -- Fixed timer, confirmed after log review 2022/09/26: 6.0 for first intermission
-		else
-			timerRagingSpiritCD:Start(5, self.vb.ragingSpiritCount) -- Fixed timer, confirmed after log review 2022/09/26: 5.0 for second intermission
-		end
-		warnShamblingSoon:Cancel()
-		timerShamblingHorror:Cancel()
-		timerDrudgeGhouls:Cancel()
-		timerSummonValkyr:Cancel()
-		timerInfestCD:Cancel()
-		soundInfestSoon:Cancel()
-		timerNecroticPlagueCD:Cancel()
-		timerTrapCD:Cancel()
-		timerDefileCD:Cancel()
-		warnDefileSoon:Cancel()
-		warnDefileSoon:CancelVoice()
-		timerSoulreaperCD:Cancel()
-		soundSoulReaperSoon:Cancel()
-		self:RegisterShortTermEvents(
-			"UPDATE_MOUSEOVER_UNIT",
-			"UNIT_TARGET_UNFILTERED"
-		)
-		self:DestroyFrame()
-		if self.Options.RangeFrame then
-			DBM.RangeCheck:Show(8)
-		end
-	elseif spellName == GetSpellInfo(72262) then -- Quake (phase transition end)
-		self.vb.ragingSpiritCount = 0
-		warnQuake:Show()
-		timerRagingSpiritCD:Cancel()
-		self:SetStage(self.vb.phase + 0.5) -- Return back to whole number
-		self:UnregisterShortTermEvents()
-		NextPhase(self) -- keep this after UnregisterShortTermEvents for P2 vehicle events
-		if self.Options.RangeFrame then
-			DBM.RangeCheck:Hide()
-		end
-	elseif spellName == GetSpellInfo(70358) then -- Drudge Ghouls
-		warnDrudgeGhouls:Show()
-		timerDrudgeGhouls:Start()
-	elseif spellName == GetSpellInfo(70498) then -- Vile Spirits
-		warnSummonVileSpirit:Show()
-		timerVileSpirit:Start()
-	elseif spellName == GetSpellInfo(70541) then -- Infest
-		self.vb.infestCount = self.vb.infestCount + 1
-		warnInfest:Show(self.vb.infestCount)
-		specWarnInfest:Show(self.vb.infestCount)
-		timerInfestCD:Start(nil, self.vb.infestCount+1)
-		soundInfestSoon:Cancel()
-		soundInfestSoon:Schedule(22.5-2, "Interface\\AddOns\\DBM-Core\\sounds\\RaidAbilities\\infestSoon.mp3")
-	elseif spellName == GetSpellInfo(72762) then -- Defile
-		self.vb.defileCount = self.vb.defileCount + 1
-		self:BossTargetScanner(36597, "DefileTarget", 0.02, 15)
-		warnDefileSoon:Cancel()
-		warnDefileSoon:CancelVoice()
-		warnDefileSoon:Schedule(27, self.vb.defileCount+1)
-		warnDefileSoon:ScheduleVoice(27, "scatter")
-		timerDefileCD:Start(nil, self.vb.defileCount+1)
-	elseif spellName == GetSpellInfo(73539) then -- Shadow Trap (Heroic)
-		self:BossTargetScanner(36597, "TrapTarget", 0.02, 10)
-		timerTrapCD:Start()
-	elseif spellName == GetSpellInfo(72350) then -- Fury of Frostmourne
-		self:SetWipeTime(190) --Change min wipe time mid battle to force dbm to keep module loaded for this long out of combat roleplay, hopefully without breaking mod.
-		self:Stop()
-		self:ClearIcons()
-		timerRoleplay:Start()
-	end
-end
-]]
 
 function mod:UNIT_SPELLCAST_SUCCEEDED(_, spellName)
 --	if spellName == soulshriek and mod:LatencyCheck() then
@@ -855,21 +769,6 @@ function mod:UNIT_SPELLCAST_SUCCEEDED(_, spellName)
 		warnSummonValkyr:Show(self.vb.valkyrWaveCount)
 		timerSummonValkyr:Start(nil, self.vb.valkyrWaveCount+1)
 		]]
-	--[[
-	elseif spellName == GetSpellInfo(73654) then -- Harvest Souls (Heroic)
-		specWarnHarvestSouls:Show()
-		--specWarnHarvestSouls:Play("phasechange")
---		timerHarvestSoulCD:Start(106.1) -- Custom edit to make Harvest Souls timers work again. REVIEW! 1s variance? (25H Lordaeron 2022/09/03 || 25H Lordaeron 2022/11/16) - 106.4, 107.5, 106.5 || 106.1, 106.3, 106.6
-		timerVileSpirit:Cancel()
-		timerSoulreaperCD:Cancel()
-		soundSoulReaperSoon:Cancel()
-		timerDefileCD:Cancel()
-		warnDefileSoon:Cancel()
-		warnDefileSoon:CancelVoice()
-		self:SetWipeTime(50)--We set a 45 sec min wipe time to keep mod from ending combat if you die while rest of raid is in frostmourn
-		self:Schedule(50, RestoreWipeTime, self)
---		self:Schedule(48.55, leftFrostmourne, self) -- Subtract [48.55]s from Exit FM to last CAST_SUCCESS diff. Timestamps: Harvest cast success > Enter Frostmourne (SAA 73655) > Exit FM (SAR 73655) > Exit FM (ZONE_CHANGED) > Harvest cast. (25H Lordaeron [2023-08-23]@[22:14:48]) - "Harvest Souls-74297-npc:36597-3706 = pull:452.4/Stage 3/14.0, 107.3, 107.2" => '107.3 calculation as follows': 452.42 > 458.44 [6.02] > 500.97 [42.53/48.55] > 501.39 [0.42/42.95/48.97] > 559.69 [58.30/58.72/101.25/107.27]
-	]]
 	end
 end
 
@@ -887,7 +786,7 @@ function mod:UPDATE_MOUSEOVER_UNIT()
 			local spiritIndex = DBM:tIndexOf(ragingSpiritsGUIDs, "unknownSpiritGUID")
 			if spiritIndex then
 				ragingSpiritsGUIDs[spiritIndex] = spiritGUID -- replace the dummy GUID with the real one
-				local totalTime = "v18-20" -- timerSoulShriekCD:Time("unknownSpiritGUID") -- 02/11/2025: Core method does not return variance, only total time. Since total time in this mod is fixed, we can just hardcode it.
+				local totalTime = "v21-23.5" -- timerSoulShriekCD:Time("unknownSpiritGUID") -- 02/11/2025: Core method does not return variance, only total time. Since total time in this mod is fixed, we can just hardcode it.
 				local elapsedTime = timerSoulShriekCD:GetTime("unknownSpiritGUID")
 				timerSoulShriekCD:Cancel("unknownSpiritGUID") -- cancel the dummy timer
 				timerSoulShriekCD:Update(elapsedTime, totalTime, spiritGUID) -- restart the timer with the real GUID
@@ -914,7 +813,7 @@ function mod:UNIT_TARGET_UNFILTERED(uId)
 			local spiritIndex = DBM:tIndexOf(ragingSpiritsGUIDs, "unknownSpiritGUID")
 			if spiritIndex then
 				ragingSpiritsGUIDs[spiritIndex] = spiritGUID -- replace the dummy GUID with the real one
-				local totalTime = "v18-20" -- timerSoulShriekCD:Time("unknownSpiritGUID") -- 02/11/2025: Core method does not return variance, only total time. Since total time in this mod is fixed, we can just hardcode it.
+				local totalTime = "v21-23.5" -- timerSoulShriekCD:Time("unknownSpiritGUID") -- 02/11/2025: Core method does not return variance, only total time. Since total time in this mod is fixed, we can just hardcode it.
 				local elapsedTime = timerSoulShriekCD:GetTime("unknownSpiritGUID")
 				timerSoulShriekCD:Cancel("unknownSpiritGUID") -- cancel the dummy timer
 				timerSoulShriekCD:Update(elapsedTime, totalTime, spiritGUID) -- restart the timer with the real GUID

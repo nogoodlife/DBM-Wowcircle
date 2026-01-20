@@ -41,7 +41,7 @@ local timerPortalsClose		= mod:NewTimer(10, "TimerPortalsClose", 72483, nil, nil
 local timerHealerBuff		= mod:NewBuffFadesTimer(40, 70873, nil, nil, nil, 5, nil, DBM_COMMON_L.HEALER_ICON)
 local timerGutSpray			= mod:NewBuffFadesTimer(12, 70633, nil, "Tank|Healer", nil, 5)
 local timerCorrosion		= mod:NewBuffFadesTimer(6, 70751, nil, false, nil, 3)
-local timerBlazingSkeleton	= mod:NewNextTimer(60, 70933, "TimerBlazingSkeleton", nil, nil, 1, 17204)
+local timerBlazingSkeleton	= mod:NewNextTimer(61, 70933, "TimerBlazingSkeleton", nil, nil, 1, 17204)
 local timerAbom				= mod:NewNextCountTimer(60, 70922, "TimerAbom", nil, nil, 1)
 local timerSuppressers		= mod:NewNextCountTimer(60, 70935, nil, nil, nil, 1)
 
@@ -62,36 +62,27 @@ local portalNameH = GetSpellInfo(71987)
 local function Suppressers(self)
 	self.vb.SuppressersWave = self.vb.SuppressersWave + 1
 	if self.vb.SuppressersWave == 2 then
-		timerSuppressers:Stop()
+		--timerSuppressers:Stop() 		-- is this needed?
+		--specWarnSuppressers:Cancel()	-- is this needed?
+		--self:Unschedule(Suppressers)	-- is this needed?
 		timerSuppressers:Start(61, self.vb.SuppressersWave)
-		specWarnSuppressers:Cancel()
 		specWarnSuppressers:Schedule(61)
 		soundSpecWarnSuppressers:Schedule(61, "Interface\\AddOns\\DBM-Core\\sounds\\RaidAbilities\\suppressersSpawned.mp3")
-		self:Unschedule(Suppressers)
 		self:Schedule(61, Suppressers, self)
 	elseif self.vb.SuppressersWave == 3 then
-		timerSuppressers:Stop()
 		timerSuppressers:Start(61, self.vb.SuppressersWave)
-		specWarnSuppressers:Cancel()
 		specWarnSuppressers:Schedule(61)
 		soundSpecWarnSuppressers:Schedule(61, "Interface\\AddOns\\DBM-Core\\sounds\\RaidAbilities\\suppressersSpawned.mp3")
-		self:Unschedule(Suppressers)
 		self:Schedule(61, Suppressers, self)
 	elseif self.vb.SuppressersWave == 4 then
-		timerSuppressers:Stop()
 		timerSuppressers:Start(61, self.vb.SuppressersWave)
-		specWarnSuppressers:Cancel()
 		specWarnSuppressers:Schedule(61)
 		soundSpecWarnSuppressers:Schedule(61, "Interface\\AddOns\\DBM-Core\\sounds\\RaidAbilities\\suppressersSpawned.mp3")
-		self:Unschedule(Suppressers)
 		self:Schedule(61, Suppressers, self)
-	elseif self.vb.SuppressersWave > 4 then -- using dummy values since I have no VODs past 4 waves.
-		timerSuppressers:Stop()
+	elseif self.vb.SuppressersWave > 4 then
 		timerSuppressers:Start(61, self.vb.SuppressersWave)
-		specWarnSuppressers:Cancel()
 		specWarnSuppressers:Schedule(61)
 		soundSpecWarnSuppressers:Schedule(61, "Interface\\AddOns\\DBM-Core\\sounds\\RaidAbilities\\suppressersSpawned.mp3")
-		self:Unschedule(Suppressers)
 		self:Schedule(61, Suppressers, self)
 	end
 end
@@ -99,27 +90,23 @@ end
 local function StartBlazingSkeletonTimer(self)
 	timerBlazingSkeleton:Start(self.vb.BlazingSkeletonTimer)
 	self:Schedule(self.vb.BlazingSkeletonTimer, StartBlazingSkeletonTimer, self)
---	if self.vb.BlazingSkeletonTimer >= 10 then--Keep it from dropping below 5
---		self.vb.BlazingSkeletonTimer = self.vb.BlazingSkeletonTimer - 5  -- 60,55,50,45
---	end
+	self.vb.BlazingSkeletonTimer = self.vb.BlazingSkeletonTimer + 1
+	-- 30 > 61 > 62 > 63 ?
 end
 
 local function StartAbomTimer(self)
-	self.vb.AbomSpawn = self.vb.AbomSpawn + 1
-	if self.vb.AbomSpawn == 1 then --
-		timerAbom:Start(self.vb.AbomTimer, self.vb.AbomSpawn + 1) -- second adom spawn
+	self.vb.AbomSpawn = self.vb.AbomSpawn + 1 --0+1=1
+	if self.vb.AbomSpawn == 1 then -- then setup second adom spawn
+		timerAbom:Start(self.vb.AbomTimer, self.vb.AbomSpawn + 1)
 		self:Schedule(self.vb.AbomTimer, StartAbomTimer, self)
 --		self.vb.AbomTimer = self.vb.AbomTimer + 1	-- next spwan +1s
-	elseif self.vb.AbomSpawn == 2 or self.vb.AbomSpawn == 3 then -- third and fourth abom spawn
-		timerAbom:Start(self.vb.AbomTimer, self.vb.AbomSpawn + 1) -- WHY self.vb.AbomSpawn + 1 STILL???
+	elseif self.vb.AbomSpawn == 2 or self.vb.AbomSpawn == 3 then  -- then setup 3rt and 4th adom spawn
+		timerAbom:Start(self.vb.AbomTimer, self.vb.AbomSpawn + 1)
 		self:Schedule(self.vb.AbomTimer, StartAbomTimer, self)
 --		self.vb.AbomTimer = self.vb.AbomTimer + 1	-- next spwan +1s
-	elseif self.vb.AbomSpawn >= 4 then	-- after 4th abom, the timer starts subtracting again.
-		timerAbom:Start(self.vb.AbomTimer, self.vb.AbomSpawn + 1)-- WHY self.vb.AbomSpawn + 1 STILL???
+	elseif self.vb.AbomSpawn >= 4 then	-- 5th+ abom
+		timerAbom:Start(self.vb.AbomTimer, self.vb.AbomSpawn + 1)
 		self:Schedule(self.vb.AbomTimer, StartAbomTimer, self)
---		if self.vb.AbomTimer >= 10 then--Keep it from dropping below 5
---			self.vb.AbomTimer = self.vb.AbomTimer - 5--Rest of timers after 3rd 55 second timer will be 5 less than previous until they come every 5 seconds.
---		end
 	end
 end
 
@@ -148,7 +135,7 @@ function mod:OnCombatStart(delay)
 	timerNextPortal:Start(nil, 1) -- Hardcode 1 on combatStart, there's no need to calculate self.vb.portalCount+1
 	warnPortalSoon:Schedule(40)
 --	self:Schedule(45.4, Portals, self)--This will never be perfect, since it's never same. 45-48sec variations
-	self.vb.BlazingSkeletonTimer = 60
+	self.vb.BlazingSkeletonTimer = 61
 	self.vb.AbomTimer = 60
 	self.vb.AbomSpawn = 0
 	timerBlazingSkeleton:Start(30-delay)

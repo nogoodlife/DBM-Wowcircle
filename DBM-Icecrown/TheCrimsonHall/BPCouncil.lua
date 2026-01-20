@@ -324,7 +324,12 @@ end
 function mod:OnSync(msg, target)
 	if msg == "EmpoweredFlamesTarget" and target and not EmpoweredFlamesCheck then
 		EmpoweredFlamesCheck = false
+		print("target = "..target)
 		if target == UnitName("player") then
+			print("IT WORKS!")
+			print("Your ass saved by me, kek")
+			print("please send report")
+			DBM:AddMsg("nice ass btw")
 			specWarnEmpoweredFlames:Show()
 			if not self.Options.Sound72040 then
 				specWarnEmpoweredFlames:Play("justrun")
@@ -332,6 +337,8 @@ function mod:OnSync(msg, target)
 			soundEmpoweredFlames:Play("Interface\\AddOns\\DBM-Core\\sounds\\RaidAbilities\\EmpoweredOrbOnYou.mp3")
 			yellEmpoweredFlames:Yell()
 		else
+			print("IT WORKS!!")
+			DBM:AddMsg("please send report")
 			warnEmpoweredFlames:Show(target)
 		end
 		if self.Options.EmpoweredFlameIcon then
