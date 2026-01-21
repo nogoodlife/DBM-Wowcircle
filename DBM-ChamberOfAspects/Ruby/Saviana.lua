@@ -66,8 +66,8 @@ end
 
 function mod:OnCombatStart(delay)
 	self:SetStage(1)
-	timerConflagCD:Start(27.5-delay) -- 2026.01.09 25hc = 27.5?
-	timerBreath:Start(12-delay) -- 2026.01.09 25hc = 12
+	timerConflagCD:Start(27.5-delay) -- beacon 27.47, conflag 28.54
+	timerBreath:Start(12-delay) -- 12.10
 	timerFlight:Start(23.5-delay)
 	table.wipe(beaconTargets)
 	self.vb.beaconIcon = 8
@@ -123,7 +123,6 @@ end
 
 function mod: UNIT_SPELLCAST_SUCCEEDED(_, spellName) -- UNIT_SPELLCAST_START/CLEU fires and stops right after, and only gets SUCCEEDED one second after, one time only, which is better to optimize some calls
 	if spellName == GetSpellInfo(74454) then -- Conflagration
-	print("UNIT_SPELLCAST_SUCCEEDED 74454 EVEN EXISTS ON CIRCLE?")
 		timerConflagCD:Restart() -- This will always be prone to bad timers, since it doesn't account for travel time, which can be different!
 		timerLanding:Start()
 		self:Schedule(7, savianaPhaseCatcher, self)

@@ -13,8 +13,7 @@
 Накс ХМ и Санвел ХМ? Незнаю, не видел =_=
 
 > [!NOTE]
-> Вердикт на 2026.01.20 : с цлк закончил, проверить бы еще, чтобы нигде не наложал xD
-> оставил несколько лишних принтов в чат для теста
+> Вердикт на 2026.01.22 : с цлк закончил, нужно проверить; с рс покончено и проверено
 
 
 # ПЕРВАЯ УСТАНОВКА
@@ -62,7 +61,8 @@ https://github.com/Zidras/DBM-Warmane
   - [x] BoneSpike: pull+15, cd=18
     - [ ] add +3sec to cd after whirlwind cast start or how tf this sht works ?
   - [x] Whirlwind: pull+45nm, cd=90 ?
-    - I've never seen 2 Whirlwinds, so... plz report CD
+    - I've never seen 2 Whirlwinds, so... what CD ?
+
 - ### LadyDeathwhisper
   - [x] Adds: pull+9, cd=45 always, no restart on phase2
     - check adds cd on normals ?
@@ -77,9 +77,11 @@ https://github.com/Zidras/DBM-Warmane
     - [x] filter specWarnFrostbolt when interrupt on cd
     - [ ] filter players without interrupts - dbm-core.lua/CheckInterruptFilter
       - [x] full ignore for PRIEST, WARLOCK, PALADIN, DRUID for now
+
 - ### GunshipBattle
   - [X] Adds: pull+12, cd = 60 ?
   - [x] BelowZero: pull+39(Alliance)/+37(Horde) ? < it autocorrects itself later
+
 - ### DeathbringerSaurfang
   - [ ] CombatStart: Alliance=100.3, Horde=100.3 ?
   - [x] CallBloodBeast: pull+40, cd=40
@@ -88,11 +90,13 @@ https://github.com/Zidras/DBM-Warmane
   - [x] RuneofBlood: pull+19.1 /19.177/ ? cd=19.5
   - [x] BoilingBlood: pull+19, cd=15.5  /15.7-19.6/ - need var timer?
   - [x] BloodNova: pull+20, cd=20
+
 - ### Rotface - right side
   - [x] WallSlime
   - [x] SlimeSpray
   - [x] VileGas
     - куда прикрутить отображение ренжи до боя ?
+
 - ### Festergut - left side
   - Goo
     - check cd for 10/25 hc
@@ -102,6 +106,7 @@ https://github.com/Zidras/DBM-Warmane
   - VileGas
     - no timers ?
     - куда прикрутить отображение ренжи до боя ?
+
 - ### Putricide
   - [x] SlimePuddle: pull+10, phase2+10.5, phase3+23.5, cd=35
   - [x] UnboundPlague: pull+10, phase2+55.5, phase3+58.5 ? cd= ?
@@ -109,22 +114,26 @@ https://github.com/Zidras/DBM-Warmane
   - [x] ChokingGasBomb: phase2+10.5, phase3+20.5, cd=36
   - [x] MalleableGoo: phase2+10.5, phase3+17.5, cd=20
   - [x] MutatedPlague: cd=10
+
 - ### BPCouncil - ой ляяяяя...
   - check everything =_=
   - EmpoweredFlames
     - [x] added SendSync, no idea if it works xD
-      - bcz its missing CHAT_MSG_RAID_BOSS_EMOTE sometimes
+      - bcz no CHAT_MSG_RAID_BOSS_EMOTE sometimes
+
 - ### Lanathel
   - [x] FirstBite: pull+15
   - [x] PactDarkfallen: pull+15, InciteTerror+25.5, cd=30.5
   - [x] SwarmingShadows: pull+30.5, InciteTerror+30.5, cd=30.5
   - [x] InciteTerror: pull+100, cd=100
     - check pull/cd timers for 10nm/10hc/25nm, cd timer for 25hc
+
 - ### Valithria
   - [x] Suppressers: pull+70 > 61 > 61 > 61 > ?
   - [x] BlazingSkeleton: pull+30 > 61 > 62 > 63 ?
   - [x] Abom: pull+5 > 60 > 60 > 60 ?
   - [] Portal
+
 - ### Sindragosa +-
   - [x] Airphase: pull+50, cd=120
   - [ ] Groundphase: Airphase+45.2
@@ -153,6 +162,7 @@ https://github.com/Zidras/DBM-Warmane
     - pull+19.97 | SindragosaLanded+20.09 | stage2+27.59 OR just 31.64 cd
     - cd 29.19 29.18 | phase2 cd 32.00
       - var timer v29-32 ?
+
 - ### LichKing - *более лимение*
   - [ ] Infest: SPELL_CAST_START pull+5, phase2+14 ?? cd="v21-24"
     - pull 5.04 | phase2 17.45
@@ -198,20 +208,65 @@ https://github.com/Zidras/DBM-Warmane
     - phase3+11.17 | leftFrostmourne 56.47
 
 ## Ruby Sanctum
-- ### Балтар
-  - изменить аннос разделения (specwarning ибо отброс в мили это ВАЖНО)
-  - кд BladeTempest +- чекнуть
-- ### Савиана +- ?
-- ### Генерал ?
-  - фир ?
-  - адды ?
-- ### Халион
-  - фазы +
-  - метеор +
-  - лезвия +
-  - FieryBreath +-
-    - when 1st FieryBreath on phase3 ? SendSync from outside tank+heal should fix that anyway ?
-  - ShadowBreath +-
-    - when 1st ShadowBreath on phase2 ? SendSync from inside tank should fix that anyway ?
-  - метки свет +- чекнуть
-  - метки тьма +- чекнуть
+- ### Baltharus
+  - make SplitSoon specWarning, and RepellingWave - smoll warning
+  - [ ] BladeTempest: SPELL_AURA_APPLIED pull+17 ? cd=28 ?
+    - pull+16.70 16.62
+    - cd 28.45, 26.96, 27.01, 28.50
+    - no boss2/boss3 frames on circle so no start timer for new boss copy ?
+  
+- ### Saviana
+  - [ ] Conflag: pull+27.5, cd=50 ?
+    - conflag UNIT_SPELLCAST_SUCCEEDED pull+28.54
+    - beacon SPELL_AURA_APPLIED pull+27.47
+    - why this done in such anal way ?
+  - [ ] Breath: SPELL_CAST_START pull+12, cd=25
+    - pull+12.10
+    - cd 24.37 (pause on airphase, resume on landing)
+  - [x] FlightL pull+23.5, cd=38
+
+- ### Zarithrian
+  - [ ] Fear: SPELL_CAST_START pull+14, cd=40
+    - pull+13.98
+    - cd 40.13
+      - check if variable cd
+  - [ ] Adds: CHAT_MSG_MONSTER_YELL pull+15.5, cd=45.5 ?
+    - pull+15.98
+    - cd 42.09
+      - check if variable cd
+
+- ### Halion
+  - needs phase2 boss2target sync from inside tank for proper ShadowBreath/SoulConsumption timers on phase2 ?
+  - needs phase3 boss1target sync from outside tank for proper FieryBreath/FieryCombustion timers on phase3 ?
+    - [after they fix this issue](https://forum.wowcircle.com/showthread.php?t=1370513)
+  - [ ] FieryBreath: SPELL_CAST_START pull+10, phase3=5 ? cd=19
+    - [x] pull+10.06, 10.19
+    - phase3 9.62, 17.01
+      - probably phase3 timer v2-5 from boss1target not from phase3 announce
+        - maybe pause on phase2 resume on boss1target on phase3 ? o_O
+      - need outside tank logs, maybe add boss1target sync ?
+    - [x] cd 19.08, 19.07, 18.99, 19.06, 19.04, 19.08, 19.10, 19.08
+  - [ ] FieryCombustion: SPELL_CAST_SUCCESS pull+15 , phase3+22.5 ? cd=20
+    - [x] pull+14.97, 15.03
+    - phase3+22.44 22.46
+      - or timer not from stage3 but from boss1target ?
+      - need outside tank logs, maybe add boss1target sync ?
+        - wowcircle has no bossframes outside on phase3, soooo... xD
+    - [x] cd 20.08, 20.08, 20.05 20.00, 20.03, 20.07, 20.05, 20.11, 21.53
+  - [x] Meteor: CHAT_MSG_MONSTER_YELL pull+20, phase3+32, cd=40
+    - [x] pull+19.98 | 20.06
+    - [x] phase3+32.47 | 32.47
+    - [x] cd 40.08, 40.08, 40.00, 40.06, 40.08 40.05
+  - [ ] ShadowBreath: SPELL_CAST_START phase2+40 ? cd=19
+    - phase2+41.50 | 42.70 ?
+    - [x] cd 19.08, 19.08, 19.02, 19.04, 19.11
+    - when 1st ShadowBreath on phase2 ? SendSync from inside tank should fix that anyway ? phase2 timer not from stage2 but from boss2target ?
+      - need inside tank logs/vid
+  - [ ] SoulConsumption: SPELL_CAST_SUCCESS phase2+35 ? cd=20
+    - phase2+36.57 | 37.72
+      - need inside tank logs/vid
+    - [x] cd 20.02, 20.10, 20.01, 20.09, 20.09
+  - [x] TwilightCutterSpawn: CHAT_MSG_MONSTER_YELL phase2+35, cd=20
+    - [x] phase3+29.98(yell)+5(cast)=34.98 | 30.09(yell)+5=35.09
+    - duration 10s
+    - between yells 30.08, 30.03 30.06 30.02

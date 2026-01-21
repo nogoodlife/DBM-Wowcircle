@@ -25,7 +25,7 @@ local specWarnRepellingWave	= mod:NewSpecialWarningSpell(74509, nil, nil, nil, 2
 local timerWhirlwind		= mod:NewBuffActiveTimer(4, 75125, nil, "Tank|Healer", nil, 3)
 local timerRepellingWave	= mod:NewCastTimer(4, 74509, nil, nil, nil, 2)--1 second cast + 3 second stun
 local timerBrand			= mod:NewBuffActiveTimer(10, 74505, nil, nil, nil, 5)
-local timerBladeTempest		= mod:NewCDCountTimer("d28", 75125, nil, nil, 5) -- String timer starting with "d" means "allowDouble". 25hc = 28s?
+local timerBladeTempest		= mod:NewCDCountTimer("d27", 75125, nil, nil, 5) -- String timer starting with "d" means "allowDouble". -- 28.45, 26.96, 27.01, 28.50
 
 mod:AddRangeFrameOption(12, 74505)
 mod:AddSetIconOption("SetIconOnBrand", 74505, false, false, {1, 2, 3, 4, 5, 6, 7, 8})
@@ -52,7 +52,7 @@ function mod:OnCombatStart(delay)
 	table.wipe(bossGUIDs)
 	self.vb.brandIcon = 8
 	self.vb.allClonesSpawned = false
-	timerBladeTempest:Start(17-delay, 1, UnitGUID("boss1")) -- REVIEW! 25hc = 16? 16.5? 16.7?
+	timerBladeTempest:Start(16.6-delay, 1, UnitGUID("boss1")) -- pull+16.70 16.62
 	if self.Options.RangeFrame then
 		DBM.RangeCheck:Show(12)
 	end

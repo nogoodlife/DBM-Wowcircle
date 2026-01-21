@@ -418,7 +418,7 @@ end
 
 function mod:UNIT_TARGET(uId)
 	-- Attempt to catch when she lands by checking for Sindragosa's target being a raid member
-	if UnitExists(uId.."target") then
+	if UnitExists(uId.."target") then --if boss1target exists then SindragosaLanded ?
 		self:SendSync("SindragosaLanded") -- Sync landing with raid since UNIT_TARGET:boss1 event requires Sindragosa to be target/focus, which not all members do
 	end
 end

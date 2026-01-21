@@ -20,7 +20,7 @@ mod:RegisterEventsInCombat(
 	"CHAT_MSG_MONSTER_YELL",
 	"CHAT_MSG_RAID_BOSS_EMOTE",
 	"UPDATE_WORLD_STATES",
-	"UNIT_HEALTH boss1"
+	"UNIT_HEALTH boss1 boss2"
 )
 
 -- General
@@ -39,10 +39,10 @@ local specWarnFieryCombustion		= mod:NewSpecialWarningRun(74562, nil, nil, nil, 
 local yellFieryCombustion			= mod:NewYellMe(74562)
 local specWarnMeteorStrike			= mod:NewSpecialWarningMove(74648, nil, nil, nil, 1, 2)
 
-local timerFieryCombustionCD		= mod:NewNextTimer(20, 74562, nil, nil, nil, 3) -- 2025.12.28 25hc = 20s
+local timerFieryCombustionCD		= mod:NewNextTimer(20, 74562, nil, nil, nil, 3) -- 20.08, 20.08, 20.05 20.00, 20.03, 20.07, 20.05, 20.11, 21.53
 local timerMeteorCD					= mod:NewNextTimer(40, 74648, nil, nil, nil, 3, nil, DBM_COMMON_L.DEADLY_ICON)--Target or aoe? tough call. It's a targeted aoe! Even though on pull has variance, can't implement "keep" due to OnSync phasing, unless I sync schedule and end timer flag but that's a bit overkill
 local timerMeteorCast				= mod:NewCastTimer(7, 74648)-- 6.5-7? seconds from boss yell the meteor impacts.
-local timerFieryBreathCD			= mod:NewCDTimer(19, 74525, nil, "Tank|Healer", nil, 5, nil, DBM_COMMON_L.TANK_ICON, true) -- 2025.12.28 25hc = 19s
+local timerFieryBreathCD			= mod:NewCDTimer(19, 74525, nil, "Tank|Healer", nil, 5, nil, DBM_COMMON_L.TANK_ICON) -- remove keep -- 19.05, 19.02, 19.09
 local timerTailLashCD				= mod:NewCDTimer(10, 74531, nil, nil, nil, 2) -- Almost a fixed timer, with very occasional delay, on both Physical and Shadow realms. (25H Lordaeron 2022/09/23) - pull:10.1/Stage 1/10.1, 10.0, 10.0, 10.0, 10.1, 10.5, 10.0, 10.1, 11.7, Stage 2/13.5, 10.1, 10.0, 10.0, 10.1, 10.0, 10.0, 10.0, Stage 3/10.0, 10.0, 11.2, 10.0, 10.0, 10.0, 10.1, 10.1, 10.0, 10.0, 10.0, 10.0, 10.0, 10.1, 10.0, 10.0, 10.0, 11.0, 10.0
 
 mod:AddSetIconOption("SetIconOnFireConsumption", 74562, true, false, {7})--Red x for Fire
@@ -60,12 +60,12 @@ local specWarnSoulConsumption		= mod:NewSpecialWarningRun(74792, nil, nil, nil, 
 local yellSoulConsumption			= mod:NewYellMe(74792)
 local specWarnTwilightCutter		= mod:NewSpecialWarningSpell(74769, nil, nil, nil, 3, 2)
 
-local timerSoulConsumptionCD		= mod:NewNextTimer(20, 74792, nil, nil, nil, 3) -- 2025.12.28 25hc = 20s
+local timerSoulConsumptionCD		= mod:NewNextTimer(20, 74792, nil, nil, nil, 3) -- 20.02, 20.10, 20.01
 local timerTwilightCutterCast		= mod:NewCastTimer(5, 74769, nil, nil, nil, 3, nil, DBM_COMMON_L.DEADLY_ICON)
 local timerTwilightCutter			= mod:NewBuffActiveTimer(10, 74769, nil, nil, nil, 6)
 local timerTwilightCutterCD			= mod:NewNextTimer(15, 74769, nil, nil, nil, 6)
 local timerTwilightCutterSpawn		= mod:NewTimer(20, "TimerCutterSpawn", 74769, false, nil, 6, nil, nil, nil, nil, nil, nil, nil, 74769) -- Combines CD + Cast, and disables them too
-local timerShadowBreathCD			= mod:NewCDTimer(19, 74806, nil, "Tank|Healer", nil, 5, nil, DBM_COMMON_L.TANK_ICON, true) -- 2025.12.28 25hc = 19s
+local timerShadowBreathCD			= mod:NewCDTimer(19, 74806, nil, "Tank|Healer", nil, 5, nil, DBM_COMMON_L.TANK_ICON) -- remove keep -- 19.08, 19.08, 19.02
 
 mod:AddSetIconOption("SetIconOnShadowConsumption", 74792, true, false, {3})--Purple diamond for shadow
 
@@ -87,8 +87,11 @@ local previousCorporeality = 0
 
 local function clearKeepTimers(self) -- Attempt to clear "keep" negative timers that are not relevant to the realm and would otherwise tick to infinity
 --	if not self.AnnounceAlternatePhase then return end
-	if timerShadowBreathCD:GetRemaining() < 0 then timerShadowBreathCD:Stop() end
-	if timerFieryBreathCD:GetRemaining() < 0 then timerFieryBreathCD:Stop() end
+	--if timerShadowBreathCD:GetRemaining() < 0 then timerShadowBreathCD:Stop() end
+	--if timerFieryBreathCD:GetRemaining() < 0 then timerFieryBreathCD:Stop() end
+	if self.Options.AnnounceAlternatePhase then -- if ppl inside want to see FieryCD sync timer in phase3
+			soulConsumptionCLEU = false
+	end
 end
 
 function mod:OnCombatStart(delay)
@@ -102,9 +105,9 @@ function mod:OnCombatStart(delay)
 	shadowBreathCLEU = false
 	previousCorporeality = 0
 	berserkTimer:Start(-delay)
-	timerMeteorCD:Start(20-delay) -- REVIEW! ~5s variance (25N Lordaeron 2022/09/20 || 25H Lordaeron 2022/10/09) - 20.7 || 24.5
+	timerMeteorCD:Start(20-delay) -- 19.98
 	timerFieryCombustionCD:Start(15-delay) -- (25N Lordaeron 2022/09/20 || 25H Lordaeron 2022/10/09) - 17.6 || 16.4
-	timerFieryBreathCD:Start(10-delay) -- (25H Lordaeron 2022/09/21 wipe1 || 25H Lordaeron 2022/09/21 wipe2 || 25H Lordaeron 2022/09/21 wipe3 || 25H Lordaeron 2022/09/23) - 10.5 || 11.3 || 12.4 || 10.3
+	timerFieryBreathCD:Start(10-delay) -- 10.06
 	timerTailLashCD:Start(-delay)
 end
 
@@ -355,22 +358,25 @@ function mod:OnSync(msg, target)
 		timerFieryCombustionCD:Cancel()
 		warnPhase2:Show()
 		warnPhase2:Play("ptwo")
-		timerShadowBreathCD:Start(30) -- 25 seconds from tank aggro, but easier to add 5 seconds to it as a estimate timer than trying to detect this.
-		timerSoulConsumptionCD:Start(25)-- 20 seconds from tank aggro, but easier to add 5 seconds to it as a estimate timer than trying to detect this.
+		timerShadowBreathCD:Start(40) -- 41.50 | 42.70 --need inside tank logs
+		timerSoulConsumptionCD:Start(35) -- 36.57 | 37.72 --need inside tank logs
 		if self.Options.TimerCutterSpawn then
-			timerTwilightCutterSpawn:Start(35)
+			timerTwilightCutterSpawn:Start(35) -- 5 + 29.98
 		else
-			timerTwilightCutterCD:Start(30) -- (25N Lordaeron 2022/09/20 || 25H Lordaeron 2022/09/21) - Stage 2/30.0 || Stage 2/30.0
+			timerTwilightCutterCD:Start(30) -- 29.98
 		end
-		self:Schedule(31, clearKeepTimers, self)
+		if self.Options.AnnounceAlternatePhase then -- so ppl inside with AnnounceAlternatePhase can see FieryCD = timerFieryCombustionCD in phase3
+			fieryCombustionCLEU = false
+		end
+		--self:Schedule(31, clearKeepTimers, self) -- we have no keep timers
 	elseif msg == "Phase3" and self:GetStage(3, 1) then
 		self:SetStage(3)
 		warnPhase3:Show()
 		warnPhase3:Play("pthree")
 		timerMeteorCD:Start(32)
 		timerFieryCombustionCD:Start(22.5)		
-		timerFieryBreathCD:Start(17.8)
-		self:Schedule(33, clearKeepTimers, self)
+		timerFieryBreathCD:Start(5) -- 9.62, 17.01 ?????? REVIEW LATER
+		self:Schedule(20, clearKeepTimers, self) -- we have no keep timers, but using this to shedule soulConsumptionCLEU=false so ppl outside with AnnounceAlternatePhase can see ShadowCD = timerSoulConsumptionCD in phase3
 	elseif msg == "Phase3soon" and not self.vb.warned_preP3 then
 		self.vb.warned_preP3 = true
 		warnPhase3Soon:Show()
