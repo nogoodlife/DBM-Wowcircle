@@ -30,15 +30,13 @@ mod:RegisterEventsInCombat(
 	"UNIT_SPELLCAST_SUCCEEDED boss1 boss2 boss3"
 )
 
-local myRealm = select(3, DBM:GetMyPlayerInfo())
-
 -- General
 local warnTargetSwitch			= mod:NewAnnounce("WarnTargetSwitch", 3, 70952)
 local warnTargetSwitchSoon		= mod:NewAnnounce("WarnTargetSwitchSoon", 2, 70952)
 
 local timerCombatStart			= mod:NewCombatTimer(29) -- Roleplay for first pull
 local timerTargetSwitch			= mod:NewTimer(46.5, "TimerTargetSwitch", 70952) -- REVIEW! ~0.2s variance [46.42-46.60], with 46.0/46.2 outliers. Since these outliers are very rare, I prefer keeping this timer as the most probable cd seen in the logs
-local berserkTimer				= mod:NewBerserkTimer((myRealm == "Lordaeron" or myRealm == "Frostmourne") and 360 or 600)
+local berserkTimer				= mod:NewBerserkTimer(600)
 
 mod:AddSetIconOption("ActivePrinceIcon", nil, false, 5, {8})
 
@@ -88,8 +86,8 @@ local warnGliteringSparks		= mod:NewTargetAnnounce(71807, 2, nil, false)
 local specWarnEmpoweredFlames	= mod:NewSpecialWarningRun(72040, nil, nil, nil, 4, 2)
 local yellEmpoweredFlames		= mod:NewYellMe(72040)
 
-local timerConjureFlamesCD		= mod:NewCDTimer(15.3, 71718, nil, nil, nil, 3, nil, nil, true) -- normal + empowered. REVIEW! ~13s variance [15.3-29.4]. Added "keep" arg (25H Lordaeron 2022/09/07 || 25H Lordaeron 2022/10/09 || 25H Lordaeron 2022/10/21) -- 20.0, 29.4, 24.3, 18.0, 23.5, 21.3, 27.6, 20.5, 22.3 || 20.0, 29.9, 22.0, 17.7, 24.6, 29.1, 29.9 || pull:76.3, 19.9, 18.2, 22.2 (Empowered: pull:93.8, 18.7, 15.3)
-local timerGlitteringSparksCD	= mod:NewVarTimer("v15.41-50", 71807, nil, nil, nil, 2, nil, nil, true) -- This is pretty nasty on heroic. Very high variance! Added "keep" arg. UNIT_SPELLCAST_SUCCEEDED: (10N Icecrown 2022/08/25 || 25H Lordaeron 2022/09/07 || 25H Lordaeron [2025-10-30]@[21:43:38]) - 36, 17.5 || pull:12.5, 43.5, 20.8, 44.3, 38.6, 16.9, 33.3 || "Glittering Sparks-npc:37973-1602 = pull:13.39, 15.46, Taldaram Empowered/17.63, 16.02/33.65, Keleseth Empowered/30.49, 6.01/36.50, Taldaram Empowered/40.54, 7.01/47.55"
+local timerConjureFlamesCD		= mod:NewCDTimer(20, 71718, nil, nil, nil, 3, nil, nil, true) -- nmpull:20.00/[Valanar Empowered/0.05] 19.95, Keleseth Empowered/26.45, 1.98/28.44
+local timerGlitteringSparksCD	= mod:NewVarTimer("v20-21", 71807, nil, nil, nil, 2, nil, nil, true) -- pull:14.05/[Valanar Empowered/0.05] 14.00, 20.97
 
 local soundEmpoweredFlames		= mod:NewSoundYou(72040)
 
@@ -100,7 +98,7 @@ mod:AddArrowOption("EmpoweredFlameArrow", 72040, true)
 mod:AddTimerLine(L.Keleseth)
 local warnDarkNucleus			= mod:NewSpellAnnounce(71943, 1, nil, false)	-- instant cast
 
-local timerDarkNucleusCD		= mod:NewCDTimer(10, 71943, nil, false, nil, 5, nil, nil, true)	-- ~6s variance [10.5-16.3]. Added "keep" arg (25H Lordaeron 2022/09/07) - 12.1, 12.2, 14.2, 16.3, 12.2, 10.5, 13.8, 12.1, 14.1, 12.2, 12.1, 14.3, 14.1, 14.3, 13.9, 12.1
+local timerDarkNucleusCD		= mod:NewCDTimer(10, 71943, nil, false, nil, 5, nil, nil, true)	-- check variance 12.53, 14.56 12.34
 
 mod.vb.kineticIcon = 7
 mod.vb.kineticCount = 0
@@ -117,12 +115,13 @@ function mod:OnCombatStart(delay)
 	self.vb.kineticCount = 0
 	personalNucleusCount = 0
 	berserkTimer:Start(-delay)
+	--[[ on circle SPELL_AURA_APPLIED 70952 on Valanar 0.05 after combat start, so we don't need this
 	warnTargetSwitchSoon:Schedule(42-delay)
 	warnTargetSwitchSoon:ScheduleVoice(42-delay, "swapsoon")
-	timerTargetSwitch:Start(-delay)
-	timerEmpoweredShockVortex:Start(15-delay) -- REVIEW! 5s variance [15-20] (25H Lordaeron 2022/09/07 || 10N Frostmourne 2023-01-22) - 15.9 || 15.6
-	timerKineticBombCD:Start(19.8-delay, 1) -- (25H Lordaeron 2022/07/09 || 25H Lordaeron 2022/07/30 || 10N Icecrown 2022/08/22 || 10N Icecrown 2022/08/25 || 25H Lordaeron 2022/09/07 || 25H Lordaeron 2022/12/07 || 10N Frostmourne 2023-01-22 || 25H Lordaeron [2023-08-23]@[21:05:58]) - 24 || 24 || 27 || 24.9 || 23.1 || 22.1 || 21.6 || 19.8
-	timerDarkNucleusCD:Start(12-delay) -- REVIEW! Lowest possible timer? (25H Lordaeron 2022/07/09 || 25H Lordaeron 2022/07/30 || 10N Icecrown 2022/08/22 || 10N Icecrown 2022/08/25 || 25H Lordaeron 2022/09/07 || 10N Frostmourne 2023-01-22) - 15 || 12 || 14 || 12 || 12.3 || 13.5
+	timerTargetSwitch:Start(-delay)]]
+	timerEmpoweredShockVortex:Start(18.2-delay) -- REVIEW! check variance ? pull:18.23/[Valanar Empowered/0.05] 18.19
+	timerKineticBombCD:Start(24-delay, 1) -- 24.34 (25nm)
+	timerDarkNucleusCD:Start(12-delay) -- REVIEW! var timer? pull:15.92
 	if self.Options.RangeFrame then
 		DBM.RangeCheck:Show(12)
 	end
@@ -234,6 +233,7 @@ function mod:SPELL_AURA_APPLIED(args)
 			self:ScanForMobs(args.destGUID, 2, 8, 1, nil, 12, "ActivePrinceIcon")
 		end
 	elseif spellId == 70982 and self:IsInCombat() then
+		EmpoweredFlamesCheck = false
 		warnTargetSwitch:Show(L.Taldaram)
 		warnTargetSwitchSoon:Schedule(42)
 		warnTargetSwitchSoon:ScheduleVoice(42, "swapsoon")
@@ -318,14 +318,18 @@ function mod:CHAT_MSG_RAID_BOSS_EMOTE(msg, _, _, _, target)
 		if self.Options.EmpoweredFlameArrow then
 			DBM.Arrow:ShowRunTo(target, 0, 0, 10) -- 0 distance (so it doesn't hide with proximity) and 10s hideTime
 		end
+	elseif msg:match(L.EmpoweredFlames) then
+		print("EmpoweredFlames CHAT_MSG_RAID_BOSS_EMOTE missing target, plz report")
+		print("EmpoweredFlames CHAT_MSG_RAID_BOSS_EMOTE missing target, plz report")
+		print("EmpoweredFlames CHAT_MSG_RAID_BOSS_EMOTE missing target, plz report")
 	end
 end
 
 function mod:OnSync(msg, target)
 	if msg == "EmpoweredFlamesTarget" and target and not EmpoweredFlamesCheck then
-		EmpoweredFlamesCheck = false
-		print("target = "..target)
+		EmpoweredFlamesCheck = true
 		if target == UnitName("player") then
+			print("EmpoweredFlamesTarget = "..target)
 			print("IT WORKS!")
 			print("Your ass saved by me, kek")
 			print("please send report")
@@ -336,7 +340,8 @@ function mod:OnSync(msg, target)
 			end
 			soundEmpoweredFlames:Play("Interface\\AddOns\\DBM-Core\\sounds\\RaidAbilities\\EmpoweredOrbOnYou.mp3")
 			yellEmpoweredFlames:Yell()
-		else
+		elseif target then
+			print("EmpoweredFlamesTarget = "..target)
 			print("IT WORKS!!")
 			DBM:AddMsg("please send report")
 			warnEmpoweredFlames:Show(target)

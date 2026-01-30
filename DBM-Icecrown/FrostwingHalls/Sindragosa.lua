@@ -188,9 +188,9 @@ local function landingPhaseWorkaround(self, timeOffset)
 	DBM:Debug("UNIT_TARGET boss1 didn't fire. Landing Phase scheduled")
 	self:SetStage(1)
 	if timeOffset then print("timeOffset = "..timeOffset) end
-	timerUnchainedMagic:Start(11-timeOffset) -- 13.84
+	timerUnchainedMagic:Start(13-timeOffset) -- 13.84 13.13
 	timerTailSmash:Start(20-timeOffset) -- 20.09
-	timerNextBlisteringCold:Start(34-timeOffset) -- SindragosaLanded+38.74 | -1.5=37.24 --is it always borked by first FrostBreath or just random?
+	timerNextBlisteringCold:Start(sformat("v%s-%s", 37-timeOffset, 38.5-timeOffset)) -- SindragosaLanded+38.74 | -1.5=37.24 --is it always borked by first FrostBreath or just random?
 	self:UnregisterShortTermEvents()
 end
 
@@ -209,10 +209,9 @@ function mod:OnCombatStart(delay)
 	self:SetStage(1)
 	berserkTimer:Start(-delay)
 	timerNextAirphase:Start(50-delay)
-	if delay then print("delay = "..delay) end
-	timerNextBlisteringCold:Start(33.5-delay) -- blistering cold spell_cast_start = pull+36.42 | -1.5=34.92  = IcyGrip (no event on circle)
+	timerNextBlisteringCold:Start(sformat("v%s-%s", 33.5-delay, 35-delay)) -- blistering cold spell_cast_start = pull+36.42 | -1.5=34.92  = IcyGrip (no event on circle)
 	timerTailSmash:Start(20-delay)
-	timerUnchainedMagic:Start(9.2-delay) -- 11.18
+	timerUnchainedMagic:Start(10.5-delay) -- 11.18 10.83
 	self.vb.warned_P2 = false
 	self.vb.warnedfailed = false
 	table.wipe(beaconTargets)
@@ -236,7 +235,7 @@ function mod:SPELL_CAST_START(args)
 		timerNextFrostBreath:Start()
 	elseif args.spellId == 71077 then
 		timerTailSmash:Start()
-	elseif args:IsSpellID(70123, 71047, 71048, 71049) then --wowcircle BlisteringCold cuz no SPELL_CAST_SUCCESS 70117 event
+	elseif args:IsSpellID(70123, 71047, 71048, 71049) then --wowcircle BlisteringCold, we cant use IcyGrip cuz no SPELL_CAST_SUCCESS 70117 event
 		timerNextBlisteringCold:Cancel()
 		specWarnBlisteringCold:Show()
 		specWarnBlisteringCold:Play("runout")
@@ -437,7 +436,7 @@ function mod:CHAT_MSG_MONSTER_YELL(msg)
 		timerNextAirphase:Start()
 		timerNextGroundphase:Start()
 		warnGroundphaseSoon:Schedule(40.5)
-		self:Schedule(45.2, landingPhaseWorkaround, self, 1) -- make bigger shedule to check if "UNIT_TARGET boss1" even works --giving a 0.2s cushion from 45s (max I have on logs is 45.1s). 1s comes from 45.2-44.2s from ground timer
+		self:Schedule(45.3, landingPhaseWorkaround, self, 1) -- make bigger shedule to check if "UNIT_TARGET boss1" even works --giving a 0.2s cushion from 45s (max I have on logs is 45.1s). 1s comes from 45.2-44.2s from ground timer
 		self:RegisterShortTermEvents(
 			"UNIT_TARGET boss1"
 		)
@@ -449,7 +448,7 @@ function mod:CHAT_MSG_MONSTER_YELL(msg)
 		timerNextAirphase:Cancel()
 		timerNextGroundphase:Cancel()
 		warnGroundphaseSoon:Cancel()
-		timerNextBlisteringCold:Restart("v35-36.5") -- check if Restart("v ") works with varTimer or just Cancel() + Start("v ")
+		timerNextBlisteringCold:Restart("v35-36.5")
 		timerNextMysticBuffet:Start()
 		self:Schedule(6, cycleMysticBuffet, self)
 		self:Unschedule(landingPhaseWorkaround)
@@ -462,9 +461,9 @@ function mod:OnSync(msg)
 	if msg == "SindragosaLanded" and self:GetStage(1.5) then
 		self:Unschedule(landingPhaseWorkaround)
 		self:SetStage(1)
-		timerUnchainedMagic:Start(11) -- 13.84
+		timerUnchainedMagic:Start(13) -- 13.84 13.13
 		timerTailSmash:Start(20) -- 20.09
-		timerNextBlisteringCold:Start("v34-35.5") -- SindragosaLanded+38.74 | -1.5=37.24 --is it always borked by first FrostBreath or just random?
+		timerNextBlisteringCold:Start("v37-38.5") -- SindragosaLanded+38.74 | -1.5=37.24 --is it always borked by first FrostBreath or just random?
 		self:UnregisterShortTermEvents()
 	end
 end

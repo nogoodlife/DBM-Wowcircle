@@ -358,8 +358,8 @@ function mod:OnSync(msg, target)
 		timerFieryCombustionCD:Cancel()
 		warnPhase2:Show()
 		warnPhase2:Play("ptwo")
-		timerShadowBreathCD:Start(40) -- 41.50 | 42.70 --need inside tank logs
-		timerSoulConsumptionCD:Start(35) -- 36.57 | 37.72 --need inside tank logs
+		timerShadowBreathCD:Start(35) -- 41.50 | 42.70 | 34.86 --need inside tank logs
+		timerSoulConsumptionCD:Start(30) -- 36.57 | 37.72 | 29.82 --need inside tank logs
 		if self.Options.TimerCutterSpawn then
 			timerTwilightCutterSpawn:Start(35) -- 5 + 29.98
 		else

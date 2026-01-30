@@ -38,9 +38,9 @@ local acidmaw = L.Acidmaw
 local icehowl = L.Icehowl
 
 -- General
-local enrageTimer			= mod:NewBerserkTimer(223) -- REVIEW! 2022/09/05 log with 233s fight time. Does Icehowl actually gets enraged or just the next massive crash will wipe the raid?
-local timerCombatStart		= mod:NewCombatTimer(23)
-local timerNextBoss			= mod:NewTimer(150, "TimerNextBoss", 2457, nil, nil, 1) -- 2min 30s, as per TC.
+local enrageTimer			= mod:NewBerserkTimer(223) -- enrage when?
+local timerCombatStart		= mod:NewCombatTimer(11.2)
+local timerNextBoss			= mod:NewTimer(150, "TimerNextBoss", 2457, nil, nil, 1) -- is this how it works on circle ? no idea, plz report
 
 mod:AddRangeFrameOption("10")
 

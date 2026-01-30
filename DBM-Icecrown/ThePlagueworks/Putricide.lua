@@ -75,7 +75,7 @@ local specWarnMalleableGooCast		= mod:NewSpecialWarningSpell(72295, "Ranged", ni
 
 local timerChokingGasBombCD			= mod:NewCDTimer(36, 71255, nil, nil, nil, 3, nil, nil, true) -- 2025.12.27 25hc = 36?
 local timerChokingGasBombExplosion	= mod:NewCastTimer(12, 71279, nil, nil, nil, 2)
-local timerMalleableGooCD			= mod:NewNextTimer(20, 72295, nil, nil, nil, 3) -- 25nm = 25
+local timerMalleableGooCD			= mod:NewNextTimer(20, 72295, nil, nil, nil, 3)
 
 local soundSpecWarnMalleableGoo		= mod:NewSound(72295, nil, "Ranged")
 local soundMalleableGooSoon			= mod:NewSoundSoon(72295, nil, "Ranged")
@@ -173,7 +173,7 @@ function mod:SPELL_CAST_START(args)
 		warnUnstableExperimentSoon:Cancel()
 		warnUnstableExperiment:Show()
 		timerUnstableExperimentCD:Start()
-		warnUnstableExperimentSoon:Schedule(33) -- 25hc = 38-5=33s
+		warnUnstableExperimentSoon:Schedule(33) -- 25hc = cd38-5=33s
 	elseif spellId == 71617 then --Tear Gas (stun all on Normal phase) (Normal intermission)
 		self:SetStage(self.vb.phase + 0.5) -- phase1.5/2.5 for 25nm --(what id for 10nm?)
 		warnTearGas:Show()

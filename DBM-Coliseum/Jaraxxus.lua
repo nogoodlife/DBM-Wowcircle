@@ -41,7 +41,7 @@ local specWarnFelInferno		= mod:NewSpecialWarningMove(66496, nil, nil, nil, 1, 2
 local SpecWarnFelFireball		= mod:NewSpecialWarningInterrupt(66532, "HasInterrupt", nil, 2, 1, 2)
 local SpecWarnFelFireballDispel	= mod:NewSpecialWarningDispel(66532, "RemoveMagic", nil, 2, 1, 2)
 
-local timerCombatStart			= mod:NewCombatTimer(76)--roleplay for first pull
+local timerCombatStart			= mod:NewCombatTimer(90.5)--roleplay for first pull
 local timerFlame				= mod:NewTargetTimer(8, 66197, nil, nil, nil, 3)--There are 8 debuff Ids. Since we detect first to warn, use an 8sec timer to cover duration of trigger spell and damage debuff.
 local timerFlameCD				= mod:NewNextTimer(30, 66197, nil, nil, nil, 3) -- (25H Lordaeron 2022/09/03) - 30.0, 30.0, 30.1, 30.0, 30.1, 30.0
 local timerNetherPowerCD		= mod:NewNextTimer(45, 67009, nil, "MagicDispeller", nil, 5, nil, DBM_COMMON_L.MAGIC_ICON) -- (25H Lordaeron 2022/09/03) - 45.1, 45.0, 45.0, 45.0

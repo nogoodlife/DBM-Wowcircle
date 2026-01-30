@@ -67,7 +67,7 @@ mod.vb.pactIcons = 1
 local function warnPactTargets(self)
 	warnPactDarkfallen:Show(table.concat(pactTargets, "<, >"))
 	table.wipe(pactTargets)
-	timerNextPactDarkfallen:Start(30)
+	timerNextPactDarkfallen:Start()
 	warnPactDarkfallenSoon:Schedule(25)
 	warnPactDarkfallenSoon:ScheduleVoice(25, "linesoon")
 	self.vb.pactIcons = 1
@@ -223,14 +223,6 @@ function mod:SPELL_DAMAGE(sourceGUID, _, _, destGUID, destName, _, spellId, spel
 	end
 end
 mod.SPELL_MISSED = mod.SPELL_DAMAGE
-
--- function mod:SPELL_PERIODIC_DAMAGE(_, _, _, destGUID, _, _, spellId)
---	if (spellId == 71277 or spellId == 72638 or spellId == 72639 or spellId == 72640 or spellId == 72637) and destGUID == UnitGUID("player") and self:AntiSpam() then		--Swarn of Shadows (spell damage, you're standing in it.)
---		specWarnSwarmingShadows:Show()
---		specWarnSwarmingShadows:Play("runaway")
---	end
--- end
--- mod.SPELL_PERIODIC_MISSED = mod.SPELL_PERIODIC_DAMAGE
 
 function mod:CHAT_MSG_RAID_BOSS_EMOTE(msg, _, _, _, target)
 	if msg:match(L.SwarmingShadows) and target then

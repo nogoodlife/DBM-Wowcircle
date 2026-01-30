@@ -21,7 +21,7 @@ local warnFearSoon				= mod:NewSoonAnnounce(74384, 2, nil, nil, nil, nil, nil, 2
 local specWarnFear				= mod:NewSpecialWarningSpell(74384, nil, nil, nil, 2, 2)
 local specWarnCleaveArmor		= mod:NewSpecialWarningStack(74367, nil, 2, nil, nil, 1, 6)--ability lasts 30 seconds, has a 15 second cd, so tanks should trade at 2 stacks.
 
-local timerAddsCD				= mod:NewTimer(45.5, "TimerAdds", 74398, nil, nil, 1, nil, DBM_COMMON_L.DAMAGE_ICON)
+local timerAddsCD				= mod:NewTimer(42, "TimerAdds", 74398, nil, nil, 1, nil, DBM_COMMON_L.DAMAGE_ICON)
 local timerAddsTravel			= mod:NewTimer(10, "AddsArrive") -- Timer to indicate when the summoned adds arive
 local timerCleaveArmor			= mod:NewTargetTimer(30, 74367, nil, "Tank|Healer", nil, 5, nil, DBM_COMMON_L.TANK_ICON)
 local timerFearCD				= mod:NewCDTimer(40, 74384, nil, nil, nil, 2) -- 40.13 -- check if v35-40
@@ -32,7 +32,7 @@ local CleaveArmorTargets = {}
 function mod:OnCombatStart(delay)
 	timerFearCD:Start(14-delay)
 	warnFearSoon:ScheduleVoice(11, "fearsoon") -- 3 secs prewarning
-	timerAddsCD:Start(15.5-delay)
+	timerAddsCD:Start(16-delay)
 end
 
 function mod:OnCombatEnd()

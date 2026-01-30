@@ -26,7 +26,7 @@ local timerConflag			= mod:NewBuffActiveTimer(5, 74456, nil, nil, nil, 3)
 local timerConflagCD		= mod:NewCDTimer(50, 74452, nil, nil, nil, 3) -- old circle timer = 50
 local timerBreath			= mod:NewCDTimer(25, 74403, nil, "Tank|Healer", nil, 5, nil, DBM_COMMON_L.TANK_ICON, true) -- old circle timer = 25
 local timerEnrage			= mod:NewBuffActiveTimer(10, 78722, nil, "RemoveEnrage|Tank|Healer", nil, 5, nil, DBM_COMMON_L.ENRAGE_ICON..DBM_COMMON_L.TANK_ICON)
-local timerFlight			= mod:NewNextTimer(38, 34873, nil, nil, nil, 6, 54950)
+local timerFlight			= mod:NewNextTimer(37, 34873, nil, nil, nil, 6, 54950)
 local timerLanding			= mod:NewNextTimer(8, 30202, nil, nil, nil, 6, 54950)
 
 mod:AddRangeFrameOption(10, 74456)
@@ -59,8 +59,8 @@ local function savianaLanding(self)
 	self:SetStage(1)
 	timerFlight:Start()
 	timerBreath:Resume()
-	self:Schedule(41.5, savianaPhaseCatcher, self)
-	self:Schedule(42, savianaAirphase, self)
+	self:Schedule(36.5, savianaPhaseCatcher, self)
+	self:Schedule(37, savianaAirphase, self)
 	self:UnregisterShortTermEvents()
 end
 
@@ -68,14 +68,14 @@ function mod:OnCombatStart(delay)
 	self:SetStage(1)
 	timerConflagCD:Start(27.5-delay) -- beacon 27.47, conflag 28.54
 	timerBreath:Start(12-delay) -- 12.10
-	timerFlight:Start(23.5-delay)
+	timerFlight:Start(23.1-delay) --23.01 RegisterShortTermEvents fired
 	table.wipe(beaconTargets)
 	self.vb.beaconIcon = 8
 	if self.Options.RangeFrame then
 		DBM.RangeCheck:Show(12)
 	end
-	self:Schedule(23, savianaPhaseCatcher, self)
-	self:Schedule(23.5, savianaAirphase, self) -- Lowest 24.96
+	self:Schedule(22.6, savianaPhaseCatcher, self)
+	self:Schedule(23.1, savianaAirphase, self)
 end
 
 function mod:OnCombatEnd()
@@ -126,7 +126,7 @@ function mod: UNIT_SPELLCAST_SUCCEEDED(_, spellName) -- UNIT_SPELLCAST_START/CLE
 		timerConflagCD:Restart() -- This will always be prone to bad timers, since it doesn't account for travel time, which can be different!
 		timerLanding:Start()
 		self:Schedule(7, savianaPhaseCatcher, self)
-		self:Schedule(7.8, savianaLanding, self)
+		self:Schedule(7.89, savianaLanding, self)
 	end
 end
 

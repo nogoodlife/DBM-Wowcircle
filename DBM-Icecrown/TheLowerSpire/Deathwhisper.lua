@@ -27,12 +27,11 @@ mod:RegisterEventsInCombat(
 
 local canShadowmeld = select(2, UnitRace("player")) == "NightElf"
 local canVanish = select(2, UnitClass("player")) == "ROGUE"
-local myRealm = select(3, DBM:GetMyPlayerInfo())
 
 -- General
 local specWarnWeapons				= mod:NewSpecialWarning("WeaponsStatus", false)
 
-local berserkTimer					= mod:NewBerserkTimer((myRealm == "Lordaeron" or myRealm == "Frostmourne") and 420 or 600)
+local berserkTimer					= mod:NewBerserkTimer(600)
 
 mod:RemoveOption("HealthFrame")
 mod:AddBoolOption("ShieldHealthFrame", false, "misc")
@@ -85,7 +84,7 @@ local timerSummonSpiritCD			= mod:NewCDTimer(13.5, 71426, nil, true, nil, 3, nil
 local timerFrostboltCast			= mod:NewCastTimer(2, 72007, nil, "HasInterrupt")
 local timerFrostboltVolleyCD		= mod:NewCDTimer(20, 72905, nil, nil, nil, 2) -- 25hc = 20s
 local timerTouchInsignificance		= mod:NewTargetTimer(30, 71204, nil, "Tank|Healer", nil, 5)
-local timerTouchInsignificanceCD	= mod:NewCDTimer(9, 71204, nil, "Tank|Healer", nil, 5, nil, nil, true) -- 6.38/6.59/7.69/8.09/8.25/9.85,  keep "keep" arg, make varCD later
+local timerTouchInsignificanceCD	= mod:NewCDTimer(6, 71204, nil, "Tank|Healer", nil, 5, nil, nil, true) -- 6.38, 6.39, 6.17, 7.50, 7.38, 8.30 | 6.59 7.69 8.09 8.25 9.85,  keep "keep" arg, make varCD+keep later
 
 local soundWarnSpirit				= mod:NewSound(71426)
 
@@ -448,7 +447,7 @@ function mod:SPELL_AURA_REMOVED(args)
 		warnPhase2:Show()
 		warnPhase2:Play("ptwo")
 		timerSummonSpiritCD:Start(13) -- 13.5/15s after phase2 start
-		timerTouchInsignificanceCD:Start(6.5) -- var timer? 6.9
+		timerTouchInsignificanceCD:Start(6.5) -- var timer? 6.38
 		timerFrostboltVolleyCD:Start(20) -- 25hc = 20s
 		if self.Options.InfoFrame then
 			DBM.InfoFrame:Hide()

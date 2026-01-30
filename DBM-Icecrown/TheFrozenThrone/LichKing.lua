@@ -64,11 +64,9 @@ mod:RegisterEventsInCombat(
 -- "<529.70 21:17:12> [DBM_Announce] Defile on >player4<:Interface\\Icons\\Ability_Rogue_EnvelopingShadows:target:72762:LichKing:false:", -- [42826]
 -- "<529.70 21:17:12> [DBM_Debug] BossTargetScanner has ended for 36597:2:", -- [42827]
 
-local myRealm = select(3, DBM:GetMyPlayerInfo())
-
 -- General
-local timerCombatStart		= mod:NewCombatTimer(54.5)
-local berserkTimer			= mod:NewBerserkTimer(myRealm == "Lordaeron" and mod:IsNormal() and 720 or 900)
+local timerCombatStart		= mod:NewCombatTimer(54.2)
+local berserkTimer			= mod:NewBerserkTimer(900)
 
 mod:AddBoolOption("RemoveImmunes")
 mod:AddMiscLine(L.FrameGUIDesc)
@@ -139,7 +137,7 @@ local specWarnSoulreaperOtr			= mod:NewSpecialWarningTaunt(69409, false, nil, ni
 local specWarnValkyrLow				= mod:NewSpecialWarning("SpecWarnValkyrLow", nil, nil, nil, 1, 2, nil, 71844, 69037)
 
 local timerSoulreaper				= mod:NewTargetTimer(5.1, 69409, nil, "Tank|Healer|TargetedCooldown")
-local timerSoulreaperCD				= mod:NewCDCountTimer(34.0, 69409, nil, nil, nil, 5, nil, DBM_COMMON_L.TANK_ICON) -- 25hc = 34s
+local timerSoulreaperCD				= mod:NewCDCountTimer(34.0, 69409, nil, nil, nil, 5, nil, DBM_COMMON_L.TANK_ICON) --need KEEP ? cd phase2 34.25, 34.18, cd phase3/leftFrostmourne 36.27
 local timerDefileCD					= mod:NewCDCountTimer(32, 72762, nil, nil, nil, 3, nil, DBM_COMMON_L.DEADLY_ICON, true, 1, 4) -- ~3s variance [32.83-35.03]. Added "keep" arg, but might need sync for Normal Harvest Soul since CLEU could be OOR
 local timerSummonValkyr				= mod:NewCDCountTimer(48.5, 69037, nil, nil, nil, 1, 71844, DBM_COMMON_L.DAMAGE_ICON, true, 2, 3) -- Added "keep" arg, countdown voice2, countdownMax3 ?
 
@@ -293,12 +291,12 @@ local function NextPhase(self, delay)
 			self:CreateFrame()
 		end
 		timerSummonValkyr:Start(16.5, self.vb.valkyrWaveCount+1) --16.50
-		timerSoulreaperCD:Start(32, self.vb.soulReaperCount+1)
+		timerSoulreaperCD:Start(31.5, self.vb.soulReaperCount+1) --phase2+31.46 31.67
 		soundSoulReaperSoon:Schedule(32-2.5, "Interface\\AddOns\\DBM-Core\\sounds\\RaidAbilities\\soulreaperSoon.mp3")
-		timerDefileCD:Start(37, self.vb.defileCount+1) -- 2025.12.27 25hc 37? 37.5?
+		timerDefileCD:Start(37, self.vb.defileCount+1) -- phase2+36.96 37.02
 		warnDefileSoon:Schedule(34, self.vb.defileCount+1)
 		warnDefileSoon:ScheduleVoice(34, "scatter") -- Voice Pack - Scatter.ogg: "Spread!"
-		timerInfestCD:Start(14, self.vb.infestCount+1) -- wowcircle?
+		timerInfestCD:Start(17, self.vb.infestCount+1) -- 17.45 17.55
 		soundInfestSoon:Schedule(14-2, "Interface\\AddOns\\DBM-Core\\sounds\\RaidAbilities\\infestSoon.mp3")
 		self:RegisterShortTermEvents(
 			"UNIT_ENTERING_VEHICLE",
@@ -308,12 +306,12 @@ local function NextPhase(self, delay)
 		warnPhase3:Show()
 		warnPhase3:Play("pthree")
 		timerVileSpirit:Start(17) --delete or 10hc or what???
-		timerSoulreaperCD:Start(37.5, self.vb.soulReaperCount+1) --delete or 10hc or what???
-		soundSoulReaperSoon:Schedule(37.5-2.5, "Interface\\AddOns\\DBM-Core\\sounds\\RaidAbilities\\soulreaperSoon.mp3") --delete or 10hc or what???
-		timerDefileCD:Start(nil, self.vb.defileCount+1) --delete or 10hc or what???
-		warnDefileSoon:Schedule(32-3, self.vb.defileCount+1) --delete or 10hc or what???
-		warnDefileSoon:ScheduleVoice(32-3, "scatter") --delete or 10hc or what???
-		timerHarvestSoulCD:Start(11) -- 2025.12.27 25hc = 11.1?
+		timerSoulreaperCD:Start(37.5, self.vb.soulReaperCount+1) -- phase3+37.89 -25nm
+		soundSoulReaperSoon:Schedule(37.5-2.5, "Interface\\AddOns\\DBM-Core\\sounds\\RaidAbilities\\soulreaperSoon.mp3")
+		timerDefileCD:Start(nil, self.vb.defileCount+1) -- phase3 32.97 -25nm
+		warnDefileSoon:Schedule(32-3, self.vb.defileCount+1)
+		warnDefileSoon:ScheduleVoice(32-3, "scatter")
+		timerHarvestSoulCD:Start(11) -- 11.09 11.17
 --		if self:IsHeroic() then
 --			self:RegisterShortTermEvents(
 --				"ZONE_CHANGED"
@@ -417,9 +415,9 @@ function mod:SPELL_CAST_START(args)
 		warnRemorselessWinter:Show()
 		timerPhaseTransition:Start()
 		if self.vb.phase == 1.5 then
-			timerRagingSpiritCD:Start(3, self.vb.ragingSpiritCount) -- 3.14
+			timerRagingSpiritCD:Start(3, self.vb.ragingSpiritCount) -- 3.14 3.03
 		else
-			timerRagingSpiritCD:Start(5, self.vb.ragingSpiritCount) -- 4.91
+			timerRagingSpiritCD:Start(5, self.vb.ragingSpiritCount) -- 4.91 4.99
 		end
 		warnShamblingSoon:Cancel()
 		timerShamblingHorror:Cancel()
@@ -541,9 +539,9 @@ function mod:SPELL_CAST_SUCCESS(args)
 			warnRagingSpirit:Show(args.destName)
 		end
 		if self.vb.phase == 1.5 then
-			timerRagingSpiritCD:Start(nil, self.vb.ragingSpiritCount) -- cd phase1.5 22.02, 22.12
+			timerRagingSpiritCD:Start(nil, self.vb.ragingSpiritCount) -- cd phase1.5 22.02, 22.12 22.02, 22.14
 		else
-			timerRagingSpiritCD:Start(17.0, self.vb.ragingSpiritCount) -- cd phase2.5 17.06, 17.10, 17.03
+			timerRagingSpiritCD:Start(17.0, self.vb.ragingSpiritCount) -- cd phase2.5 17.06, 17.10, 17.03 17.17, 17.03, 17.02  
 		end
 		if self.Options.RagingSpiritIcon then
 			self:SetIcon(args.destName, 6, 5)

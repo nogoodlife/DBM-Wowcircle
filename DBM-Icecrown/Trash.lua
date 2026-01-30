@@ -86,7 +86,7 @@ mod.vb.frostwardenAlive = 6
 
 function mod:SPELL_CAST_START(args)
 	local spellId = args.spellId
-	if spellId == 71022 then
+	if spellId == 71022 then  --add check if caster or nah, ppl can use double profile?
 		warnDisruptingShout:Show()
 		specWarnDisruptingShout:Show()
 		timerDisruptingShout:Start()

@@ -27,7 +27,7 @@ mod:RegisterEventsInCombat(
 --local canVanish = select(2, UnitClass("player")) == "ROGUE"
 
 -- General
-local timerCombatStart		= mod:NewCombatTimer(100.30)
+local timerCombatStart		= mod:NewCombatTimer(100.35)
 local enrageTimer			= mod:NewBerserkTimer(480)
 
 mod:RemoveOption("HealthFrame")
@@ -47,7 +47,7 @@ local specwarnMark			= mod:NewSpecialWarningYou(72444, nil, 28836, nil, 1, 2)
 local specwarnRuneofBlood	= mod:NewSpecialWarningTaunt(72410, nil, nil, nil, 1, 2)
 local specwarnRuneofBloodYou= mod:NewSpecialWarningYou(72410, "Tank")
 
-local timerRuneofBlood		= mod:NewNextTimer(19.5, 72410, nil, "Tank|Healer", nil, 5, nil, DBM_COMMON_L.TANK_ICON) -- 2026.01.11 25hc = 19.5
+local timerRuneofBlood		= mod:NewNextTimer(19.5, 72410, nil, "Tank|Healer", nil, 5, nil, DBM_COMMON_L.TANK_ICON) -- 19.59, 19.64
 local timerBoilingBlood		= mod:NewCDTimer(15.5, 72385, nil, "Healer", nil, 5, nil, DBM_COMMON_L.HEALER_ICON, true) -- 2026.01.11 25hc = 15.7/15.6/19.5/19.6
 local timerBloodNova		= mod:NewCDTimer(20, 72378, nil, nil, nil, 2, nil, nil, true) -- 2026.01.11 25hc = 20
 
@@ -124,7 +124,7 @@ function mod:OnCombatStart(delay)
 		enrageTimer:Start(360-delay)
 	end
 	timerCallBloodBeast:Start(-delay)
-	warnAddsSoon:Schedule(30-delay)
+	warnAddsSoon:Schedule(35-delay)
 	timerBloodNova:Start(-delay) -- 2026.01.11 25hc = 20
 	timerRuneofBlood:Start(19.1-delay) -- 2026.01.11 25hc = 19.177 ? 19?
 	timerBoilingBlood:Start(19-delay) -- 2026.01.11 25hc = 19
@@ -215,7 +215,7 @@ function mod:SPELL_SUMMON(args)
 			self.vb.beastIcon = 8
 			self.vb.bloodBeastAlive = self.vb.bloodBeastAlive + (self:IsDifficulty("normal25", "heroic25") and 5 or 2)
 			warnAdds:Show()
-			warnAddsSoon:Schedule(30)
+			warnAddsSoon:Schedule(35)
 			timerCallBloodBeast:Start()
 			if self:IsHeroic() then
 				timerNextScentofBlood:Start()
