@@ -1,6 +1,8 @@
 local mod	= DBM:NewMod("Sindragosa", "DBM-Icecrown", 4)
 local L		= mod:GetLocalizedStrings()
 
+local sformat = string.format
+
 mod:SetRevision("20251101201015")
 mod:SetCreatureID(36853)
 mod:SetEncounterID(855)
