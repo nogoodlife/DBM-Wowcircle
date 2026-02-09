@@ -22,7 +22,7 @@ local specWarnWebWrap	= mod:NewSpecialWarningSwitch(28622, "RangedDps", nil, nil
 local yellWebWrap		= mod:NewYellMe(28622)
 
 local timerWebSpray		= mod:NewNextTimer(40, 29484, nil, nil, nil, 2)
-local timerWebWrap		= mod:NewNextTimer(39.6, 28622, nil, "RangedDps|Healer", nil, 3)-- 39.593-40.885
+local timerWebWrap		= mod:NewNextTimer(39.6, 28622, nil, "RangedDps|Healer", nil, 3)	-- 25HC: 39.31 40.42 39.97
 local timerSpider		= mod:NewTimer(30, "TimerSpider", 17332, nil, nil, 1)
 
 local function Spiderlings(self)
@@ -35,8 +35,8 @@ end
 
 function mod:OnCombatStart(delay)
 	warnWebSpraySoon:Schedule(35 - delay)
-	timerWebSpray:Start(40 - delay)
-	timerWebWrap:Start(20.1 - delay)--20.095-21.096
+	timerWebSpray:Start(39.8 - delay)
+	timerWebWrap:Start(20.1 - delay) -- 25HC: 21.45
 	warnSpidersSoon:Schedule(25 - delay)
 	warnSpidersNow:Schedule(30 - delay)
 	timerSpider:Start(30 - delay)
@@ -67,7 +67,12 @@ end
 function mod:SPELL_CAST_SUCCESS(args)
 	if args:IsSpellID(29484, 54125) then -- Web Spray
 		warnWebSprayNow:Show()
-		warnWebSpraySoon:Schedule(35)
-		timerWebSpray:Start()
+		if self:IsDifficulty("heroic25") then
+			warnWebSpraySoon:Schedule(25)
+			timerWebSpray:Start(30)
+		else
+			warnWebSpraySoon:Schedule(35)
+			timerWebSpray:Start()
+		end
 	end
 end

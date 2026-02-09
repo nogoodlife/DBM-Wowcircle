@@ -30,9 +30,12 @@ function mod:OnCombatStart(delay)
 	if self:IsDifficulty("normal25") then
 		timerLocustIn:Start(100 - delay)
 		warningLocustSoon:Schedule(90 - delay)
+	elseif self:IsDifficulty("heroic25") then
+		timerLocustIn:Start(70 - delay)
+		warningLocustSoon:Schedule(65 - delay)
 	else
 		timerLocustIn:Start(91 - delay)
-		warningLocustSoon:Schedule(76 - delay)
+		warningLocustSoon:Schedule(86 - delay)
 	end
 	timerImpale:Start(12.7-delay) -- REVIEW! variance? (25m Lordaeron 2022/10/16) - pull:12.7
 end
@@ -48,7 +51,8 @@ function mod:SPELL_CAST_START(args)
 		specialWarningLocust:Show()
 		specialWarningLocust:Play("aesoon")
 		timerLocustIn:Stop()
-		if self:IsDifficulty("normal25") then
+		timerImpale:Stop()
+		if self:IsDifficulty("normal25", "heroic25") then
 			timerLocustFade:Start(23)
 		else
 			timerLocustFade:Start(19)
@@ -70,7 +74,13 @@ function mod:SPELL_AURA_REMOVED(args)
 	if args:IsSpellID(28785, 54021)
 	and args.auraType == "BUFF" then
 		warningLocustFaded:Show()
-		timerLocustIn:Start()
-		warningLocustSoon:Schedule(62)
+		timerImpale:Start()
+		if self:IsDifficulty("heroic25") then
+			timerLocustIn:Start(75-23)
+			warningLocustSoon:Schedule(70-23)
+		else
+			timerLocustIn:Start()
+			warningLocustSoon:Schedule(75)
+		end
 	end
 end

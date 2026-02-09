@@ -5819,6 +5819,8 @@ function DBM:GetCurrentInstanceDifficulty()
 				local raidDifficulty = GetRaidDifficulty()
 				if raidDifficulty ~= difficulty and (raidDifficulty == 2 or raidDifficulty == 4) then -- extra checks due to lack of tests and no access to a timewalking server
 					return "timewalker", difficultyName.." - ", 33, maxPlayers
+				elseif raidDifficulty ~= difficulty and raidDifficulty == 3 then	-- circle naxx 10 HC
+					return "heroic10", difficultyName.." - ", 193, maxPlayers
 				else
 					if maxPlayers == 40 then
 						return "normal40", difficultyName.." - ", 186, maxPlayers
@@ -5838,7 +5840,12 @@ function DBM:GetCurrentInstanceDifficulty()
 					end
 				end
 			elseif difficulty == 2 then
-				return "normal25", difficultyName.." - ", 176, maxPlayers
+				local raidDifficulty = GetRaidDifficulty()
+				if raidDifficulty ~= difficulty then	-- circle naxx 25 HC
+					return "heroic25", difficultyName.." - ", 194, maxPlayers
+				else
+					return "normal25", difficultyName.." - ", 176, maxPlayers
+				end
 			elseif difficulty == 3 then
 				return "heroic10", difficultyName.." - ", 193, maxPlayers
 			elseif difficulty == 4 then

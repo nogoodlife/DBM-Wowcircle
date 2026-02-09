@@ -27,8 +27,8 @@ local specWarnPursue			= mod:NewSpecialWarning("SpecialPursueWarnYou", nil, nil,
 
 local timerSystemOverload		= mod:NewBuffActiveTimer(20, 62475, nil, nil, nil, 6)
 local timerFlameVents			= mod:NewCastTimer(10, 62396, nil, nil, nil, 2, nil, DBM_COMMON_L.INTERRUPT_ICON)
-local timertFlameVentsCD		= mod:NewCDTimer(19.7, 62396, nil, nil, nil, 2) -- ~0.5s variance (S3 FM Log review 2022/07/17 || 25m Lordaeron 2022/10/30) - 0.1, 20.0, 20.0, 20.1, 20.0, 20.3 || 20.3, 19.7, 20.0, 20.1
-local timerPursued				= mod:NewTargetTimer(30, 62374, nil, nil, nil, 3) -- Variance dependent on whether boss is pulled right after gate opens or not. Corrected using count. S3 FM Log review 2022/07/17 - 0.1, 11.0, 19.0, 30.0, 30.0, 30.0
+local timertFlameVentsCD		= mod:NewVarTimer("v15.6-21.8", 62396, nil, nil, nil, 2) -- v15.6-21.8 ? -- 16.67 19.28 15.91 16.16 15.80 17.49 15.70 19.34 21.82 18.24 15.66
+local timerPursued				= mod:NewTargetTimer(35, 62374, nil, nil, nil, 3) -- Variance dependent on whether boss is pulled right after gate opens or not. Corrected using count. S3 FM Log review 2022/07/17 - 0.1, 11.0, 19.0, 30.0, 30.0, 30.0
 
 -- Hard Mode
 mod:AddTimerLine(DBM_COMMON_L.HEROIC_ICON..DBM_CORE_L.HARD_MODE)
@@ -52,7 +52,7 @@ end
 
 local function CheckTowers(self, delay)
 	if DBM:UnitBuff("boss1", 64482) then -- Tower of Life
-		timerNextWardOfLife:Start(41 - delay) -- S2 VOD review
+		timerNextWardOfLife:Start(36.8 - delay)
 	end
 end
 
@@ -66,7 +66,7 @@ function mod:OnCombatStart(delay)
 	end
 	buildGuidTable(self)
 	self.vb.pursueCount = 0
-	timertFlameVentsCD:Start(20-delay) -- 25 man log review (2022/07/10 || 25m Lordaeron 2022/10/30) - 20.0 || 20.0
+	timertFlameVentsCD:Start(20-delay) -- 25HC: 20.01 20.01 20.07 20.04 20.08
 	self:Schedule(5, CheckTowers, self, delay)
 	DBM:Debug("OnCombatStart boss1 had speed: "..bossMovingSpeed)
 end
@@ -83,7 +83,7 @@ function mod:SPELL_AURA_APPLIED(args)
 	elseif spellId == 62475 then	-- Systems Shutdown / Overload
 		timerSystemOverload:Start()
 		timertFlameVentsCD:Stop()
-		timertFlameVentsCD:Start(40) -- Same for 10 and 25m (S3 FM 25HM cleu log 2022/07/16)
+		timertFlameVentsCD:Start(23) -- Same for 10 and 25m or not ?
 		specWarnSystemOverload:Show()
 		specWarnSystemOverload:Play("attacktank")
 	elseif spellId == 62374 then	-- Pursued
@@ -92,18 +92,20 @@ function mod:SPELL_AURA_APPLIED(args)
 		if firstRushPull or bossMovingSpeed ~= 0 then
 			DBM:Debug("Running Pursued timer in gate pull mode. boss1 had speed: "..bossMovingSpeed) -- 27.99370765686
 			if self.vb.pursueCount == 1 then
+				print("firstRushPull wtf111")
 				warnNextPursueSoon:Schedule(5.4)
 				timerPursued:Start(10.4, target) -- S2 Lord 2022/07/10 || S3 FM 2022/07/17 - 10.4 || 11.0
 			elseif self.vb.pursueCount == 2 then
+				rint("firstRushPull wtf222")
 				warnNextPursueSoon:Schedule(14.0)
 				timerPursued:Start(19.0, target) -- S2 Lord 2022/07/10 || S3 FM 2022/07/17 - 19.6 || 19.0
 			else
-				warnNextPursueSoon:Schedule(25)
+				warnNextPursueSoon:Schedule(30)
 				timerPursued:Start(target)
 			end
 		else
 			DBM:Debug("Running Pursued timer in stationary pull mode. boss1 had speed: "..bossMovingSpeed) -- 0
-			warnNextPursueSoon:Schedule(25)
+			warnNextPursueSoon:Schedule(30)
 			timerPursued:Start(target)
 		end
 		if target then
@@ -128,6 +130,7 @@ function mod:SPELL_AURA_REMOVED(args)
 	elseif spellId == 62374 then	-- Pursued
 		local target = guids[args.destGUID]
 		timerPursued:Stop(target)
+		warnNextPursueSoon:Cancel()
 	end
 end
 

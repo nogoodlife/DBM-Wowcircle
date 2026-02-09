@@ -135,10 +135,11 @@ local function EqWKT(self)
 end
 
 local aurastoRemove = { -- ordered by aggressiveness {degree, classFilter}
-	-- 1 (Gift)
+	-- 1 (Gift)									-- add freedom and bubble ?
 	[48469] = {1, nil}, -- Mark of the Wild
 	[48470] = {1, nil}, -- Gift of the Wild
 	[69381] = {1, nil}, -- Drums of the Wild
+	[48707] = {1, "DEATHKNIGHT"}, -- Anti-Magic Shell
 	-- 2 (CCFree)
 	[48169] = {2, nil}, -- Shadow Protection
 	[48170] = {2, nil}, -- Prayer of Shadow Protection

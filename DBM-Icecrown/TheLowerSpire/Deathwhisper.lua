@@ -84,7 +84,7 @@ local timerSummonSpiritCD			= mod:NewCDTimer(13.5, 71426, nil, true, nil, 3, nil
 local timerFrostboltCast			= mod:NewCastTimer(2, 72007, nil, "HasInterrupt")
 local timerFrostboltVolleyCD		= mod:NewCDTimer(20, 72905, nil, nil, nil, 2) -- 25hc = 20s
 local timerTouchInsignificance		= mod:NewTargetTimer(30, 71204, nil, "Tank|Healer", nil, 5)
-local timerTouchInsignificanceCD	= mod:NewCDTimer(6, 71204, nil, "Tank|Healer", nil, 5, nil, nil, true) -- 6.38, 6.39, 6.17, 7.50, 7.38, 8.30 | 6.59 7.69 8.09 8.25 9.85,  keep "keep" arg, make varCD+keep later
+local timerTouchInsignificanceCD	= mod:NewCDTimer(6, 71204, nil, "Tank|Healer", nil, 5, nil, nil, true) -- 6.38, 6.39, 6.17, 7.50, 7.38, 8.30 | 6.59 7.69 8.09 8.25 9.85,  keep "keep" arg, make varTimer+keep later
 
 local soundWarnSpirit				= mod:NewSound(71426)
 
@@ -166,10 +166,11 @@ local function EqW(self)
 end
 
 local aurastoRemove = { -- ordered by aggressiveness {degree, classFilter}
-	-- 1 (Gift)
+	-- 1 (Gift)									-- add freedom and bubble ?
 	[48469] = {1, nil}, -- Mark of the Wild
 	[48470] = {1, nil}, -- Gift of the Wild
 	[69381] = {1, nil}, -- Drums of the Wild
+	[48707] = {1, "DEATHKNIGHT"}, -- Anti-Magic Shell
 	-- 2 (CCFree)
 	[48169] = {2, nil}, -- Shadow Protection
 	[48170] = {2, nil}, -- Prayer of Shadow Protection
