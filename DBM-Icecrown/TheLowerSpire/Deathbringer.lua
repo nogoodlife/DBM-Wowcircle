@@ -47,8 +47,8 @@ local specwarnMark			= mod:NewSpecialWarningYou(72444, nil, 28836, nil, 1, 2)
 local specwarnRuneofBlood	= mod:NewSpecialWarningTaunt(72410, nil, nil, nil, 1, 2)
 local specwarnRuneofBloodYou= mod:NewSpecialWarningYou(72410, "Tank")
 
-local timerRuneofBlood		= mod:NewNextTimer(19.5, 72410, nil, "Tank|Healer", nil, 5, nil, DBM_COMMON_L.TANK_ICON) -- 19.59, 19.64
-local timerBoilingBlood		= mod:NewCDTimer(15.5, 72385, nil, "Healer", nil, 5, nil, DBM_COMMON_L.HEALER_ICON, true) -- 2026.01.11 25hc = 15.7/15.6/19.5/19.6
+local timerRuneofBlood		= mod:NewNextTimer(19.5, 72410, nil, "Tank|Healer", nil, 5, nil, DBM_COMMON_L.TANK_ICON) -- 19.59, 19.64 | 19.59, 19.55, 19.57, 19.51
+local timerBoilingBlood		= mod:NewVarTimer("v15.5-19.5", 72385, nil, "Healer", nil, 5, nil, DBM_COMMON_L.HEALER_ICON, true) -- cd 15.97, 19.19 | 15.93, 19.00, 17.13, 15.80
 local timerBloodNova		= mod:NewCDTimer(20, 72378, nil, nil, nil, 2, nil, nil, true) -- 2026.01.11 25hc = 20
 
 --local soundSpecWarnMark		= mod:NewSound(72293, nil, canShadowmeld or canVanish)
@@ -126,8 +126,8 @@ function mod:OnCombatStart(delay)
 	timerCallBloodBeast:Start(-delay)
 	warnAddsSoon:Schedule(35-delay)
 	timerBloodNova:Start(-delay) -- 2026.01.11 25hc = 20
-	timerRuneofBlood:Start(19.1-delay) -- 2026.01.11 25hc = 19.177 ? 19?
-	timerBoilingBlood:Start(19-delay) -- 2026.01.11 25hc = 19
+	timerRuneofBlood:Start(19.2-delay)
+	timerBoilingBlood:Start(19.1-delay)
 	self.vb.warned_preFrenzy = false
 	self.vb.boilingBloodIcon = 1
 	self.vb.beastIcon = 8
@@ -225,7 +225,7 @@ function mod:SPELL_SUMMON(args)
 			)
 		end
 		if self.Options.BeastIcons then
-			self:ScanForMobs(args.destGUID, 2, self.vb.beastIcon, 1, nil, 10, "BeastIcons")
+			self:ScanForMobs(args.destGUID, 2, self.vb.beastIcon, 1, nil, 10, "BeastIcons") -- scanId, iconSetMethod, mobIcon, maxIcon, scanTable, scanningTime, optionName, allowFriendly, skipMarked, allAllowed, wipeGUID
 		end
 		self.vb.beastIcon = self.vb.beastIcon - 1
 	end

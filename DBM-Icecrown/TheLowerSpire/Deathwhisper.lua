@@ -57,7 +57,7 @@ local warnDominateMind				= mod:NewTargetNoFilterAnnounce(71289, 3)
 local specWarnDeathDecay			= mod:NewSpecialWarningGTFO(71001, nil, nil, nil, 1, 8)
 
 local timerDominateMind				= mod:NewBuffActiveTimer(12, 71289, nil, nil, nil, 5)
-local timerDominateMindCD			= mod:NewCDTimer(40, 71289, nil, nil, nil, 3, nil, nil, true) -- wowcircle 25nm ALWAYS 40s CD INSTEAD OF 30s restart on phase2?
+local timerDominateMindCD			= mod:NewCDCountTimer(40, 71289, nil, nil, nil, 3, nil, nil, true, 2, 3) -- NewCDCountTimer(timer, spellId, timerText, optionDefault, optionName, colorType, texture, inlineIcon, keep, countdown, countdownMax)
 
 local soundSpecWarnDominateMind		= mod:NewSound(71289, nil, canShadowmeld or canVanish)
 
@@ -84,14 +84,15 @@ local timerSummonSpiritCD			= mod:NewCDTimer(13.5, 71426, nil, true, nil, 3, nil
 local timerFrostboltCast			= mod:NewCastTimer(2, 72007, nil, "HasInterrupt")
 local timerFrostboltVolleyCD		= mod:NewCDTimer(20, 72905, nil, nil, nil, 2) -- 25hc = 20s
 local timerTouchInsignificance		= mod:NewTargetTimer(30, 71204, nil, "Tank|Healer", nil, 5)
-local timerTouchInsignificanceCD	= mod:NewCDTimer(6, 71204, nil, "Tank|Healer", nil, 5, nil, nil, true) -- 6.38, 6.39, 6.17, 7.50, 7.38, 8.30 | 6.59 7.69 8.09 8.25 9.85,  keep "keep" arg, make varTimer+keep later
+local timerTouchInsignificanceCD	= mod:NewCDTimer(6, 71204, nil, "Tank|Healer", nil, 5, nil, nil, true) -- keep "keep" arg, make varTimer later ?
 
 local soundWarnSpirit				= mod:NewSound(71426)
 
 local dominateMindTargets = {}
 mod.vb.dominateMindIcon = 1
 local shieldName = DBM:GetSpellInfo(70842)
-local summonSpiritName = DBM:GetSpellInfo(71426)
+--local summonSpiritName = DBM:GetSpellInfo(71426)	-- Призыв духа ??? maybe 10nm/10HC ?
+local summonSpiritName = DBM:GetSpellInfo(72478)	-- Призыв духов (25HC/25nm)
 local playerHadTarget = false
 
 local playerClass = select(2, UnitClass("player"))
@@ -448,7 +449,7 @@ function mod:SPELL_AURA_REMOVED(args)
 		warnPhase2:Show()
 		warnPhase2:Play("ptwo")
 		timerSummonSpiritCD:Start(13) -- 13.5/15s after phase2 start
-		timerTouchInsignificanceCD:Start(6.5) -- var timer? 6.38
+		timerTouchInsignificanceCD:Start()
 		timerFrostboltVolleyCD:Start(20) -- 25hc = 20s
 		if self.Options.InfoFrame then
 			DBM.InfoFrame:Hide()

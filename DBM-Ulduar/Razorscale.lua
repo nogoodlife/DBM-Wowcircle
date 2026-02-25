@@ -33,9 +33,9 @@ local specWarnDevouringFlameNear	= mod:NewSpecialWarningClose(64733, false, nil,
 local yellDevouringFlame			= mod:NewYell(64733)
 
 local timerTurret1					= mod:NewTimer(54, "timerTurret1", 48642, nil, nil, 5, DBM_COMMON_L.IMPORTANT_ICON) -- Fixed timer: 54s. Then +21 on every subsequent turret. (Lordaeron: 25m review2022/07/10 || 10m [2025-09-06]@[20:43:48] || 25m [2025-10-20]@[19:41:45]) - "?-Harpoon Turret is ready for use!-npc:Razorscale Controller = pull:54.05/[Stage 1/0.00] 54.05, 21.05, 102.27, 21.08, Stage 2/34.38" || "?-Harpoon Turret is ready for use!-npc:Razorscale Controller = pull:54.08/[Stage 1/0.00] 54.08, 21.02, 21.07, 21.05, Stage 2/49.28"
-local timerTurret2					= mod:NewTimer(75, "timerTurret2", 48642, nil, nil, 5, DBM_COMMON_L.IMPORTANT_ICON)
-local timerTurret3					= mod:NewTimer(96, "timerTurret3", 48642, nil, nil, 5, DBM_COMMON_L.IMPORTANT_ICON)
-local timerTurret4					= mod:NewTimer(117, "timerTurret4", 48642, nil, nil, 5, DBM_COMMON_L.IMPORTANT_ICON)
+local timerTurret2					= mod:NewTimer(74, "timerTurret2", 48642, nil, nil, 5, DBM_COMMON_L.IMPORTANT_ICON)
+local timerTurret3					= mod:NewTimer(94.5, "timerTurret3", 48642, nil, nil, 5, DBM_COMMON_L.IMPORTANT_ICON)
+local timerTurret4					= mod:NewTimer(114.5, "timerTurret4", 48642, nil, nil, 5, DBM_COMMON_L.IMPORTANT_ICON)
 
 -- Stage Two
 mod:AddTimerLine(DBM_CORE_L.SCENARIO_STAGE:format(2))
@@ -79,8 +79,8 @@ function mod:OnCombatStart(delay)
 		timerTurret1:Start(-delay)
 		timerTurret2:Start(-delay)
 	else
-		warnTurretsReadySoon:Schedule(96-delay)
-		warnTurretsReady:Schedule(117-delay)
+		warnTurretsReadySoon:Schedule(94.5-delay)
+		warnTurretsReady:Schedule(114.5-delay)
 		timerTurret1:Start(-delay) -- 54sec
 		timerTurret2:Start(-delay) -- +21
 		timerTurret3:Start(-delay) -- +21
@@ -142,7 +142,7 @@ function mod:CHAT_MSG_RAID_BOSS_EMOTE(emote)
 		timerTurret3:Stop()
 		timerTurret4:Stop()
 		timerGrounded:Stop()
-		timerFuseArmorCD:Start(19) -- REVIEW! variance? (25 man log review 2022/07/10) - 19
+		timerFuseArmorCD:Start(15) -- 25nm: 15.05
 	end
 end
 

@@ -96,7 +96,7 @@ function mod:SPELL_AURA_APPLIED(args)
 				warnNextPursueSoon:Schedule(5.4)
 				timerPursued:Start(10.4, target) -- S2 Lord 2022/07/10 || S3 FM 2022/07/17 - 10.4 || 11.0
 			elseif self.vb.pursueCount == 2 then
-				rint("firstRushPull wtf222")
+				print("firstRushPull wtf222")
 				warnNextPursueSoon:Schedule(14.0)
 				timerPursued:Start(19.0, target) -- S2 Lord 2022/07/10 || S3 FM 2022/07/17 - 19.6 || 19.0
 			else

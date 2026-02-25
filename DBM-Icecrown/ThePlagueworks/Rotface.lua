@@ -33,11 +33,11 @@ local specWarnLittleOoze		= mod:NewSpecialWarning("SpecWarnLittleOoze", false, n
 local specWarnVileGas			= mod:NewSpecialWarningYou(72272, nil, nil, nil, 1, 2, 3) -- Heroic Ability
 
 local timerStickyOoze			= mod:NewNextTimer(15, 69774, nil, "Tank", nil, 5, nil, DBM_COMMON_L.TANK_ICON)
-local timerWallSlime			= mod:NewNextTimer(20.5, 69789) -- 20.5? 20.4? 20.6?
-local timerSlimeSpray			= mod:NewNextTimer(25, 69508, nil, nil, nil, 3) -- 25hc = 25.2/27,5/25.4/28.9 -- NEED KEEP ARG?
+local timerWallSlime			= mod:NewNextTimer(20.5, 69789) -- cd 20.56 20.57 20.58 20.55 | 20.58 20.55 20.51
+local timerSlimeSpray			= mod:NewNextTimer(25, 69508, nil, nil, nil, 3) -- NEED KEEP ARG? varTimer? -- cd 25.75, 25.08 | 27.29, 26.82, 27.62, 29.93, 27.91
 local timerMutatedInfection		= mod:NewTargetTimer(12, 69674, nil, nil, nil, 5)
 local timerOozeExplosion		= mod:NewCastTimer(4, 69839, nil, nil, nil, 2, nil, DBM_COMMON_L.MYTHIC_ICON, nil, 3)
-local timerVileGasCD			= mod:NewCDTimer(30, 72272, nil, nil, nil, 3) -- 2025.12.20 25hc = 32,8/31,2/33.4 -- NEED KEEP ARG?
+local timerVileGasCD			= mod:NewCDTimer(30, 72272, nil, nil, nil, 3) -- NEED KEEP ARG? -- cd 29.73 29.77 35.44?? 30.06
 
 
 mod:AddRangeFrameOption(10, 72272, "Ranged")
@@ -49,7 +49,7 @@ mod.vb.InfectionIcon = 1
 
 
 function mod:OnCombatStart(delay)
-	timerWallSlime:Start(25-delay) -- 25mn = 25? 26?
+	timerWallSlime:Start(26-delay)
 	timerSlimeSpray:Start(15-delay) -- wowcircle 25hc = 15, 25mn =15
 	if self:IsHeroic() then
 		timerVileGasCD:Start(24.5-delay) -- 25hc = 24.5?

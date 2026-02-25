@@ -369,7 +369,8 @@ L:SetMiscLocalization({
 	FrameHide				= "Скрыть окно",
 	FrameClose				= "Закрыть",
 	FrameGUIDesc			= "Рамка Вал'Кира",
-	FrameGUIMoveMe			= "Переместить каркас Вал'Кира"
+	FrameGUIMoveMe			= "Переместить каркас Вал'Кира",
+	ValkYellSummon			= "Валь'кира, твой господин зовет!"
 })
 
 -------------

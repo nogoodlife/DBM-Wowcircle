@@ -73,7 +73,7 @@ local warnChokingGasBomb			= mod:NewSpellAnnounce(71255, 3, nil, "Melee")		-- Ph
 local specWarnChokingGasBomb		= mod:NewSpecialWarningMove(71255, "Melee", nil, nil, 1, 2)
 local specWarnMalleableGooCast		= mod:NewSpecialWarningSpell(72295, "Ranged", nil, nil, 2, 2)
 
-local timerChokingGasBombCD			= mod:NewCDTimer(36, 71255, nil, nil, nil, 3, nil, nil, true) -- 2025.12.27 25hc = 36?
+local timerChokingGasBombCD			= mod:NewCDTimer(36, 71255, nil, nil, nil, 3, nil, nil, true)
 local timerChokingGasBombExplosion	= mod:NewCastTimer(12, 71279, nil, nil, nil, 2)
 local timerMalleableGooCD			= mod:NewNextTimer(20, 72295, nil, nil, nil, 3)
 
@@ -126,7 +126,7 @@ local function NextPhase(self)
 		timerMalleableGooCD:Start(10.5)
 		soundMalleableGooSoon:Schedule(10.5-3, "Interface\\AddOns\\DBM-Core\\sounds\\RaidAbilities\\malleable_soon.mp3")
 		timerChokingGasBombCD:Start(20.5)
-		soundChokingGasSoon:Schedule(20.5-3, "Interface\\AddOns\\DBM-Core\\sounds\\RaidAbilities\\choking_soon.mp3")
+		soundChokingGasSoon:Schedule(20.5-5, "Interface\\AddOns\\DBM-Core\\sounds\\RaidAbilities\\choking_soon.mp3")
 		warnChokingGasBombSoon:Schedule(20.5-5)
 		timerSlimePuddleCD:Start(15.5)
 		if self:IsHeroic() then
@@ -138,7 +138,7 @@ local function NextPhase(self)
 		timerMalleableGooCD:Start(17.5)
 		soundMalleableGooSoon:Schedule(17.5-3, "Interface\\AddOns\\DBM-Core\\sounds\\RaidAbilities\\malleable_soon.mp3")
 		timerChokingGasBombCD:Start(20.5)
-		soundChokingGasSoon:Schedule(20.5-3, "Interface\\AddOns\\DBM-Core\\sounds\\RaidAbilities\\choking_soon.mp3")
+		soundChokingGasSoon:Schedule(20.5-5, "Interface\\AddOns\\DBM-Core\\sounds\\RaidAbilities\\choking_soon.mp3")
 		warnChokingGasBombSoon:Schedule(20.5-5)
 		timerSlimePuddleCD:Start(23.5)
 		if self:IsHeroic() then
@@ -250,7 +250,7 @@ function mod:SPELL_CAST_SUCCESS(args)
 		specWarnChokingGasBomb:Show()
 		soundSpecWarnChokingGasBomb:Play("Interface\\AddOns\\DBM-Core\\sounds\\RaidAbilities\\choking.mp3")
 		soundChokingGasSoon:Cancel()
-		soundChokingGasSoon:Schedule(36-3, "Interface\\AddOns\\DBM-Core\\sounds\\RaidAbilities\\choking_soon.mp3") -- 2025.12.27 25hc cd = 36
+		soundChokingGasSoon:Schedule(36-5, "Interface\\AddOns\\DBM-Core\\sounds\\RaidAbilities\\choking_soon.mp3")
 		timerChokingGasBombCD:Start()
 		timerChokingGasBombExplosion:Start()
 		warnChokingGasBombSoon:Schedule(36-5)

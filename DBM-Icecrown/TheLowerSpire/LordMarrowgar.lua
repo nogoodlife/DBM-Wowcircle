@@ -59,13 +59,14 @@ end
 
 function mod:SPELL_AURA_APPLIED(args)
 	if args.spellId == 69076 then						-- Bone Storm (Whirlwind)
+		timerBoneSpike:Resume()
 		specWarnWhirlwind:Show()
 		specWarnWhirlwind:Play("justrun")
 		if self:IsHeroic() then
 			timerWhirlwind:Show(30)			-- As of 16/11/2022, Warmane fixed this timer - 30s
 		else
 			timerWhirlwind:Show()			-- REVIEW! After 16/11/2022, needs to be rechecked if it's fixed on 20s. || 30 on Norm (10N Icecrown 2022/08/25) - pull:52.2
-			timerBoneSpike:Cancel()						-- He doesn't do Bone Spike Graveyard during Bone Storm on normal
+			timerBoneSpike:Cancel()			-- there is no Bone Spike Graveyard during Bone Storm on normal ?
 		end
 	end
 end
@@ -91,8 +92,9 @@ function mod:SPELL_CAST_START(args)
 		timerBoneSpikeUp:Start()
 		soundBoneSpike:Play("Interface\\AddOns\\DBM-Core\\sounds\\RaidAbilities\\Bone_Spike_cast.mp3")
 	elseif args.spellId == 69076 then
+		timerBoneSpike:Pause()
 		preWarnWhirlwind:Schedule(85)
-		timerWhirlwindCD:Start() -- As of 16/11/2022, Warmane fixed this timer (Transcriptor snippets above) || On Jul 3, 2021 I changed this to only trigger on Bone Storm finish, although looking at TC script this might be slightly innacurate since it reschedules on EVENT_WARN_BONE_STORM... Keep a close eye on this with more log data and also VOD review (25H Lordaeron 2022/09/14) - [-36s cf] 33.4, 32.7 || [no cf] 69.1, 69.0
+		timerWhirlwindCD:Start()
 		timerWhirlwindStart:Start()
 		soundBoneStorm:Play("Interface\\AddOns\\DBM-Core\\sounds\\RaidAbilities\\Bone_Storm_cast.mp3")
 	end

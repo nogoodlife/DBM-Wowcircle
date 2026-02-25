@@ -139,7 +139,7 @@ local specWarnValkyrLow				= mod:NewSpecialWarning("SpecWarnValkyrLow", nil, nil
 local timerSoulreaper				= mod:NewTargetTimer(5.1, 69409, nil, "Tank|Healer|TargetedCooldown")
 local timerSoulreaperCD				= mod:NewCDCountTimer(34.0, 69409, nil, nil, nil, 5, nil, DBM_COMMON_L.TANK_ICON) --need KEEP ? cd phase2 34.25, 34.18, cd phase3/leftFrostmourne 36.27
 local timerDefileCD					= mod:NewCDCountTimer(32, 72762, nil, nil, nil, 3, nil, DBM_COMMON_L.DEADLY_ICON, true, 1, 4) -- ~3s variance [32.83-35.03]. Added "keep" arg, but might need sync for Normal Harvest Soul since CLEU could be OOR
-local timerSummonValkyr				= mod:NewCDCountTimer(48.5, 69037, nil, nil, nil, 1, 71844, DBM_COMMON_L.DAMAGE_ICON, true, 2, 3) -- Added "keep" arg, countdown voice2, countdownMax3 ?
+local timerSummonValkyr				= mod:NewVarCountTimer("v47.5-49.5", 69037, nil, nil, nil, 1, 71844, DBM_COMMON_L.DAMAGE_ICON, true, 2, 3) -- Added "keep" arg, countdown voice2, countdownMax3 ?
 
 local soundDefileOnYou				= mod:NewSoundYou(72762)
 local soundSoulReaperSoon			= mod:NewSoundSoon(69409, nil, "Tank|Healer|TargetedCooldown")
@@ -207,7 +207,7 @@ local plagueHop = DBM:GetSpellInfo(70338)--Hop spellID only, not cast one.
 -- local soulshriek = GetSpellInfo(69242)
 local plagueExpires = {}
 local grabIcon = 2
-local lastValk = 0
+--local lastValk = 0
 --	local maxValks = mod:IsDifficulty("normal25", "heroic25") and 3 or 1
 local warnedAchievement = false
 local lastPlague
@@ -290,7 +290,7 @@ local function NextPhase(self, delay)
 		if self.Options.ShowFrame then
 			self:CreateFrame()
 		end
-		timerSummonValkyr:Start(16.5, self.vb.valkyrWaveCount+1) --16.50
+		timerSummonValkyr:Start(15.5, self.vb.valkyrWaveCount+1) --16.50
 		timerSoulreaperCD:Start(31.5, self.vb.soulReaperCount+1) --phase2+31.46 31.67
 		soundSoulReaperSoon:Schedule(32-2.5, "Interface\\AddOns\\DBM-Core\\sounds\\RaidAbilities\\soulreaperSoon.mp3")
 		timerDefileCD:Start(37, self.vb.defileCount+1) -- phase2+36.96 37.02
@@ -614,7 +614,7 @@ end
 function mod:SPELL_SUMMON(args)
 	local spellId = args.spellId
 	if spellId == 69037 then -- Summon Val'kyr
-		if time() - lastValk > 15 then -- show the warning and timer just once for all three summon events
+		--[[if time() - lastValk > 15 then -- show the warning and timer just once for all three summon events
 			table.wipe(valkyrTargets)	-- reset valkyr cache for next round
 			grabIcon = 2
 			self.vb.valkIcon = 2
@@ -622,7 +622,7 @@ function mod:SPELL_SUMMON(args)
 			warnSummonValkyr:Show(self.vb.valkyrWaveCount)
 			timerSummonValkyr:Start(nil, self.vb.valkyrWaveCount+1)
 			lastValk = time()
-			------scanValkyrTargets(self)
+			----scanValkyrTargets(self)
 			--if self.Options.ValkyrIcon then
 			--	local cid = self:GetCIDFromGUID(args.destGUID)
 			--	if self:IsDifficulty("normal25", "heroic25") then
@@ -631,13 +631,13 @@ function mod:SPELL_SUMMON(args)
 			--		self:ScanForMobs(args.destGUID, 1, 2, 1, nil, 20, "ValkyrIcon")
 			--	end
 			--end
-		end
+		end--]]
 	
 		if self.Options.ShowFrame then
 			self:CreateFrame()
 		end
 		if self.Options.ValkyrIcon then
-			self:ScanForMobs(args.destGUID, 2, self.vb.valkIcon, 1, nil, 12, "ValkyrIcon") --12s scan time?
+			self:ScanForMobs(args.destGUID, 2, self.vb.valkIcon, 1, nil, 12, "ValkyrIcon") -- scanId, iconSetMethod, mobIcon, maxIcon, scanTable, scanningTime, optionName, allowFriendly, skipMarked, allAllowed, wipeGUID
 		end
 		self.vb.valkIcon = self.vb.valkIcon + 1
 		
@@ -682,6 +682,13 @@ function mod:CHAT_MSG_MONSTER_YELL(msg)
 		if self.Options.ShowFrame then
 			self:CreateFrame()
 		end
+	elseif msg == L.ValkYellSummon or msg:find(L.ValkYellSummon) then
+		table.wipe(valkyrTargets)	-- reset valkyr cache for next round
+		grabIcon = 2
+		self.vb.valkIcon = 2
+		self.vb.valkyrWaveCount = self.vb.valkyrWaveCount + 1
+		warnSummonValkyr:Show(self.vb.valkyrWaveCount)
+		timerSummonValkyr:Start(nil, self.vb.valkyrWaveCount+1)
 	end
 end
 

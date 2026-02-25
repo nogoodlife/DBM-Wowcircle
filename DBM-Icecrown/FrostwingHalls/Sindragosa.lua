@@ -421,6 +421,7 @@ function mod:UNIT_TARGET(uId)
 	-- Attempt to catch when she lands by checking for Sindragosa's target being a raid member
 	if UnitExists(uId.."target") then --if boss1target exists then SindragosaLanded ?
 		self:SendSync("SindragosaLanded") -- Sync landing with raid since UNIT_TARGET:boss1 event requires Sindragosa to be target/focus, which not all members do
+		DBM:Debug("UNIT_TARGET boss1 fired. Thats a proper Landing Phase")
 	end
 end
 
@@ -438,7 +439,7 @@ function mod:CHAT_MSG_MONSTER_YELL(msg)
 		timerNextAirphase:Start()
 		timerNextGroundphase:Start()
 		warnGroundphaseSoon:Schedule(40.5)
-		self:Schedule(45.3, landingPhaseWorkaround, self, 1) -- make bigger shedule to check if "UNIT_TARGET boss1" even works --giving a 0.2s cushion from 45s (max I have on logs is 45.1s). 1s comes from 45.2-44.2s from ground timer
+		self:Schedule(46, landingPhaseWorkaround, self, 1) -- giving a 1s cushion from 45s. What proper ground timer for circle?
 		self:RegisterShortTermEvents(
 			"UNIT_TARGET boss1"
 		)

@@ -368,7 +368,8 @@ L:SetMiscLocalization({
 	FrameHide				= "Hide Frame",
 	FrameClose				= "Close",
 	FrameGUIDesc			= "Val'Kyr Frame",
-	FrameGUIMoveMe			= "Move Val'Kyr Frame"
+	FrameGUIMoveMe			= "Move Val'Kyr Frame",
+	ValkYellSummon			= "Val'kyr, your master calls!"
 })
 
 -------------
