@@ -99,13 +99,10 @@ local specWarnTrapNear				= mod:NewSpecialWarningClose(73539, nil, nil, nil, 3, 
 local specWarnEnrage				= mod:NewSpecialWarningSpell(72143, "Tank")
 local specWarnEnrageLow				= mod:NewSpecialWarningSpell(28747, false)
 
---NewTimer / NewVarTimer / NewNextTimer / NewCDTimer args
---timer, spellId, timerText, optionDefault, optionName, colorType, texture, inlineIcon, keep, countdown, countdownMax, ...
-
 local timerInfestCD					= mod:NewVarCountTimer("v21-24", 70541, nil, "Healer|RaidCooldown", nil, 5, nil, DBM_COMMON_L.HEALER_ICON, true) -- NewVarCountTimer "v21-24" ? stage1 cd 23.88, 23.35, 23.71, 21.66 | stage2 cd 22.61, 22.05, 23.89, 21.05
 local timerNecroticPlagueCleanse	= mod:NewTimer(5, "TimerNecroticPlagueCleanse", 70337, "Healer", nil, 5, DBM_COMMON_L.HEALER_ICON, nil, nil, nil, nil, nil, nil, 70337)
 local timerNecroticPlagueCD			= mod:NewCDTimer(30, 70337, nil, nil, nil, 3, nil, DBM_COMMON_L.DISEASE_ICON, true) -- 3s variance [30.1-32.9] Added "keep" arg. (10N Icecrown 2022/08/20 || 10N Icecrown 2022/08/25 || 25H Lordaeron 2022/09/03) - 32.8, 31.6 ; 32.7 ; 31.2;  31.7, 32.7 || 30.2 || 32.3, 32.9 ; 31.3, 31.9 ; 32.9, 30.4 ; 30.7, 31.7 ; 30.1, 30.2 ; 32.6, 31.2 ; 31.1 ; 32.5, 30.3, 31.7
-local timerEnrageCD					= mod:NewCDCountTimer("d20", 72143, nil, "Tank|RemoveEnrage", nil, 5, nil, DBM_COMMON_L.ENRAGE_ICON--[[, true]]) -- String timer starting with "d" means "allowDouble". 5s variance [20.1-24.7]. Disabled "keep" arg since cast can be stun-skipped. (25H Lordaeron 2022/09/03) - 20.5, 24.7
+local timerEnrageCD					= mod:NewCDCountTimer("d20", 72143, nil, "Tank|RemoveEnrage", nil, 5, nil, DBM_COMMON_L.ENRAGE_ICON--[[, true]]) -- String timer starting with "d" means "allowDouble". Disabled "keep" arg since cast can be stun-skipped.
 local timerShamblingHorror			= mod:NewNextTimer(60, 70372, nil, nil, nil, 1)
 local timerDrudgeGhouls				= mod:NewNextTimer(30, 70358, nil, nil, nil, 1)
 local timerTrapCD					= mod:NewNextTimer(15, 73539, nil, nil, nil, 3, nil, DBM_COMMON_L.DEADLY_ICON, nil, 1, 4) -- 16.03, 15.08, 15.09, 16.81, 15.02

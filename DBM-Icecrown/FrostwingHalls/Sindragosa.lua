@@ -49,7 +49,7 @@ local specWarnChilledtotheBone	= mod:NewSpecialWarningStack(70106, nil, mod:IsHe
 local specWarnBlisteringCold	= mod:NewSpecialWarningRun(70123, nil, nil, nil, 4, 2)
 
 local timerNextAirphase			= mod:NewTimer(120, "TimerNextAirphase", 43810, nil, nil, 6) -- Fixed timer on Air Yell: 120s
-local timerNextGroundphase		= mod:NewTimer(44.2, "TimerNextGroundphase", 43810, nil, nil, 6)
+local timerNextGroundphase		= mod:NewTimer("v44.2-46.5", "TimerNextGroundphase", 43810, nil, nil, 6)
 local timerNextFrostBreath		= mod:NewVarTimer("v20-25", 69649, nil, "Tank|Healer", nil, 5, nil, DBM_COMMON_L.TANK_ICON, true) --circle 25hc 20.1/22.4/24.9 also can be delayed by IcyGrip+BlistreingCold
 
 --NewTimer / NewVarTimer / NewNextTimer / NewCDTimer args
@@ -59,7 +59,7 @@ local timerNextBlisteringCold	= mod:NewVarTimer("v66-67.5", 70123, nil, nil, nil
 local timerNextBeacon			= mod:NewNextCountTimer(16, 70126, nil, nil, nil, 3, nil, DBM_COMMON_L.DEADLY_ICON)
 local timerBeaconIncoming		= mod:NewTargetTimer("d7", 70126, nil, nil, nil, 3) -- One incoming timer for each target
 local timerBlisteringCold		= mod:NewCastTimer(5, 70123, nil, nil, nil, 2)
-local timerUnchainedMagic		= mod:NewCDTimer(33.5, 69762, nil, nil, nil, 3) -- 33.5
+local timerUnchainedMagic		= mod:NewVarTimer("v31.5-35", 69762, nil, nil, nil, 3)
 local timerInstability			= mod:NewBuffFadesTimer(5, 69766, nil, nil, nil, 5)
 local timerChilledtotheBone		= mod:NewBuffFadesTimer(8, 70106, nil, nil, nil, 5)
 local timerTailSmash			= mod:NewCDTimer(29, 71077, nil, nil, nil, 2, nil, nil, true) -- cd 29.19 29.18 | phase2 cd 32.00 ? check if var timer needed ?
@@ -189,8 +189,8 @@ end
 local function landingPhaseWorkaround(self, timeOffset)
 	DBM:Debug("UNIT_TARGET boss1 didn't fire. Landing Phase scheduled")
 	self:SetStage(1)
-	if timeOffset then print("timeOffset = "..timeOffset) end
-	timerUnchainedMagic:Start(13-timeOffset) -- 13.84 13.13
+	print("Landing Phase scheduled")
+	timerUnchainedMagic:Start(sformat("v%s-%s", 12.5-timeOffset, 13.9-timeOffset))
 	timerTailSmash:Start(20-timeOffset) -- 20.09
 	timerNextBlisteringCold:Start(sformat("v%s-%s", 37-timeOffset, 38.5-timeOffset)) -- SindragosaLanded+38.74 | -1.5=37.24 --is it always borked by first FrostBreath or just random?
 	self:UnregisterShortTermEvents()
@@ -211,9 +211,9 @@ function mod:OnCombatStart(delay)
 	self:SetStage(1)
 	berserkTimer:Start(-delay)
 	timerNextAirphase:Start(50-delay)
-	timerNextBlisteringCold:Start(sformat("v%s-%s", 33.5-delay, 35-delay)) -- blistering cold spell_cast_start = pull+36.42 | -1.5=34.92  = IcyGrip (no event on circle)
+	timerNextBlisteringCold:Start(sformat("v%s-%s", 33.5-delay, 36.5-delay)) -- blistering cold spell_cast_start = pull+36.42 | -1.5=34.92  = IcyGrip (no event on circle)
 	timerTailSmash:Start(20-delay)
-	timerUnchainedMagic:Start(10.5-delay) -- 11.18 10.83
+	timerUnchainedMagic:Start(sformat("v%s-%s", 10.5-delay, 12.5-delay))
 	self.vb.warned_P2 = false
 	self.vb.warnedfailed = false
 	table.wipe(beaconTargets)
@@ -439,9 +439,9 @@ function mod:CHAT_MSG_MONSTER_YELL(msg)
 		timerNextAirphase:Start()
 		timerNextGroundphase:Start()
 		warnGroundphaseSoon:Schedule(40.5)
-		self:Schedule(46, landingPhaseWorkaround, self, 1) -- giving a 1s cushion from 45s. What proper ground timer for circle?
+		self:Schedule(46.5, landingPhaseWorkaround, self, 1) -- giving a 1s cushion from 45.5s. -- proper landing 45.22 45.77 45.81 44.27 44.56
 		self:RegisterShortTermEvents(
-			"UNIT_TARGET boss1"
+			"UNIT_TARGET boss1" -- this event fired on landing only if boss in your target or focus, thats why we need sync
 		)
 	elseif (msg == L.YellPhase2 or msg:find(L.YellPhase2)) or (msg == L.YellPhase2Dem or msg:find(L.YellPhase2Dem)) then
 		self:SetStage(2)
@@ -464,9 +464,9 @@ function mod:OnSync(msg)
 	if msg == "SindragosaLanded" and self:GetStage(1.5) then
 		self:Unschedule(landingPhaseWorkaround)
 		self:SetStage(1)
-		timerUnchainedMagic:Start(13) -- 13.84 13.13
+		timerUnchainedMagic:Start("v12.5-13.9")
 		timerTailSmash:Start(20) -- 20.09
-		timerNextBlisteringCold:Start("v37-38.5") -- SindragosaLanded+38.74 | -1.5=37.24 --is it always borked by first FrostBreath or just random?
+		timerNextBlisteringCold:Start("v37-40") -- SindragosaLanded+v38.5-40 | -1.5=v37-40 --is it always borked by first FrostBreath or just random?
 		self:UnregisterShortTermEvents()
 	end
 end

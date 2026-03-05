@@ -87,7 +87,7 @@ local specWarnEmpoweredFlames	= mod:NewSpecialWarningRun(72040, nil, nil, nil, 4
 local yellEmpoweredFlames		= mod:NewYellMe(72040)
 
 local timerConjureFlamesCD		= mod:NewCDTimer(20, 71718, nil, nil, nil, 3, nil, nil, true) -- nmpull:20.00/[Valanar Empowered/0.05] 19.95, Keleseth Empowered/26.45, 1.98/28.44
-local timerGlitteringSparksCD	= mod:NewVarTimer("v20-21", 71807, nil, nil, nil, 2, nil, nil, true) -- pull:14.05/[Valanar Empowered/0.05] 14.00, 20.97
+local timerGlitteringSparksCD	= mod:NewVarTimer("v20-21", 71807, nil, nil, nil, 2, nil, nil, false) --false "keep" cuz timer weird asf
 
 local soundEmpoweredFlames		= mod:NewSoundYou(72040)
 
@@ -119,8 +119,8 @@ function mod:OnCombatStart(delay)
 	warnTargetSwitchSoon:Schedule(42-delay)
 	warnTargetSwitchSoon:ScheduleVoice(42-delay, "swapsoon")
 	timerTargetSwitch:Start(-delay)]]
-	timerEmpoweredShockVortex:Start(18.2-delay) -- REVIEW! check variance ? pull:18.23/[Valanar Empowered/0.05] 18.19
-	timerKineticBombCD:Start(24-delay, 1) -- 24.34 (25nm)
+	timerEmpoweredShockVortex:Start(18.2-delay) -- REVIEW! check variance ?
+	timerKineticBombCD:Start(24-delay, 1)
 	timerDarkNucleusCD:Start(12-delay) -- REVIEW! var timer? pull:15.92
 	if self.Options.RangeFrame then
 		DBM.RangeCheck:Show(12)
@@ -192,7 +192,7 @@ end
 
 function mod:SPELL_AURA_APPLIED(args)
 	local spellId = args.spellId
-	if spellId == 70952 then
+	if spellId == 70952 then	--Valanar
 		if self:IsInCombat() then
 			warnTargetSwitch:Show(L.Valanar)
 			warnTargetSwitchSoon:Schedule(42)
@@ -213,7 +213,7 @@ function mod:SPELL_AURA_APPLIED(args)
 		if self.Options.ActivePrinceIcon then
 			self:ScanForMobs(args.destGUID, 2, 8, 1, nil, 12, "ActivePrinceIcon")
 		end
-	elseif spellId == 70981 then
+	elseif spellId == 70981 then	--Keleseth
 		warnTargetSwitch:Show(L.Keleseth)
 		warnTargetSwitchSoon:Schedule(42)
 		warnTargetSwitchSoon:ScheduleVoice(42, "swapsoon")
@@ -232,7 +232,7 @@ function mod:SPELL_AURA_APPLIED(args)
 		if self.Options.ActivePrinceIcon then
 			self:ScanForMobs(args.destGUID, 2, 8, 1, nil, 12, "ActivePrinceIcon")
 		end
-	elseif spellId == 70982 and self:IsInCombat() then
+	elseif spellId == 70982 and self:IsInCombat() then	--Taldaram
 		EmpoweredFlamesCheck = false
 		warnTargetSwitch:Show(L.Taldaram)
 		warnTargetSwitchSoon:Schedule(42)
@@ -333,7 +333,7 @@ function mod:OnSync(msg, target)
 			print("IT WORKS!")
 			print("Your ass saved by me, kek")
 			print("please send report")
-			DBM:AddMsg("nice ass btw")
+			print("nice ass btw")
 			specWarnEmpoweredFlames:Show()
 			if not self.Options.Sound72040 then
 				specWarnEmpoweredFlames:Play("justrun")
@@ -343,7 +343,7 @@ function mod:OnSync(msg, target)
 		elseif target then
 			print("EmpoweredFlamesTarget = "..target)
 			print("IT WORKS!!")
-			DBM:AddMsg("please send report")
+			print("please send report")
 			warnEmpoweredFlames:Show(target)
 		end
 		if self.Options.EmpoweredFlameIcon then
@@ -363,7 +363,7 @@ function mod:UNIT_SPELLCAST_SUCCEEDED(_, spellName)
 		soundKineticBomb:Play("Interface\\AddOns\\DBM-Core\\sounds\\RaidAbilities\\KineticSpawn.mp3")
 		timerKineticBombCD:Start(nil, self.vb.kineticCount+1)
 		if self.Options.SetIconOnKineticBomb then
-			self:ScanForMobs(38454, 2, self.vb.kineticIcon, 5, nil, 12, "SetIconOnKineticBomb", false, nil, true)
+			self:ScanForMobs(38454, 2, self.vb.kineticIcon, 5, nil, 12, "SetIconOnKineticBomb", false, nil, true)-- scanId, iconSetMethod, mobIcon, maxIcon, scanTable, scanningTime, optionName, allowFriendly, skipMarked, allAllowed, wipeGUID
 			self.vb.kineticIcon = self.vb.kineticIcon - 1
 			if self.vb.kineticIcon < 5 then
 				self.vb.kineticIcon = 7

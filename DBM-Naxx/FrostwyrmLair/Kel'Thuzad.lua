@@ -19,7 +19,8 @@ mod:RegisterEventsInCombat(
 	"SPELL_AURA_REMOVED 28410",
 	"SPELL_CAST_SUCCESS 27810 27819 27808 28410",
 	"CHAT_MSG_MONSTER_YELL",
-	"UNIT_HEALTH boss1"
+	"UNIT_HEALTH boss1",
+	"SPELL_SUMMON 27810"
 )
 
 local specWarnWeapons		= mod:NewSpecialWarning("WeaponsStatus", false)
@@ -47,7 +48,7 @@ local blastTimer			= mod:NewBuffActiveTimer(4, 27808, nil, nil, nil, 5, nil, DBM
 local timerManaBomb			= mod:NewVarTimer("v25-31.26", 27819, nil, nil, nil, 3, nil, nil, true) -- REVIEW! ~6s variance [25.20-31.26]. Added "keep" arg. SPELL_CAST_SUCCESS: (Lordaeron: 25m [2025-10-03]@[20:37:12]) - "Detonate Mana-27819-npc:15990-3 = pull:293.74/[Stage 1/0.00, Stage 2/227.95] 65.79/293.74, Stage 3/24.38, 6.88/31.26, 30.34, 25.20"
 local timerFrostBlast		= mod:NewVarTimer("v35.5-42.67", 27808, nil, nil, nil, 3, nil, DBM_COMMON_L.DEADLY_ICON, true) -- REVIEW! ~7s variance [35.5-42.67]. Added "keep" arg. SPELL_CAST_SUCCESS: (Lordaeron: 25m [2025-10-03]@[20:37:12]) - "Frost Blast-27808-npc:15990-3 = pull:308.71/[Stage 1/0.00, Stage 2/227.95] 80.76/308.71, Stage 3/9.41, 33.25/42.67, 35.25"
 local timerFissure			= mod:NewTargetTimer(5, 27810, nil, nil, 2, 3)
-local timerFissureCD 		= mod:NewVarTimer("v16.78-29.41", 27810, nil, nil, nil, 3, nil, nil, true) -- REVIEW! ~13s variance [16.78-29.41]. Added "keep" arg. SPELL_CAST_SUCCESS: (Lordaeron: 25m [2025-10-03]@[20:37:12]) - "Shadow Fissure-27810-npc:15990-3 = pull:250.56/[Stage 1/0.00, Stage 2/227.95] 22.60/250.56, 16.78, 29.41, Stage 3/21.38, 0.02/21.39, 27.82, 17.65"
+local timerFissureCD 		= mod:NewVarTimer("v14.2-17.0", 27810, nil, nil, nil, 3, nil, nil, true) -- REVIEW! need logs from 10nm/10hc/25nm
 local timerMC				= mod:NewBuffActiveTimer(20, 28410, nil, nil, nil, 3)
 local timerMCCD				= mod:NewCDTimer(90, 28410, nil, nil, nil, 3) -- Almost no variance. SPELL_CAST_SUCCESS: (Lordaeron: 25m [2025-10-03]@[20:37:12]) - "Chains of Kel'Thuzad-28410-npc:15990-3 = pull:258.01/[Stage 1/0.00, Stage 2/227.95] 30.06/258.01, 0.00, 0.00, Stage 3/60.11, 29.93/90.04, 0.00"
 local timerPhase2			= mod:NewTimer(228, "TimerPhase2", nil, nil, nil, 6) -- P2 script starts on Yell or Emote, and IEEU fires 0.55s after. (25m Lordaeron 2022/10/16) - 228.0
@@ -285,9 +286,20 @@ function mod:OnCombatEnd()
 	end
 end
 
+function mod:SPELL_SUMMON(args)
+	if args:IsSpellID(27810) and self:AntiSpam(2, 3) then
+		warnFissure:Show()
+		warnFissure:Play("watchstep") -- check what sound, watchfeet/targetyou /maybe look for "beware" or what name?
+		timerFissure:Start()
+		timerFissureCD:Start()
+	end
+end
+
+
 function mod:SPELL_CAST_SUCCESS(args)
 	local spellId = args.spellId
 	if spellId == 27810 then
+		print("DBM: SPELL_CAST_SUCCESS 27810 DETECTED! Plz report")
 		timerFissure:Start(args.destName)
 		timerFissureCD:Start()
 		if args:IsPlayer() then

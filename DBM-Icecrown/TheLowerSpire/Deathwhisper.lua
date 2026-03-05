@@ -80,9 +80,9 @@ local specWarnVengefulShade			= mod:NewSpecialWarning("SpecWarnVengefulShade", t
 local specWarnVengefulShadeOnYou	= mod:NewSpecialWarningRun(71426, nil, nil, nil, 4, 2)
 --local yellVengefulShadeOnMe			= mod:NewYellMe(71426)
 
-local timerSummonSpiritCD			= mod:NewCDTimer(13.5, 71426, nil, true, nil, 3, nil, nil, true) -- 25nm = 14.4/14.7 between 1st SPELL_SUMMON in a wave (first wave missing 1 SPELL_SUMMON VERY OFTEN)
+local timerSummonSpiritCD			= mod:NewVarTimer("v12.7-16.9", 71426, nil, true, nil, 3, nil, nil, true)
 local timerFrostboltCast			= mod:NewCastTimer(2, 72007, nil, "HasInterrupt")
-local timerFrostboltVolleyCD		= mod:NewCDTimer(20, 72905, nil, nil, nil, 2) -- 25hc = 20s
+local timerFrostboltVolleyCD		= mod:NewCDTimer(20, 72905, nil, nil, nil, 2)
 local timerTouchInsignificance		= mod:NewTargetTimer(30, 71204, nil, "Tank|Healer", nil, 5)
 local timerTouchInsignificanceCD	= mod:NewCDTimer(6, 71204, nil, "Tank|Healer", nil, 5, nil, nil, true) -- keep "keep" arg, make varTimer later ?
 
@@ -91,8 +91,8 @@ local soundWarnSpirit				= mod:NewSound(71426)
 local dominateMindTargets = {}
 mod.vb.dominateMindIcon = 1
 local shieldName = DBM:GetSpellInfo(70842)
---local summonSpiritName = DBM:GetSpellInfo(71426)	-- Призыв духа ??? maybe 10nm/10HC ?
-local summonSpiritName = DBM:GetSpellInfo(72478)	-- Призыв духов (25HC/25nm)
+local summonSpiritName = DBM:GetSpellInfo(71426)	-- Призыв духа ??? maybe 10nm/10HC ?
+local summonSpiritsName = DBM:GetSpellInfo(72478)	-- Призыв духов (25HC/25nm)
 local playerHadTarget = false
 
 local playerClass = select(2, UnitClass("player"))
@@ -271,9 +271,9 @@ local function addsTimer(self)
 		self:Schedule(45, addsTimer, self)
 		timerAdds:Start(45)
 	else -- check adds cd on normals?
-		warnAddsSoon:Schedule(40)	-- 5 secs prewarning
-		self:Schedule(45, addsTimer, self)
-		timerAdds:Start()
+		warnAddsSoon:Schedule(55)	-- 5 secs prewarning
+		self:Schedule(60, addsTimer, self)
+		timerAdds:Start(60)
 	end
 end
 
@@ -448,9 +448,14 @@ function mod:SPELL_AURA_REMOVED(args)
 		self:SetStage(2)
 		warnPhase2:Show()
 		warnPhase2:Play("ptwo")
-		timerSummonSpiritCD:Start(13) -- 13.5/15s after phase2 start
+		timerSummonSpiritCD:Start(12)
 		timerTouchInsignificanceCD:Start()
-		timerFrostboltVolleyCD:Start(20) -- 25hc = 20s
+		timerFrostboltVolleyCD:Start(20)
+		if self:IsNormal() then
+			timerAdds:Cancel()
+			warnAddsSoon:Cancel()
+			self:Unschedule(addsTimer)
+		end
 		if self.Options.InfoFrame then
 			DBM.InfoFrame:Hide()
 		end
@@ -474,22 +479,14 @@ function mod:SPELL_INTERRUPT(args)
 	end
 end
 
---very inconsistent timer due to spirit travel distance until spawn. Moved to UNIT_SPELLCAST_SUCCEEDED
---nah, circus server can't afford UNIT_SPELLCAST_SUCCEEDED events
+--[[very inconsistent timer due to spirit travel distance until spawn. Moved to UNIT_SPELLCAST_SUCCEEDED
 function mod:SPELL_SUMMON(args)
 	if args.spellId == 71426 and self:AntiSpam(5, 1) then -- Summon Vengeful Shade
-		playerHadTarget = UnitGUID("target") and true
 		warnSummonSpirit:Show()
 		timerSummonSpiritCD:Start()
 		soundWarnSpirit:Play("Interface\\AddOns\\DBM-Core\\sounds\\RaidAbilities\\spirits.mp3")
-		if not playerHadTarget then
-			self:RegisterShortTermEvents(
-				"PLAYER_TARGET_CHANGED"
-			)
-			self:Schedule(0.1, unregisterShortTermEvents, self)
-		end
 	end
-end
+end]]
 
 function mod:SWING_DAMAGE(sourceGUID, _, _, destGUID)
 	if destGUID == UnitGUID("player") and self:GetCIDFromGUID(sourceGUID) == 38222 then
@@ -524,12 +521,16 @@ function mod:PLAYER_TARGET_CHANGED()
 end
 
 function mod:UNIT_SPELLCAST_SUCCEEDED(_, spellName)
-	if spellName == summonSpiritName and self:AntiSpam(5, 1) then -- Summon Spirit
-		print("WOWCIRCLE UNIT_SPELLCAST_SUCCEEDED 71426 DETECTED! Plz report")
-		DBM:AddMsg("1WOWCIRCLE UNIT_SPELLCAST_SUCCEEDED 71426 DETECTED! Plz report")
+	if spellName == summonSpiritsName then -- Summon Spirits
+		warnSummonSpirit:Show()
+		timerSummonSpiritCD:Start()
+		soundWarnSpirit:Play("Interface\\AddOns\\DBM-Core\\sounds\\RaidAbilities\\spirits.mp3")
+	elseif spellName == summonSpiritName and self:AntiSpam(5, 1) then -- Summon Spirit
+		print("DBM: Summon Spirit UNIT_SPELLCAST_SUCCEEDED detected, plz report")
+		--[[
 		playerHadTarget = UnitGUID("target") and true
-		--warnSummonSpirit:Show()
-		--timerSummonSpiritCD:Start()
+		warnSummonSpirit:Show()
+		timerSummonSpiritCD:Start()
 		soundWarnSpirit:Play("Interface\\AddOns\\DBM-Core\\sounds\\RaidAbilities\\spirits.mp3")
 		if not playerHadTarget then
 			self:RegisterShortTermEvents(
@@ -537,5 +538,6 @@ function mod:UNIT_SPELLCAST_SUCCEEDED(_, spellName)
 			)
 			self:Schedule(0.1, unregisterShortTermEvents, self)
 		end
+		]]
 	end
 end
