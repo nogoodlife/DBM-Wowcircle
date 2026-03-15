@@ -4,6 +4,7 @@ local L		= mod:GetLocalizedStrings()
 local UnitExists, UnitGUID, UnitName = UnitExists, UnitGUID, UnitName
 local GetSpellInfo = GetSpellInfo
 local GetPlayerMapPosition, SetMapToCurrentZone = GetPlayerMapPosition, SetMapToCurrentZone
+local sformat = string.format
 
 mod:SetRevision("20250929220131")
 mod:SetCreatureID(34796, 35144, 34799, 34797)
@@ -39,8 +40,9 @@ local icehowl = L.Icehowl
 
 -- General
 local enrageTimer			= mod:NewBerserkTimer(223) -- enrage when?
-local timerCombatStart		= mod:NewCombatTimer(11.1)
-local timerNextBoss			= mod:NewTimer(150, "TimerNextBoss", 2457, nil, nil, 1) -- is this how it works on circle ? no idea, plz report
+local timerCombatStart		= mod:NewCombatTimer(10.8) -- PLAYER_REGEN_DISABLED
+local timerEngage			= mod:NewTimer(11.4, "TimerEngage", 1180, nil, nil, 6)
+local timerNextBoss			= mod:NewTimer(182, "TimerNextBoss", 2457, nil, nil, 1)
 
 mod:AddRangeFrameOption("10")
 
@@ -57,8 +59,8 @@ local specWarnSilence		= mod:NewSpecialWarningSpell(66330, "SpellCaster")
 local specWarnStompPreWarn	= mod:NewSpecialWarningPreWarn(66330, "SpellCaster", 3, nil, nil, 1, 2)
 
 local timerNextStomp		= mod:NewNextTimer(20, 66330, nil, nil, nil, 2, nil, DBM_COMMON_L.INTERRUPT_ICON, nil, mod:IsSpellCaster() and 3 or nil, 3) -- cd 20.06, 20.08
-local timerImpaleCD			= mod:NewCDTimer(8, 66331, nil, "Tank|Healer", nil, 5, nil, DBM_COMMON_L.TANK_ICON, true) -- 2s variance. Added "keep" arg -- cd 9.63, 8.40, 8.62, 8.51
-local timerRisingAnger		= mod:NewCDTimer(17.5, 66636, nil, nil, nil, 1, nil, nil, true) -- REVIEW! wtf is that ?
+local timerImpaleCD			= mod:NewVarTimer("v7.0-13.0", 66331, nil, "Tank|Healer", nil, 5, nil, DBM_COMMON_L.TANK_ICON, true)
+local timerRisingAnger		= mod:NewVarTimer("v17.1-29.2", 66636, nil, nil, nil, 1, nil, nil, true) -- need more logs
 
 local soundAuraMastery		= mod:NewSound(66330, "soundConcAuraMastery")
 
@@ -146,6 +148,18 @@ local function isBuffOwner(uId, spellId)
 	end
 end
 
+local function GormokEngage(self, timeOffset)
+	specWarnStompPreWarn:Schedule(12-timeOffset) -- 3s pre-warn. (10N Lordaeron 2022/10/02) - 14.9
+	if self.Options.soundConcAuraMastery and isBuffOwner("player", 19746) then -- Concentration Aura Mastery by a Paladin will negate the interrupt effect of Staggering Stomp
+		soundAuraMastery:Schedule(12-timeOffset, "Interface\\AddOns\\DBM-Core\\sounds\\PlayerAbilities\\AuraMastery.ogg")
+	else
+		specWarnStompPreWarn:ScheduleVoice(12-timeOffset, "silencesoon")
+	end
+	timerNextStomp:Start(14.5-timeOffset) -- pull:14.54
+	timerImpaleCD:Start(sformat("v%s-%s", 16.0-timeOffset, 17.9-timeOffset))
+	timerRisingAnger:Start(sformat("v%s-%s", 18.2-timeOffset, 25.0-timeOffset)) -- REVIEW! variance? need more logs
+end
+
 function mod:OnCombatStart(delay)
 	table.wipe(phases)
 	acidmawEngaged = false
@@ -157,18 +171,11 @@ function mod:OnCombatStart(delay)
 	self.vb.DreadscaleDead = false
 	self.vb.AcidmawDead = false
 	self:SetStage(1)
-	specWarnStompPreWarn:Schedule(12-delay) -- 3s pre-warn. (10N Lordaeron 2022/10/02) - 14.9
-	if self.Options.soundConcAuraMastery and isBuffOwner("player", 19746) then -- Concentration Aura Mastery by a Paladin will negate the interrupt effect of Staggering Stomp
-		soundAuraMastery:Schedule(12-delay, "Interface\\AddOns\\DBM-Core\\sounds\\PlayerAbilities\\AuraMastery.ogg")
-	else
-		specWarnStompPreWarn:ScheduleVoice(12-delay, "silencesoon")
-	end
+	timerEngage:Start(11.4-delay)
+	self:Schedule(11.4-delay, GormokEngage, self, 11.4)	--GormokEngage(self, timeOffset)
 	if self:IsHeroic() then
 		timerNextBoss:Start(-delay)
 	end
-	timerRisingAnger:Start(25-delay) -- REVIEW! variance? -- ToGC25 = 25.13
-	timerNextStomp:Start(14.5-delay) -- pull:14.54
-	timerImpaleCD:Start() -- REVIEW! same 2s variance? (10H 2021/10/22 || 10N 2021/10/22 || 25H Lordaeron 2022/09/03) - 8 || 8 || 9.9
 	updateHealthFrame(1)
 end
 
@@ -272,13 +279,7 @@ function mod:SPELL_AURA_APPLIED_DOSE(args)
 		local amount = args.amount or 1
 		WarningSnobold:Show(args.destName)
 		if amount < 3 then
---			if self:IsHeroic() then
-				timerRisingAnger:Start(17.5) -- (25H Lordaeron 2022/09/28) - 17.5
---			else
---				if amount < 3 then
---					timerRisingAnger:Start() -- Variance for normal dose is all over the place... Only first dose is timed since it has "some" level of consistency. (25N Lordaeron 2022/09/23 || 10N Lordaeron 2022/10/02 wipe || 10N Lordaeron 2022/10/02 kill || 25N Lordaeron 2022/10/21) - 26.1, 28.9, 22.6 || 26.8, 12.7 || 20.8, 30.0 || 17.7
---				end
---			end
+			timerRisingAnger:Start()
 		elseif amount >= 4 then -- only 4 snobolds
 			timerRisingAnger:Stop()
 			specWarnAnger3:Show(amount)
@@ -339,8 +340,12 @@ function mod:CHAT_MSG_RAID_BOSS_EMOTE(msg, _, _, _, target)
 end
 
 function mod:CHAT_MSG_MONSTER_YELL(msg)
-	if msg == L.CombatStart or msg:find(L.CombatStart) then
+	if msg == L.CombatStart or msg:find(L.CombatStart) then --Gormok the Impaler
 		timerCombatStart:Start()
+		-- 00.00 CombatStart message^
+		-- +10.8 PLAYER_REGEN_DISABLED 				-- player entering combat
+		-- +0.4-0.5 INSTANCE_ENCOUNTER_ENGAGE_UNIT	-- DBM StartCombat
+		-- actual bossfight when? ~11.4?			-- add timerEngage and shedule first spell timers
 	elseif msg == L.Phase2 or msg:find(L.Phase2) then
 		self:SetStage(1.5)
 --		self:ScheduleMethod(13.5, "WormsEmerge")
