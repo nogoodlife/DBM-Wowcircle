@@ -172,7 +172,7 @@ function mod:OnCombatStart(delay)
 	self.vb.AcidmawDead = false
 	self:SetStage(1)
 	timerEngage:Start(11.4-delay)
-	self:Schedule(11.4-delay, GormokEngage, self, 11.4)	--GormokEngage(self, timeOffset)
+	self:Schedule(11.4-delay, GormokEngage, self, 11.4-delay)	--GormokEngage(self, timeOffset)
 	if self:IsHeroic() then
 		timerNextBoss:Start(-delay)
 	end

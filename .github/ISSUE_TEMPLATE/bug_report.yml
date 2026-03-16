@@ -41,8 +41,8 @@ body:
     required: true
 - type: textarea
   attributes:
-    label: Transcriptor log / Combatlog
-    description: If bug is related to a raid mechanic/timer, attach a Transcriptor log (https://github.com/Zidras/Transcriptor-WOTLK#how-to-use) or Combatlog. Otherwise, type "NA"
+    label: Transcriptor log
+    description: If bug is related to a raid mechanic/timer, attach a Transcriptor log (https://github.com/Zidras/Transcriptor-WOTLK#how-to-use). Otherwise, type "NA"
   validations:
     required: true
 - type: textarea

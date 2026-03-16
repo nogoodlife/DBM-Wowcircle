@@ -99,7 +99,7 @@ local specWarnTrapNear				= mod:NewSpecialWarningClose(73539, nil, nil, nil, 3, 
 local specWarnEnrage				= mod:NewSpecialWarningSpell(72143, "Tank")
 local specWarnEnrageLow				= mod:NewSpecialWarningSpell(28747, false)
 
-local timerInfestCD					= mod:NewVarCountTimer("v21-24", 70541, nil, "Healer|RaidCooldown", nil, 5, nil, DBM_COMMON_L.HEALER_ICON, true) -- NewVarCountTimer "v21-24" ? stage1 cd 23.88, 23.35, 23.71, 21.66 | stage2 cd 22.61, 22.05, 23.89, 21.05
+local timerInfestCD					= mod:NewVarTimer("v21.1-24.6", 70541, nil, "Healer|RaidCooldown", nil, 5, nil, DBM_COMMON_L.HEALER_ICON, true)
 local timerNecroticPlagueCleanse	= mod:NewTimer(5, "TimerNecroticPlagueCleanse", 70337, "Healer", nil, 5, DBM_COMMON_L.HEALER_ICON, nil, nil, nil, nil, nil, nil, 70337)
 local timerNecroticPlagueCD			= mod:NewCDTimer(30, 70337, nil, nil, nil, 3, nil, DBM_COMMON_L.DISEASE_ICON, true) -- 3s variance [30.1-32.9] Added "keep" arg. (10N Icecrown 2022/08/20 || 10N Icecrown 2022/08/25 || 25H Lordaeron 2022/09/03) - 32.8, 31.6 ; 32.7 ; 31.2;  31.7, 32.7 || 30.2 || 32.3, 32.9 ; 31.3, 31.9 ; 32.9, 30.4 ; 30.7, 31.7 ; 30.1, 30.2 ; 32.6, 31.2 ; 31.1 ; 32.5, 30.3, 31.7
 local timerEnrageCD					= mod:NewCDCountTimer("d20", 72143, nil, "Tank|RemoveEnrage", nil, 5, nil, DBM_COMMON_L.ENRAGE_ICON--[[, true]]) -- String timer starting with "d" means "allowDouble". Disabled "keep" arg since cast can be stun-skipped.
@@ -134,9 +134,9 @@ local specWarnSoulreaperOtr			= mod:NewSpecialWarningTaunt(69409, false, nil, ni
 local specWarnValkyrLow				= mod:NewSpecialWarning("SpecWarnValkyrLow", nil, nil, nil, 1, 2, nil, 71844, 69037)
 
 local timerSoulreaper				= mod:NewTargetTimer(5.1, 69409, nil, "Tank|Healer|TargetedCooldown")
-local timerSoulreaperCD				= mod:NewCDCountTimer(34.0, 69409, nil, nil, nil, 5, nil, DBM_COMMON_L.TANK_ICON) --need KEEP ? cd phase2 34.25, 34.18, cd phase3/leftFrostmourne 36.27
-local timerDefileCD					= mod:NewCDCountTimer(32, 72762, nil, nil, nil, 3, nil, DBM_COMMON_L.DEADLY_ICON, true, 1, 4) -- ~3s variance [32.83-35.03]. Added "keep" arg, but might need sync for Normal Harvest Soul since CLEU could be OOR
-local timerSummonValkyr				= mod:NewVarCountTimer("v47.5-49.5", 69037, nil, nil, nil, 1, 71844, DBM_COMMON_L.DAMAGE_ICON, true, 2, 3) -- Added "keep" arg, countdown voice2, countdownMax3 ?
+local timerSoulreaperCD				= mod:NewVarCountTimer("v33.6-38.6", 69409, nil, nil, nil, 5, nil, DBM_COMMON_L.TANK_ICON)
+local timerDefileCD					= mod:NewVarCountTimer("v32.1-35.0", 72762, nil, nil, nil, 3, nil, DBM_COMMON_L.DEADLY_ICON, true, 1, 4) -- ~3s variance [32.15-34.99]. Added "keep" arg, but might need sync for Normal Harvest Soul since CLEU could be OOR
+local timerSummonValkyr				= mod:NewVarCountTimer("v45.5-50.0", 69037, nil, nil, nil, 1, 71844, DBM_COMMON_L.DAMAGE_ICON, true, 2, 3) -- Added "keep" arg, countdown voice2, countdownMax3 ?
 
 local soundDefileOnYou				= mod:NewSoundYou(72762)
 local soundSoulReaperSoon			= mod:NewSoundSoon(69409, nil, "Tank|Healer|TargetedCooldown")
@@ -280,20 +280,20 @@ local function NextPhase(self, delay)
 			timerTrapCD:Start(15-delay) -- 15.08
 		end
 		timerNecroticPlagueCD:Start(-delay)
-		timerInfestCD:Start(5.0-delay, self.vb.infestCount+1) -- Fixed timer, confirmed on log review 2022/09/03
+		timerInfestCD:Start(5.0-delay, self.vb.infestCount+1)
 	elseif self.vb.phase == 2 then
 		warnPhase2:Show()
 		warnPhase2:Play("ptwo")
 		if self.Options.ShowFrame then
 			self:CreateFrame()
 		end
-		timerSummonValkyr:Start(15.5, self.vb.valkyrWaveCount+1) --16.50
+		timerSummonValkyr:Start(15.5, self.vb.valkyrWaveCount+1)
 		timerSoulreaperCD:Start(31.5, self.vb.soulReaperCount+1) --phase2+31.46 31.67
 		soundSoulReaperSoon:Schedule(32-2.5, "Interface\\AddOns\\DBM-Core\\sounds\\RaidAbilities\\soulreaperSoon.mp3")
 		timerDefileCD:Start(37, self.vb.defileCount+1) -- phase2+36.96 37.02
 		warnDefileSoon:Schedule(34, self.vb.defileCount+1)
 		warnDefileSoon:ScheduleVoice(34, "scatter") -- Voice Pack - Scatter.ogg: "Spread!"
-		timerInfestCD:Start(17, self.vb.infestCount+1) -- 17.45 17.55
+		timerInfestCD:Start(17.4, self.vb.infestCount+1) -- 17.45 17.55
 		soundInfestSoon:Schedule(14-2, "Interface\\AddOns\\DBM-Core\\sounds\\RaidAbilities\\infestSoon.mp3")
 		self:RegisterShortTermEvents(
 			"UNIT_ENTERING_VEHICLE",
@@ -320,11 +320,11 @@ end
 local function leftFrostmourne(self)
 	DBM:Debug("Left Frostmourne")
 	DBM:AddSpecialEventToTranscriptorLog("Left Frostmourne")
-	timerHarvestSoulCD:Start(56) -- 56.47
+	timerHarvestSoulCD:Start(56.5)
 	timerDefileCD:Start(1.4, self.vb.defileCount+1) -- As soon as the group leaves FM -- 1.40 1.39
 	warnDefileSoon:Show(self.vb.defileCount+1)
 	warnDefileSoon:Play("scatter") -- Voice Pack - Scatter.ogg: "Spread!"
-	timerSoulreaperCD:Start(12.4, self.vb.soulReaperCount+1) -- 12.71 | 12.44 -- but can be delayed by VileSpirit cast? (~17.5=12+0.5+5s VileSpirit cd+cast_time+cast_duration)
+	timerSoulreaperCD:Start("v10.5-18.0", self.vb.soulReaperCount+1) -- can be delayed by 0.5+5s VileSpirit cast_time+cast_duration
 	soundSoulReaperSoon:Schedule(12.4-2.5, "Interface\\AddOns\\DBM-Core\\sounds\\RaidAbilities\\soulreaperSoon.mp3")
 	timerVileSpirit:Start(12) -- 12.73 | 12.56
 end
@@ -645,8 +645,8 @@ function mod:SPELL_SUMMON(args)
 		warnShamblingHorror:Show()
 		warnShamblingSoon:Schedule(55)
 		timerShamblingHorror:Start()
-		timerEnrageCD:Start(12.3, shamblingCount, args.destGUID) -- -20s from Shambling Enrage summon. 34.4 || 34.3; 32.3; 33.4
-		timerEnrageCD:Schedule(12.3+2, nil, shamblingCount, args.destGUID) -- apparently on Warmane if you stun on pre-cast, it skips the Enrage. Couldn't repro on test server nor validate it, but doesn't really hurt because SCS has Restart method
+		timerEnrageCD:Start(19, shamblingCount, args.destGUID)
+		timerEnrageCD:Schedule(19+2, nil, shamblingCount, args.destGUID) -- apparently on Warmane if you stun on pre-cast, it skips the Enrage. Couldn't repro on test server nor validate it, but doesn't really hurt because SCS has Restart method
 	end
 end
 

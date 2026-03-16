@@ -59,7 +59,7 @@ local timerNextBlisteringCold	= mod:NewVarTimer("v66-67.5", 70123, nil, nil, nil
 local timerNextBeacon			= mod:NewNextCountTimer(16, 70126, nil, nil, nil, 3, nil, DBM_COMMON_L.DEADLY_ICON)
 local timerBeaconIncoming		= mod:NewTargetTimer("d7", 70126, nil, nil, nil, 3) -- One incoming timer for each target
 local timerBlisteringCold		= mod:NewCastTimer(5, 70123, nil, nil, nil, 2)
-local timerUnchainedMagic		= mod:NewVarTimer("v31.5-35", 69762, nil, nil, nil, 3)
+local timerUnchainedMagic		= mod:NewVarTimer("v30.0-35.0", 69762, nil, nil, nil, 3)
 local timerInstability			= mod:NewBuffFadesTimer(5, 69766, nil, nil, nil, 5)
 local timerChilledtotheBone		= mod:NewBuffFadesTimer(8, 70106, nil, nil, nil, 5)
 local timerTailSmash			= mod:NewCDTimer(29, 71077, nil, nil, nil, 2, nil, nil, true) -- cd 29.19 29.18 | phase2 cd 32.00 ? check if var timer needed ?
@@ -192,7 +192,7 @@ local function landingPhaseWorkaround(self, timeOffset)
 	print("Landing Phase scheduled")
 	timerUnchainedMagic:Start(sformat("v%s-%s", 12.5-timeOffset, 13.9-timeOffset))
 	timerTailSmash:Start(20-timeOffset) -- 20.09
-	timerNextBlisteringCold:Start(sformat("v%s-%s", 37-timeOffset, 38.5-timeOffset)) -- SindragosaLanded+38.74 | -1.5=37.24 --is it always borked by first FrostBreath or just random?
+	timerNextBlisteringCold:Start(sformat("v%s-%s", 36-timeOffset, 38.5-timeOffset)) -- SindragosaLanded+38.74 | -1.5=37.24 --is it always borked by first FrostBreath or just random?
 	self:UnregisterShortTermEvents()
 end
 
@@ -466,7 +466,7 @@ function mod:OnSync(msg)
 		self:SetStage(1)
 		timerUnchainedMagic:Start("v12.5-13.9")
 		timerTailSmash:Start(20) -- 20.09
-		timerNextBlisteringCold:Start("v37-40") -- SindragosaLanded+v38.5-40 | -1.5=v37-40 --is it always borked by first FrostBreath or just random?
+		timerNextBlisteringCold:Start("v36-40") -- SindragosaLanded+v38.5-40 | -1.5=v37-40 --is it always borked by first FrostBreath or just random? | its random, can be before frost breath ~35-35.5 after landing...
 		self:UnregisterShortTermEvents()
 	end
 end

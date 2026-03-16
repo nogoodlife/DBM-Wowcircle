@@ -354,7 +354,13 @@ do
 			--executeMarking(scanId, "mouseovertarget")
 		end
 	end
-
+	
+	function module:NAME_PLATE_UNIT_ADDED(unitId)
+		for scanId, _ in pairs(scanExpires) do
+			executeMarking(scanId, unitId)
+		end
+	end
+	
 	function module:UNIT_TARGET_UNFILTERED(unitId)
 		for scanId, _ in pairs(scanExpires) do
 			executeMarking(scanId, unitId.."target")
@@ -383,22 +389,6 @@ do
 		"party1target", "party2target", "party3target", "party4target",
 		"mouseover", "target", "focus", "targettarget", "mouseovertarget"
 	}
-	
-	if C_NamePlate then -- Custom
-		mobUids = {
-			"raid1target", "raid2target", "raid3target", "raid4target", "raid5target", "raid6target", "raid7target", "raid8target", "raid9target", "raid10target",
-			"raid11target", "raid12target", "raid13target", "raid14target", "raid15target", "raid16target", "raid17target", "raid18target", "raid19target", "raid20target",
-			"raid21target", "raid22target", "raid23target", "raid24target", "raid25target", "raid26target", "raid27target", "raid28target", "raid29target", "raid30target",
-			"raid31target", "raid32target", "raid33target", "raid34target", "raid35target", "raid36target", "raid37target", "raid38target", "raid39target", "raid40target",
-			"party1target", "party2target", "party3target", "party4target",
-			"mouseover", "target", "focus", "targettarget", "mouseovertarget",
-			-- Nameplates
-			"nameplate1", "nameplate2", "nameplate3", "nameplate4", "nameplate5", "nameplate6", "nameplate7", "nameplate8", "nameplate9", "nameplate10",
-			"nameplate11", "nameplate12", "nameplate13", "nameplate14", "nameplate15", "nameplate16", "nameplate17", "nameplate18", "nameplate19", "nameplate20",
-			"nameplate21", "nameplate22", "nameplate23", "nameplate24", "nameplate25", "nameplate26", "nameplate27", "nameplate28", "nameplate29", "nameplate30",
-			"nameplate31", "nameplate32", "nameplate33", "nameplate34", "nameplate35", "nameplate36", "nameplate37", "nameplate38", "nameplate39", "nameplate40"
-		}
-	end
 
 	function module:ScanForMobs(mod, scanId, iconSetMethod, mobIcon, maxIcon, scanTable, scanningTime, optionName, allowFriendly, skipMarked, allAllowed, wipeGUID)
 		if not optionName then optionName = mod.findFastestComputer[1] end
@@ -440,7 +430,11 @@ do
 			--But if not, we Register listeners to watch for the units we seek to appear
 			if not eventsRegistered and scansActive > 0 then
 				eventsRegistered = true
-				self:RegisterShortTermEvents("UPDATE_MOUSEOVER_UNIT", "UNIT_TARGET_UNFILTERED", "INSTANCE_ENCOUNTER_ENGAGE_UNIT")
+				if C_NamePlate then
+					self:RegisterShortTermEvents("UPDATE_MOUSEOVER_UNIT", "UNIT_TARGET_UNFILTERED", "INSTANCE_ENCOUNTER_ENGAGE_UNIT", "NAME_PLATE_UNIT_ADDED")
+				else
+					self:RegisterShortTermEvents("UPDATE_MOUSEOVER_UNIT", "UNIT_TARGET_UNFILTERED", "INSTANCE_ENCOUNTER_ENGAGE_UNIT")
+				end
 				DBM:Debug("Target events Registered", 2)
 			end
 		else
