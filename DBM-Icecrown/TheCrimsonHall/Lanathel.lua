@@ -67,9 +67,9 @@ mod.vb.pactIcons = 1
 local function warnPactTargets(self)
 	warnPactDarkfallen:Show(table.concat(pactTargets, "<, >"))
 	table.wipe(pactTargets)
-	timerNextPactDarkfallen:Start()
-	warnPactDarkfallenSoon:Schedule(25)
-	warnPactDarkfallenSoon:ScheduleVoice(25, "linesoon")
+	timerNextPactDarkfallen:Start() -- cd = 30.5
+	warnPactDarkfallenSoon:Schedule(25.5)
+	warnPactDarkfallenSoon:ScheduleVoice(25.5, "linesoon")
 	self.vb.pactIcons = 1
 end
 
@@ -79,7 +79,7 @@ function mod:OnCombatStart(delay)
 	timerNextPactDarkfallen:Start(15-delay)
 	warnPactDarkfallenSoon:Schedule(10-delay)
 	warnPactDarkfallenSoon:ScheduleVoice(10-delay, "linesoon")
-	timerNextSwarmingShadows:Start(-delay)
+	timerNextSwarmingShadows:Start(-delay) -- cd = 30.5
 	warnSwarmingShadowsSoon:Schedule(25.5-delay)
 	warnSwarmingShadowsSoon:ScheduleVoice(25.5-delay, "flamessoon")
 	table.wipe(pactTargets)
@@ -194,7 +194,7 @@ function mod:SPELL_CAST_SUCCESS(args)
 		warnPactDarkfallenSoon:Cancel()
 		warnSwarmingShadowsSoon:Cancel()
 		
-		timerNextSwarmingShadows:Restart()--This resets the swarming shadows timer
+		timerNextSwarmingShadows:Restart()--This resets the swarming shadows timer -- cd = 30.5
 		warnSwarmingShadowsSoon:Schedule(26.5)
 		warnSwarmingShadowsSoon:ScheduleVoice(26.5, "flamessoon")
 		timerNextPactDarkfallen:Restart(25.5)--and the Pact timer also reset -5 seconds
@@ -227,7 +227,7 @@ mod.SPELL_MISSED = mod.SPELL_DAMAGE
 function mod:CHAT_MSG_RAID_BOSS_EMOTE(msg, _, _, _, target)
 	if msg:match(L.SwarmingShadows) and target then
 		target = DBM:GetUnitFullName(target)
-		timerNextSwarmingShadows:Start()
+		timerNextSwarmingShadows:Start() --cd = 30.5
 		warnSwarmingShadowsSoon:Schedule(25.5)
 		warnSwarmingShadowsSoon:ScheduleVoice(25.5, "flamessoon")
 		if target == UnitName("player") then

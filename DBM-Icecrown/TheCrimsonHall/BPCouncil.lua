@@ -197,7 +197,7 @@ function mod:SPELL_AURA_APPLIED(args)
 			warnTargetSwitch:Show(L.Valanar)
 			warnTargetSwitchSoon:Schedule(42)
 			warnTargetSwitchSoon:ScheduleVoice(42, "swapsoon")
-			timerTargetSwitch:Start()
+			timerTargetSwitch:Start() -- cd = 46.5
 			if not timerEmpoweredShockVortex:IsStarted() then -- avoid overwriting first vortex
 				if timerShockVortex:IsStarted() then
 					timerEmpoweredShockVortex:Start(timerShockVortex:GetRemaining())

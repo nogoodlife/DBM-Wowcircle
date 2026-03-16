@@ -93,8 +93,8 @@ function mod:SPELL_CAST_START(args)
 		soundBoneSpike:Play("Interface\\AddOns\\DBM-Core\\sounds\\RaidAbilities\\Bone_Spike_cast.mp3")
 	elseif args.spellId == 69076 then
 		timerBoneSpike:Pause()
-		preWarnWhirlwind:Schedule(85)
-		timerWhirlwindCD:Start()
+		preWarnWhirlwind:Schedule(90-5)
+		timerWhirlwindCD:Start() -- cd=90 ?
 		timerWhirlwindStart:Start()
 		soundBoneStorm:Play("Interface\\AddOns\\DBM-Core\\sounds\\RaidAbilities\\Bone_Storm_cast.mp3")
 	end

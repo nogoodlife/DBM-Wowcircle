@@ -46,7 +46,7 @@ local warnDarkEmpowerment			= mod:NewSpellAnnounce(70901, 4)
 local specWarnVampricMight			= mod:NewSpecialWarningDispel(70674, "MagicDispeller", nil, nil, 1, 2)
 local specWarnDarkMartyrdom			= mod:NewSpecialWarningRun(71236, "Melee", nil, nil, 4, 2)
 
-local timerAdds						= mod:NewTimer(45, "TimerAdds", 61131, nil, nil, 1, DBM_COMMON_L.TANK_ICON..DBM_COMMON_L.DAMAGE_ICON) -- 25hc = 45ñ
+local timerAdds						= mod:NewTimer(45, "TimerAdds", 61131, nil, nil, 1, DBM_COMMON_L.TANK_ICON..DBM_COMMON_L.DAMAGE_ICON)
 
 -- Boss
 mod:AddTimerLine(L.name)
@@ -57,7 +57,8 @@ local warnDominateMind				= mod:NewTargetNoFilterAnnounce(71289, 3)
 local specWarnDeathDecay			= mod:NewSpecialWarningGTFO(71001, nil, nil, nil, 1, 8)
 
 local timerDominateMind				= mod:NewBuffActiveTimer(12, 71289, nil, nil, nil, 5)
-local timerDominateMindCD			= mod:NewCDCountTimer(40, 71289, nil, nil, nil, 3, nil, nil, true, 2, 3) -- NewCDCountTimer(timer, spellId, timerText, optionDefault, optionName, colorType, texture, inlineIcon, keep, countdown, countdownMax)
+local timerDominateMindCD			= mod:NewCDTimer(40, 71289, nil, nil, nil, 3, nil, nil, true, 2, 3)
+-- (timer, spellId, timerText, optionDefault, optionName, colorType, texture, inlineIcon, keep, countdownVoice, countdownMax)
 
 local soundSpecWarnDominateMind		= mod:NewSound(71289, nil, canShadowmeld or canVanish)
 
@@ -514,7 +515,8 @@ function mod:PLAYER_TARGET_CHANGED()
 		specWarnVengefulShadeOnYou:Show()
 		specWarnVengefulShadeOnYou:Play("runaway")
 --		yellVengefulShadeOnMe:Yell() -- disabled since live run proved to be ineffective to catch target without false positives
-		DBM:AddMsg("Experimental feature with spirit targeting. If you received a Special Announcement saying Summon Spirit - run away, but were NOT the real player targeted by the spirits, please share VOD/Transcriptor log with Nogoodlife")
+		print("Experimental feature with spirit targeting. If you received a Special Announcement saying Summon Spirit - run away, but were NOT the real player targeted by the spirits, please share VOD/Transcriptor log")
+		DBM:AddMsg("Experimental feature with spirit targeting. If you received a Special Announcement saying Summon Spirit - run away, but were NOT the real player targeted by the spirits, please share VOD/Transcriptor log")
 	end
 	self:Unschedule(unregisterShortTermEvents)
 	self:UnregisterShortTermEvents() -- outside the if check, since I only care about the first event, whether or not it targeted boss
@@ -525,9 +527,15 @@ function mod:UNIT_SPELLCAST_SUCCEEDED(_, spellName)
 		warnSummonSpirit:Show()
 		timerSummonSpiritCD:Start()
 		soundWarnSpirit:Play("Interface\\AddOns\\DBM-Core\\sounds\\RaidAbilities\\spirits.mp3")
+		playerHadTarget = UnitGUID("target") and true
+		if not playerHadTarget then
+			self:RegisterShortTermEvents(
+				"PLAYER_TARGET_CHANGED"
+			)
+			self:Schedule(0.1, unregisterShortTermEvents, self)
+		end
 	elseif spellName == summonSpiritName and self:AntiSpam(5, 1) then -- Summon Spirit
 		print("DBM: Summon Spirit UNIT_SPELLCAST_SUCCEEDED detected, plz report")
-		--[[
 		playerHadTarget = UnitGUID("target") and true
 		warnSummonSpirit:Show()
 		timerSummonSpiritCD:Start()
@@ -538,6 +546,5 @@ function mod:UNIT_SPELLCAST_SUCCEEDED(_, spellName)
 			)
 			self:Schedule(0.1, unregisterShortTermEvents, self)
 		end
-		]]
 	end
 end

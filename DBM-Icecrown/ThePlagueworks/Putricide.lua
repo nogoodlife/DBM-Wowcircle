@@ -172,8 +172,8 @@ function mod:SPELL_CAST_START(args)
 	if args:IsSpellID(70351, 71966, 71967, 71968) then	-- Unstable Experiment 25hc = 71968
 		warnUnstableExperimentSoon:Cancel()
 		warnUnstableExperiment:Show()
-		timerUnstableExperimentCD:Start()
-		warnUnstableExperimentSoon:Schedule(33) -- 25hc = cd38-5=33s
+		timerUnstableExperimentCD:Start() -- hc cd = 38
+		warnUnstableExperimentSoon:Schedule(38-5)
 	elseif spellId == 71617 then --Tear Gas (stun all on Normal phase) (Normal intermission)
 		self:SetStage(self.vb.phase + 0.5) -- phase1.5/2.5 for 25nm --(what id for 10nm?)
 		warnTearGas:Show()
@@ -251,7 +251,7 @@ function mod:SPELL_CAST_SUCCESS(args)
 		soundSpecWarnChokingGasBomb:Play("Interface\\AddOns\\DBM-Core\\sounds\\RaidAbilities\\choking.mp3")
 		soundChokingGasSoon:Cancel()
 		soundChokingGasSoon:Schedule(36-5, "Interface\\AddOns\\DBM-Core\\sounds\\RaidAbilities\\choking_soon.mp3")
-		timerChokingGasBombCD:Start()
+		timerChokingGasBombCD:Start() -- cd=36
 		timerChokingGasBombExplosion:Start()
 		warnChokingGasBombSoon:Schedule(36-5)
 	elseif args:IsSpellID(72855, 72856, 70911) then
@@ -261,7 +261,7 @@ function mod:SPELL_CAST_SUCCESS(args)
 		--self:BossTargetScanner(36678, "MalleableGooTarget", 0.05, 6)
 		specWarnMalleableGooCast:Show()
 		--specWarnMalleableGooCast:Play("watchstep")
-		timerMalleableGooCD:Start()
+		timerMalleableGooCD:Start() -- cd=20
 		soundSpecWarnMalleableGoo:Play("Interface\\AddOns\\DBM-Core\\sounds\\RaidAbilities\\malleable.mp3")
 		soundMalleableGooSoon:Cancel()
 		soundMalleableGooSoon:Schedule(20-3, "Interface\\AddOns\\DBM-Core\\sounds\\RaidAbilities\\malleable_soon.mp3")

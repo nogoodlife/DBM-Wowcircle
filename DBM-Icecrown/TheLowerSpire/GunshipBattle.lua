@@ -56,9 +56,9 @@ mod.vb.firstMage = false
 
 local function Adds(self) -- no longer on a timed loop, since YELL event is available
 --	timerAdds:Stop()
-	timerAdds:Start()
+	timerAdds:Start() -- cd = 60
 	warnAddsSoon:Cancel()
-	warnAddsSoon:Schedule(57)
+	warnAddsSoon:Schedule(60-3)
 --	self:Unschedule(Adds)
 --	self:Schedule(60, Adds, self)
 end

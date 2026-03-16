@@ -53,7 +53,7 @@ local specWarnGosaEvent			= mod:NewSpecialWarning("SpecWarnGosaEvent")
 local specWarnBlade				= mod:NewSpecialWarningMove(70305)
 
 --Lower Spire
-local timerDisruptingShout		= mod:NewCastTimer(3, 71022, nil, nil, nil, 2)
+local timerDisruptingShout		= mod:NewCastTimer("d3", 71022, nil, nil, nil, 2)
 local timerDarkReckoning		= mod:NewTargetTimer(8, 69483, nil, nil, nil, 5)
 local timerDeathPlague			= mod:NewTargetTimer(15, 72865, nil, nil, nil, 3)
 --Plagueworks

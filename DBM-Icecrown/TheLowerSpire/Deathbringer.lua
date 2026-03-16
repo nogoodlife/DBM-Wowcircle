@@ -47,9 +47,9 @@ local specwarnMark			= mod:NewSpecialWarningYou(72444, nil, 28836, nil, 1, 2)
 local specwarnRuneofBlood	= mod:NewSpecialWarningTaunt(72410, nil, nil, nil, 1, 2)
 local specwarnRuneofBloodYou= mod:NewSpecialWarningYou(72410, "Tank")
 
-local timerRuneofBlood		= mod:NewNextTimer(19.5, 72410, nil, "Tank|Healer", nil, 5, nil, DBM_COMMON_L.TANK_ICON) -- 19.59, 19.64 | 19.59, 19.55, 19.57, 19.51
-local timerBoilingBlood		= mod:NewVarTimer("v15.5-19.5", 72385, nil, "Healer", nil, 5, nil, DBM_COMMON_L.HEALER_ICON, true) -- cd 15.97, 19.19 | 15.93, 19.00, 17.13, 15.80
-local timerBloodNova		= mod:NewCDTimer(20, 72378, nil, nil, nil, 2, nil, nil, true) -- 2026.01.11 25hc = 20
+local timerRuneofBlood		= mod:NewNextTimer(19.5, 72410, nil, "Tank|Healer", nil, 5, nil, DBM_COMMON_L.TANK_ICON)
+local timerBoilingBlood		= mod:NewVarTimer("v15.5-19.5", 72385, nil, "Healer", nil, 5, nil, DBM_COMMON_L.HEALER_ICON, true)
+local timerBloodNova		= mod:NewCDTimer(20, 72378, nil, nil, nil, 2, nil, nil, true)
 
 --local soundSpecWarnMark		= mod:NewSound(72293, nil, canShadowmeld or canVanish)
 
@@ -123,9 +123,9 @@ function mod:OnCombatStart(delay)
 	else
 		enrageTimer:Start(360-delay)
 	end
-	timerCallBloodBeast:Start(-delay)
+	timerCallBloodBeast:Start(-delay) -- cd = 40
 	warnAddsSoon:Schedule(35-delay)
-	timerBloodNova:Start(-delay) -- 2026.01.11 25hc = 20
+	timerBloodNova:Start(-delay)
 	timerRuneofBlood:Start(19.2-delay)
 	timerBoilingBlood:Start(19.1-delay)
 	self.vb.warned_preFrenzy = false
@@ -216,7 +216,7 @@ function mod:SPELL_SUMMON(args)
 			self.vb.bloodBeastAlive = self.vb.bloodBeastAlive + (self:IsDifficulty("normal25", "heroic25") and 5 or 2)
 			warnAdds:Show()
 			warnAddsSoon:Schedule(35)
-			timerCallBloodBeast:Start()
+			timerCallBloodBeast:Start() -- cd = 40
 			if self:IsHeroic() then
 				timerNextScentofBlood:Start()
 			end
@@ -225,7 +225,8 @@ function mod:SPELL_SUMMON(args)
 			)
 		end
 		if self.Options.BeastIcons then
-			self:ScanForMobs(args.destGUID, 2, self.vb.beastIcon, 1, nil, 10, "BeastIcons") -- scanId, iconSetMethod, mobIcon, maxIcon, scanTable, scanningTime, optionName, allowFriendly, skipMarked, allAllowed, wipeGUID
+			self:ScanForMobs(args.destGUID, 2, self.vb.beastIcon, 1, nil, 10, "BeastIcons")
+			-- scanId=guid/cid, iconSetMethod, mobIcon, maxIcon, scanTable, scanningTime, optionName, allowFriendly, skipMarked, allAllowed, wipeGUID
 		end
 		self.vb.beastIcon = self.vb.beastIcon - 1
 	end

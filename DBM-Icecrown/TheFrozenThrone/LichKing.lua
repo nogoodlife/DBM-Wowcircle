@@ -99,7 +99,7 @@ local specWarnTrapNear				= mod:NewSpecialWarningClose(73539, nil, nil, nil, 3, 
 local specWarnEnrage				= mod:NewSpecialWarningSpell(72143, "Tank")
 local specWarnEnrageLow				= mod:NewSpecialWarningSpell(28747, false)
 
-local timerInfestCD					= mod:NewVarTimer("v21.1-24.6", 70541, nil, "Healer|RaidCooldown", nil, 5, nil, DBM_COMMON_L.HEALER_ICON, true)
+local timerInfestCD					= mod:NewVarCountTimer("v21.1-24.6", 70541, nil, "Healer|RaidCooldown", nil, 5, nil, DBM_COMMON_L.HEALER_ICON, true)
 local timerNecroticPlagueCleanse	= mod:NewTimer(5, "TimerNecroticPlagueCleanse", 70337, "Healer", nil, 5, DBM_COMMON_L.HEALER_ICON, nil, nil, nil, nil, nil, nil, 70337)
 local timerNecroticPlagueCD			= mod:NewCDTimer(30, 70337, nil, nil, nil, 3, nil, DBM_COMMON_L.DISEASE_ICON, true) -- 3s variance [30.1-32.9] Added "keep" arg. (10N Icecrown 2022/08/20 || 10N Icecrown 2022/08/25 || 25H Lordaeron 2022/09/03) - 32.8, 31.6 ; 32.7 ; 31.2;  31.7, 32.7 || 30.2 || 32.3, 32.9 ; 31.3, 31.9 ; 32.9, 30.4 ; 30.7, 31.7 ; 30.1, 30.2 ; 32.6, 31.2 ; 31.1 ; 32.5, 30.3, 31.7
 local timerEnrageCD					= mod:NewCDCountTimer("d20", 72143, nil, "Tank|RemoveEnrage", nil, 5, nil, DBM_COMMON_L.ENRAGE_ICON--[[, true]]) -- String timer starting with "d" means "allowDouble". Disabled "keep" arg since cast can be stun-skipped.
@@ -158,7 +158,7 @@ local specWarnHarvestSouls			= mod:NewSpecialWarningSpell(73654, nil, nil, nil, 
 
 local timerHarvestSoul				= mod:NewTargetTimer(6, 68980)
 local timerHarvestSoulCD			= mod:NewNextTimer(75, 68980, nil, nil, nil, 6)
-local timerVileSpirit				= mod:NewNextTimer(30.5, 70498, nil, nil, nil, 1) -- 30.71 30.99
+local timerVileSpirit				= mod:NewNextTimer(30.5, 70498, nil, nil, nil, 1)
 local timerRestoreSoul				= mod:NewCastTimer(40, 73650, nil, nil, nil, 6)
 local timerRoleplay					= mod:NewTimer(162, "TimerRoleplay", 72350, nil, nil, 6)
 
@@ -178,7 +178,7 @@ local specWarnIceSpheresYou			= mod:NewSpecialWarningMoveAway(69103, nil, 69090,
 local specWarnGTFO					= mod:NewSpecialWarningGTFO(68983, nil, nil, nil, 1, 8)
 
 local timerPhaseTransition			= mod:NewTimer(62.5, "PhaseTransition", 72262, nil, nil, 6)
-local timerRagingSpiritCD			= mod:NewNextCountTimer(22, 69200, nil, nil, nil, 1) -- cd phase1.5 22.02, 22.12
+local timerRagingSpiritCD			= mod:NewNextCountTimer(22, 69200, nil, nil, nil, 1)
 local timerSoulShriekCD				= mod:NewCDTimer(12, 69242, nil, nil, nil, 1) -- 12.24
 
 mod:AddRangeFrameOption(8, 72133)
@@ -204,7 +204,7 @@ local plagueHop = DBM:GetSpellInfo(70338)--Hop spellID only, not cast one.
 -- local soulshriek = GetSpellInfo(69242)
 local plagueExpires = {}
 local grabIcon = 2
---local lastValk = 0
+--	local lastValk = 0
 --	local maxValks = mod:IsDifficulty("normal25", "heroic25") and 3 or 1
 local warnedAchievement = false
 local lastPlague
@@ -277,7 +277,7 @@ local function NextPhase(self, delay)
 		timerShamblingHorror:Start(20-delay)
 		timerDrudgeGhouls:Start(10-delay)
 		if self:IsHeroic() then
-			timerTrapCD:Start(15-delay) -- 15.08
+			timerTrapCD:Start(15-delay)
 		end
 		timerNecroticPlagueCD:Start(-delay)
 		timerInfestCD:Start(5.0-delay, self.vb.infestCount+1)
@@ -288,13 +288,13 @@ local function NextPhase(self, delay)
 			self:CreateFrame()
 		end
 		timerSummonValkyr:Start(15.5, self.vb.valkyrWaveCount+1)
-		timerSoulreaperCD:Start(31.5, self.vb.soulReaperCount+1) --phase2+31.46 31.67
-		soundSoulReaperSoon:Schedule(32-2.5, "Interface\\AddOns\\DBM-Core\\sounds\\RaidAbilities\\soulreaperSoon.mp3")
-		timerDefileCD:Start(37, self.vb.defileCount+1) -- phase2+36.96 37.02
-		warnDefileSoon:Schedule(34, self.vb.defileCount+1)
-		warnDefileSoon:ScheduleVoice(34, "scatter") -- Voice Pack - Scatter.ogg: "Spread!"
-		timerInfestCD:Start(17.4, self.vb.infestCount+1) -- 17.45 17.55
-		soundInfestSoon:Schedule(14-2, "Interface\\AddOns\\DBM-Core\\sounds\\RaidAbilities\\infestSoon.mp3")
+		timerSoulreaperCD:Start(31.5, self.vb.soulReaperCount+1)
+		soundSoulReaperSoon:Schedule(31.5-2.5, "Interface\\AddOns\\DBM-Core\\sounds\\RaidAbilities\\soulreaperSoon.mp3")
+		timerDefileCD:Start(37, self.vb.defileCount+1)
+		warnDefileSoon:Schedule(37-3, self.vb.defileCount+1)
+		warnDefileSoon:ScheduleVoice(37-3, "scatter") -- Voice Pack - Scatter.ogg: "Spread!"
+		timerInfestCD:Start(17.4, self.vb.infestCount+1)
+		soundInfestSoon:Schedule(17.4-2, "Interface\\AddOns\\DBM-Core\\sounds\\RaidAbilities\\infestSoon.mp3")
 		self:RegisterShortTermEvents(
 			"UNIT_ENTERING_VEHICLE",
 			"UNIT_EXITING_VEHICLE"
@@ -325,7 +325,7 @@ local function leftFrostmourne(self)
 	warnDefileSoon:Show(self.vb.defileCount+1)
 	warnDefileSoon:Play("scatter") -- Voice Pack - Scatter.ogg: "Spread!"
 	timerSoulreaperCD:Start("v10.5-18.0", self.vb.soulReaperCount+1) -- can be delayed by 0.5+5s VileSpirit cast_time+cast_duration
-	soundSoulReaperSoon:Schedule(12.4-2.5, "Interface\\AddOns\\DBM-Core\\sounds\\RaidAbilities\\soulreaperSoon.mp3")
+	soundSoulReaperSoon:Schedule(10.5-2.5, "Interface\\AddOns\\DBM-Core\\sounds\\RaidAbilities\\soulreaperSoon.mp3")
 	timerVileSpirit:Start(12) -- 12.73 | 12.56
 end
 
@@ -467,15 +467,15 @@ function mod:SPELL_CAST_START(args)
 		specWarnInfest:Show(self.vb.infestCount)
 		timerInfestCD:Start(nil, self.vb.infestCount+1)
 		soundInfestSoon:Cancel()
-		soundInfestSoon:Schedule(22.5-2, "Interface\\AddOns\\DBM-Core\\sounds\\RaidAbilities\\infestSoon.mp3")
+		soundInfestSoon:Schedule(21.1-2, "Interface\\AddOns\\DBM-Core\\sounds\\RaidAbilities\\infestSoon.mp3") --timerInfestCD "v21.1-24.6"
 	elseif spellId == 72762 then -- Defile
 		self.vb.defileCount = self.vb.defileCount + 1
 		self:BossTargetScanner(36597, "DefileTarget", 0.02, 15)
 		warnDefileSoon:Cancel()
 		warnDefileSoon:CancelVoice()
-		warnDefileSoon:Schedule(29, self.vb.defileCount+1)
-		warnDefileSoon:ScheduleVoice(29, "scatter")
-		timerDefileCD:Start(nil, self.vb.defileCount+1)
+		warnDefileSoon:Schedule(32.1-3, self.vb.defileCount+1)
+		warnDefileSoon:ScheduleVoice(32.1-3, "scatter")
+		timerDefileCD:Start(nil, self.vb.defileCount+1) --"v32.1-35.0"
 	elseif spellId == 73539 then -- Shadow Trap (Heroic)
 		self:BossTargetScanner(36597, "TrapTarget", 0.02, 10)
 		timerTrapCD:Start()
@@ -516,8 +516,8 @@ function mod:SPELL_CAST_SUCCESS(args)
 		warnSoulreaper:Show(self.vb.soulReaperCount, args.destName)
 		specwarnSoulreaper:Show(args.destName)
 		timerSoulreaper:Start(args.destName)
-		timerSoulreaperCD:Start(nil, self.vb.soulReaperCount+1)
-		soundSoulReaperSoon:Schedule(34.0-2.5, "Interface\\AddOns\\DBM-Core\\sounds\\RaidAbilities\\soulreaperSoon.mp3")
+		timerSoulreaperCD:Start(nil, self.vb.soulReaperCount+1) --"v33.6-38.6"
+		soundSoulReaperSoon:Schedule(33.6-2.5, "Interface\\AddOns\\DBM-Core\\sounds\\RaidAbilities\\soulreaperSoon.mp3")
 		if args:IsPlayer() then
 			specWarnSoulreaper:Show()
 			specWarnSoulreaper:Play("defensive")
