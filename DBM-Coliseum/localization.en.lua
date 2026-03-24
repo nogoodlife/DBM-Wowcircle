@@ -32,7 +32,8 @@ L:SetOptionLocalization({
 
 L:SetMiscLocalization({
 	Charge				= "^%%s glares at (%S+) and lets out",
-	CombatStart			= "Hailing from the deepest, darkest caverns of the Storm Peaks, Gormok the Impaler! Battle on, heroes!",
+	--CombatStart			= "Hailing from the deepest, darkest caverns of the Storm Peaks, Gormok the Impaler! Battle on, heroes!",	--10.8
+	CombatStart			= "Welcome, champions! You have heard the call of the Argent Crusade and you have boldly answered! It is here, in the Crusaders' Coliseum, that you will face your greatest challenges. Those of you who survive the rigors of the coliseum will join the Argent Crusade on its march to Icecrown Citadel.",	--51.23-51.30
 	Phase2				= "Steel yourselves, heroes, for the twin terrors, Acidmaw and Dreadscale, enter the arena!",
 	Phase3				= "The air itself freezes with the introduction of our next combatant, Icehowl! Kill or be killed, champions!",
 	Gormok				= "Gormok the Impaler",

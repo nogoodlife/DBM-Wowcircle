@@ -192,7 +192,7 @@ local function landingPhaseWorkaround(self, timeOffset)
 	print("Landing Phase scheduled")
 	timerUnchainedMagic:Start(sformat("v%s-%s", 12.5-timeOffset, 13.9-timeOffset))
 	timerTailSmash:Start(20-timeOffset) -- 20.09
-	timerNextBlisteringCold:Start(sformat("v%s-%s", 36-timeOffset, 38.5-timeOffset)) -- SindragosaLanded+38.74 | -1.5=37.24 --is it always borked by first FrostBreath or just random?
+	timerNextBlisteringCold:Start(sformat("v%s-%s", 35-timeOffset, 40-timeOffset))
 	self:UnregisterShortTermEvents()
 end
 
@@ -466,7 +466,7 @@ function mod:OnSync(msg)
 		self:SetStage(1)
 		timerUnchainedMagic:Start("v12.5-13.9")
 		timerTailSmash:Start(20) -- 20.09
-		timerNextBlisteringCold:Start("v36-40") -- SindragosaLanded+v38.5-40 | -1.5=v37-40 --is it always borked by first FrostBreath or just random? | its random, can be before frost breath ~35-35.5 after landing...
+		timerNextBlisteringCold:Start("v35-40") -- SindragosaLanded+v35.5-40 | -1.5=v34-40 --is it always borked by first FrostBreath or just random? | its random, can be before frost breath ~35-35.5 after landing...
 		self:UnregisterShortTermEvents()
 	end
 end

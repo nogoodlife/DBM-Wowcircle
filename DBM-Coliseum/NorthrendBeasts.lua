@@ -40,9 +40,9 @@ local icehowl = L.Icehowl
 
 -- General
 local enrageTimer			= mod:NewBerserkTimer(223) -- enrage when?
-local timerCombatStart		= mod:NewCombatTimer(10.8) -- PLAYER_REGEN_DISABLED
+local timerCombatStart		= mod:NewCombatTimer(51.2) -- PLAYER_REGEN_DISABLED
 local timerEngage			= mod:NewTimer(11.4, "TimerEngage", 1180, nil, nil, 6)
-local timerNextBoss			= mod:NewTimer(182, "TimerNextBoss", 2457, nil, nil, 1)
+local timerNextBoss			= mod:NewTimer(170, "TimerNextBoss", 2457, nil, nil, 1)
 
 mod:AddRangeFrameOption("10")
 
@@ -59,8 +59,8 @@ local specWarnSilence		= mod:NewSpecialWarningSpell(66330, "SpellCaster")
 local specWarnStompPreWarn	= mod:NewSpecialWarningPreWarn(66330, "SpellCaster", 3, nil, nil, 1, 2)
 
 local timerNextStomp		= mod:NewNextTimer(20, 66330, nil, nil, nil, 2, nil, DBM_COMMON_L.INTERRUPT_ICON, nil, mod:IsSpellCaster() and 3 or nil, 3) -- cd 20.06, 20.08
-local timerImpaleCD			= mod:NewVarTimer("v7.0-13.0", 66331, nil, "Tank|Healer", nil, 5, nil, DBM_COMMON_L.TANK_ICON, true)
-local timerRisingAnger		= mod:NewVarTimer("v17.1-29.2", 66636, nil, nil, nil, 1, nil, nil, true) -- need more logs
+local timerImpaleCD			= mod:NewVarTimer("v8.0-10.0", 66331, nil, "Tank|Healer", nil, 5, nil, DBM_COMMON_L.TANK_ICON, true)
+local timerRisingAnger		= mod:NewVarTimer("v15.0-30.0", 66636, nil, nil, nil, 1, nil, nil, true) -- need more logs
 
 local soundAuraMastery		= mod:NewSound(66330, "soundConcAuraMastery")
 
@@ -74,16 +74,16 @@ local warnEnrageWorm		= mod:NewSpellAnnounce(68335, 3)
 local specWarnToxin			= mod:NewSpecialWarningMoveTo(66823, nil, nil, nil, 1, 2)
 local specWarnBile			= mod:NewSpecialWarningYou(66869, nil, nil, nil, 1, 2)
 
-local timerSubmerge			= mod:NewCDSourceTimer(45, 66948, nil, nil, nil, 6, "Interface\\AddOns\\DBM-Core\\textures\\CryptFiendBurrow.blp")
+local timerSubmerge			= mod:NewCDSourceTimer(44.5, 66948, nil, nil, nil, 6, "Interface\\AddOns\\DBM-Core\\textures\\CryptFiendBurrow.blp")
 local timerEmerge			= mod:NewNextSourceTimer(5, 66947, nil, nil, nil, 6, "Interface\\AddOns\\DBM-Core\\textures\\CryptFiendUnBurrow.blp")
-local timerSweepCD			= mod:NewCDSourceTimer(16.5, 66794, nil, "Melee", nil, 3, nil, nil, true) -- REVIEW! variance? -- togc25 17.04
+local timerSweepCD			= mod:NewCDSourceTimer(16, 66794, nil, "Melee", nil, 3, nil, nil, true) -- REVIEW! variance?
 local timerAcidicSpewCD		= mod:NewCDTimer(21, 66819, nil, "Tank", 2, 5, nil, DBM_COMMON_L.TANK_ICON, true) -- Added "Keep" arg
-local timerMoltenSpewCD		= mod:NewCDTimer(16.1, 66820, nil, "Tank", 2, 5, nil, DBM_COMMON_L.TANK_ICON, true) -- REVIEW! variance? Added "Keep" arg (25H Lordaeron 2022/09/28 || ) - 19.1 || 16.1
+local timerMoltenSpewCD		= mod:NewCDTimer(21, 66820, nil, "Tank", 2, 5, nil, DBM_COMMON_L.TANK_ICON, true) -- REVIEW! remove keep cuz no variance?
 local timerParalyticSprayCD	= mod:NewCDTimer(6, 66901, nil, nil, nil, 3, nil, nil, true) -- REVIEW! ~6s variance? -- 11.23, 6.88, 11.27, 6.30
-local timerBurningSprayCD	= mod:NewCDTimer(19, 66902, nil, nil, nil, 3, nil, nil, true) -- REVIEW! 5s variance? (25H Lordaeron 2022/09/03 || 25H Lordaeron 2022/09/28) - 20.6, 19.0 || 24.7
-local timerParalyticBiteCD	= mod:NewCDTimer(25, 66824, nil, "Melee", nil, 3, nil, nil, true) -- Added "Keep" arg
-local timerBurningBiteCD	= mod:NewCDTimer(15, 66879, nil, "Melee", nil, 3, nil, nil, true) -- REVIEW! 2s variance?  Added "Keep" arg (25H Lordaeron 2022/09/03) - 16.3
-local timerSlimePoolCD		= mod:NewCDSourceTimer(12, 66883, nil, "Melee", nil, 3) -- Dreadscale: 12.01, 12.11;   Acidmaw: ???
+local timerBurningSprayCD	= mod:NewCDTimer(17.1, 66902, nil, nil, nil, 3, nil, nil, true) -- REVIEW! check variance?
+local timerParalyticBiteCD	= mod:NewCDTimer(15, 66824, nil, "Melee", nil, 3, nil, nil, true) -- Added "Keep" arg
+local timerBurningBiteCD	= mod:NewCDTimer(15, 66879, nil, "Melee", nil, 3, nil, nil, true) -- REVIEW! remove keep cuz no variance?
+local timerSlimePoolCD		= mod:NewCDSourceTimer(12, 66883, nil, "Melee", nil, 3) -- Dreadscale: 12.09 12.08 12.5 12.55 12.10;   Acidmaw: 12.08 12.06 12.08 12.06
 
 mod:AddSetIconOption("SetIconOnBileTarget", 66869, false, 0, {1, 2, 3, 4, 5, 6, 7, 8})
 
@@ -113,13 +113,14 @@ mod:GroupSpells(52311, 66758, 66759)--Furious Charge, Staggering Daze, and Froth
 local bileName = DBM:GetSpellInfo(66869)
 local phases = {}
 local acidmawEngaged = false
-local acidmawSubmerged = false
+--local acidmawSubmerged = false
 local dreadscaleEngaged = false
 mod.vb.burnIcon = 1
 mod.vb.DreadscaleMobile = true
-mod.vb.AcidmawMobile = false
+mod.vb.AcidmawMobile = true
 mod.vb.DreadscaleDead = false
 mod.vb.AcidmawDead = false
+local ParalyticSprayCount = 1
 
 local function updateHealthFrame(phase)
 	if phases[phase] then
@@ -149,27 +150,28 @@ local function isBuffOwner(uId, spellId)
 end
 
 local function GormokEngage(self, timeOffset)
-	specWarnStompPreWarn:Schedule(12-timeOffset) -- 3s pre-warn. (10N Lordaeron 2022/10/02) - 14.9
+	specWarnStompPreWarn:Schedule(11.5-timeOffset) -- 3s pre-warn
 	if self.Options.soundConcAuraMastery and isBuffOwner("player", 19746) then -- Concentration Aura Mastery by a Paladin will negate the interrupt effect of Staggering Stomp
-		soundAuraMastery:Schedule(12-timeOffset, "Interface\\AddOns\\DBM-Core\\sounds\\PlayerAbilities\\AuraMastery.ogg")
+		soundAuraMastery:Schedule(11.5-timeOffset, "Interface\\AddOns\\DBM-Core\\sounds\\PlayerAbilities\\AuraMastery.ogg")
 	else
-		specWarnStompPreWarn:ScheduleVoice(12-timeOffset, "silencesoon")
+		specWarnStompPreWarn:ScheduleVoice(11.5-timeOffset, "silencesoon")
 	end
 	timerNextStomp:Start(14.5-timeOffset) -- pull:14.54
-	timerImpaleCD:Start(sformat("v%s-%s", 16.0-timeOffset, 17.9-timeOffset))
-	timerRisingAnger:Start(sformat("v%s-%s", 18.2-timeOffset, 25.0-timeOffset)) -- REVIEW! variance? need more logs
+	timerImpaleCD:Start(sformat("v%s-%s", 16.0-timeOffset, 18.5-timeOffset))
+	timerRisingAnger:Start(sformat("v%s-%s", 15.0-timeOffset, 30.0-timeOffset)) -- 15-30 ? need more logs
 end
 
 function mod:OnCombatStart(delay)
 	table.wipe(phases)
 	acidmawEngaged = false
-	acidmawSubmerged = false
+	--acidmawSubmerged = false
 	dreadscaleEngaged = false
 	self.vb.burnIcon = 8
 	self.vb.DreadscaleMobile = true
-	self.vb.AcidmawMobile = false
+	self.vb.AcidmawMobile = true
 	self.vb.DreadscaleDead = false
 	self.vb.AcidmawDead = false
+	ParalyticSprayCount = 1
 	self:SetStage(1)
 	timerEngage:Start(11.4-delay)
 	self:Schedule(11.4-delay, GormokEngage, self, 11.4-delay)	--GormokEngage(self, timeOffset)
@@ -205,7 +207,14 @@ function mod:SPELL_CAST_START(args)
 	elseif spellId == 66818 then							-- Acidic Spew
 		timerAcidicSpewCD:Start()
 	elseif args:IsSpellID(66901, 67615, 67616, 67617) then		-- Paralytic Spray
-		timerParalyticSprayCD:Start()
+		ParalyticSprayCount = ParalyticSprayCount + 1
+		if ParalyticSprayCount == 2 or ParalyticSprayCount == 4 then
+			timerParalyticSprayCD:Start(10.85)
+		elseif ParalyticSprayCount == 3 or ParalyticSprayCount == 5 then
+			timerParalyticSprayCD:Start(6.7)
+		else
+			timerParalyticSprayCD:Start(17.1)
+		end
 	elseif args:IsSpellID(66902, 67627, 67628, 67629) then		-- Burning Spray
 		self.vb.burnIcon = 1
 		timerBurningSprayCD:Start()
@@ -278,7 +287,7 @@ function mod:SPELL_AURA_APPLIED_DOSE(args)
 	elseif args.spellId == 66636 then	-- Rising Anger
 		local amount = args.amount or 1
 		WarningSnobold:Show(args.destName)
-		if amount < 3 then
+		if amount <= 3 then
 			timerRisingAnger:Start()
 		elseif amount >= 4 then -- only 4 snobolds
 			timerRisingAnger:Stop()
@@ -342,14 +351,13 @@ end
 function mod:CHAT_MSG_MONSTER_YELL(msg)
 	if msg == L.CombatStart or msg:find(L.CombatStart) then --Gormok the Impaler
 		timerCombatStart:Start()
-		-- 00.00 CombatStart message^
-		-- +10.8 PLAYER_REGEN_DISABLED 				-- player entering combat
+		-- 0.00 PLAYER_REGEN_DISABLED 				-- player entering combat
 		-- +0.4-0.5 INSTANCE_ENCOUNTER_ENGAGE_UNIT	-- DBM StartCombat
-		-- actual bossfight when? ~11.4?			-- add timerEngage and shedule first spell timers
+		-- +11.4-11.5 UNIT_TARGET 					-- actuall bossfight start ?
 	elseif msg == L.Phase2 or msg:find(L.Phase2) then
 		self:SetStage(1.5)
 --		self:ScheduleMethod(13.5, "WormsEmerge")
-		timerCombatStart:Start(13)
+		timerCombatStart:Start(12.7)
 		timerNextBoss:Cancel()
 		updateHealthFrame(2)
 		if self.Options.RangeFrame then
@@ -364,11 +372,11 @@ function mod:CHAT_MSG_MONSTER_YELL(msg)
 		if self:IsHeroic() then
 			enrageTimer:Start()
 		end
---		self:UnscheduleMethod("WormsSubmerge")
---		self:UnscheduleMethod("WormsEmerge")
 		timerCombatStart:Start(9)
 		timerNextBoss:Cancel()
 		timerSubmerge:Cancel()
+		self:UnscheduleMethod("acidmawSubmerge")
+		self:UnscheduleMethod("dreadscaleSubmerge")
 		timerEmerge:Cancel()
 		if self.Options.RangeFrame then
 			DBM.RangeCheck:Hide()
@@ -395,6 +403,7 @@ function mod:UNIT_DIED(args)
 		timerParalyticBiteCD:Cancel()
 		timerAcidicSpewCD:Cancel()
 		timerSubmerge:Cancel(acidmaw)
+		self:UnscheduleMethod("acidmawSubmerge")
 		if self.vb.AcidmawMobile then
 			timerSlimePoolCD:Cancel(args.destName)
 		else
@@ -411,6 +420,7 @@ function mod:UNIT_DIED(args)
 		timerBurningBiteCD:Cancel()
 		timerMoltenSpewCD:Cancel()
 		timerSubmerge:Cancel(dreadscale)
+		self:UnscheduleMethod("dreadscaleSubmerge")
 		if self.vb.DreadscaleMobile then
 			timerSlimePoolCD:Cancel(args.destName)
 		else
@@ -433,32 +443,55 @@ function mod:INSTANCE_ENCOUNTER_ENGAGE_UNIT()
 			local cid = self:GetUnitCreatureId(unitID)
 			local bossName = UnitName(unitID)
 			if cid == 35144 and not acidmawEngaged then -- Acidmaw (stationary on engage)
-				self:SetStage(2) -- IEEU fires in tandem, so phasing only once is fine
 				acidmawEngaged = true
-				if self:IsHeroic() then
-					timerNextBoss:Start()
+				if acidmawEngaged and dreadscaleEngaged then
+					self:UnregisterShortTermEvents()
 				end
-				timerSubmerge:Start(49.3, bossName) -- REVIEW! 2s delay from visual to submerge (25H Lordaeron 2022/09/03) - 50
-				timerSweepCD:Start(16.3, bossName) -- togc25 phase2+16.38
-				timerParalyticSprayCD:Start(8)	-- togc25 phase2+8.32
 			elseif cid == 34799 and not dreadscaleEngaged then -- Dreadscale (mobile on engage)
+				self:SetStage(2)
 				dreadscaleEngaged = true
-				timerSubmerge:Start(bossName)
-				timerSlimePoolCD:Start(13, bossName) -- togc25 13.06
-				timerMoltenSpewCD:Start(19.2) -- (25H Lordaeron 2022/09/03 || 25H Lordaeron 2022/09/28 || 25N Lordaeron 2022/10/13) - 24 || 23.2 || 19.2
-				timerBurningBiteCD:Start(14) -- togc25 phase2+13.97
+				timerSubmerge:Start(44.5, bossName)
+				self:ScheduleMethod(44.5, "dreadscaleSubmerge")
+				timerSlimePoolCD:Start(13.4, bossName)
+				timerMoltenSpewCD:Start(9.4)
+				timerBurningBiteCD:Start(14.4)
+				if self:IsHeroic() then
+					timerNextBoss:Start() -- what timer on circle?
+				end
+				if acidmawEngaged and dreadscaleEngaged then
+					self:UnregisterShortTermEvents()
+				end
 			elseif cid == 34797 then -- Icehowl
 				self:SetStage(3)
-				timerBreathCD:Start(14.5) -- 20-5.35 = 14.65
-				timerNextCrash:Start(31.7) -- 40.9(oldtimer)-9.18=31.72
+				timerBreathCD:Start(14.5)
+				timerNextCrash:Start(31.7)
 				self:UnregisterShortTermEvents()
 			end
-			if unitID == "boss2" then
-				self:UnregisterShortTermEvents() -- both worms are on boss frames, job finished.
-			end
+			--if unitID == "boss2" then
+			--	self:UnregisterShortTermEvents() -- both worms are on boss frames, job finished. -- what if boss1 Gormok still alive, boss2=Dreadscale ? we are fucked ?
+			--end
 		end
 	end
 end
+
+function mod:acidmawSubmerge()
+	timerAcidicSpewCD:Stop()
+	timerParalyticBiteCD:Stop()
+	timerParalyticSprayCD:Stop()
+	timerSlimePoolCD:Stop(acidmaw)
+	timerSweepCD:Stop(acidmaw)
+	timerEmerge:Start(8.1, acidmaw)
+end
+
+function mod:dreadscaleSubmerge()
+	timerMoltenSpewCD:Stop()
+	timerBurningBiteCD:Stop()
+	timerBurningSprayCD:Stop()
+	timerSlimePoolCD:Stop(dreadscale)
+	timerSweepCD:Stop(dreadscale)
+	timerEmerge:Start(8.1, dreadscale)
+end
+
 
 function mod:UNIT_SPELLCAST_START(_, spellName)
 	if spellName == GetSpellInfo(66683) and self:AntiSpam() then -- Massive Crash -- so massive that it crashes x2times at once on circle =_=
@@ -468,8 +501,10 @@ function mod:UNIT_SPELLCAST_START(_, spellName)
 end
 
 function mod:UNIT_SPELLCAST_SUCCEEDED(uId, spellName)
-	if spellName == GetSpellInfo(66948) then -- Submerge
-		local npcId = self:GetUnitCreatureId(uId)
+	if spellName == GetSpellInfo(66948) then -- Submerge --no events for 66948
+	print("DBM: UNIT_SPELLCAST_SUCCEEDED GetSpellInfo(66948) DETECTED! plz report")
+	--[[
+	local npcId = self:GetUnitCreatureId(uId)
 		local unitName = UnitName(uId) or UNKNOWN
 		DBM:Debug("Submerge casted by " .. unitName.. ": " .. tostring(npcId), 2)
 		if npcId == 35144 then -- Acidmaw
@@ -488,34 +523,43 @@ function mod:UNIT_SPELLCAST_SUCCEEDED(uId, spellName)
 			timerSweepCD:Stop(dreadscale)
 			timerEmerge:Start(6.5, unitName) -- (25H Lordaeron 2022/09/03) - 7, 6
 		end
+	]]
 	elseif spellName == GetSpellInfo(66947) then -- Emerge
 		local npcId = self:GetUnitCreatureId(uId)
 		local unitName = UnitName(uId) or UNKNOWN
 		DBM:Debug("Emerge casted by " .. unitName.. ": " .. tostring(npcId), 2)
-		if npcId == 35144 and acidmawSubmerged then -- Acidmaw
+		if npcId == 35144 then -- Acidmaw
+			timerEmerge:Stop(acidmaw)
 			self.vb.AcidmawMobile = not self.vb.AcidmawMobile
-			acidmawSubmerged = false
+			--acidmawSubmerged = false
 			DBM:Debug("Acidmaw PHASE_STATIONARY: " .. tostring(self.vb.AcidmawMobile), 2)
-			timerSubmerge:Start(43, acidmaw)
+			timerSubmerge:Start(42, acidmaw)
+			self:ScheduleMethod(42, "acidmawSubmerge")
 			if self.vb.AcidmawMobile then
-				timerSlimePoolCD:Start(acidmaw) -- (25H Lordaeron 2022/09/03) - 12
-				timerParalyticBiteCD:Start(13) -- (25H Lordaeron 2022/09/03 || 25H Lordaeron 2022/09/28 || 25H Lordearon 2022/10/09 || 25N Lordaeron 2022/10/13 || 25N Lordaeron 2022/10/21 || 25N Lordaeron 2022/12/07) - 28 || 26.2 || 22.0 || 20.2 || 16.5 || 13.0
-				timerAcidicSpewCD:Start(15.9) -- (25H Lordaeron 2022/09/03) - 21 || 15.9
+				timerSlimePoolCD:Start(9, acidmaw)
+				timerParalyticBiteCD:Start(11.9)
+				timerAcidicSpewCD:Start(15.9)
 			else
-				timerSweepCD:Start(22, acidmaw)	-- Log review: 22-24s (N/H?)
-				timerParalyticSprayCD:Start(16.7)	-- (old log review (N/H?) || 25H Lordaeron 2022/09/28) - 18-20 || 16.7
+				timerSweepCD:Start(13.4, acidmaw)
+				if ParalyticSprayCount == 1 then
+					timerParalyticSprayCD:Start(5.5)
+				else
+					timerParalyticSprayCD:Start(14.9)
+				end
 			end
 		elseif npcId == 34799 then -- Dreadscale
+			timerEmerge:Stop(dreadscale)
 			self.vb.DreadscaleMobile = not self.vb.DreadscaleMobile
 			DBM:Debug("Dreadscale PHASE_STATIONARY: " .. tostring(self.vb.DreadscaleMobile), 2)
-			timerSubmerge:Start(44, dreadscale)
+			timerSubmerge:Start(42, dreadscale)
+			self:ScheduleMethod(42, "dreadscaleSubmerge")
 			if self.vb.DreadscaleMobile then
-				timerSlimePoolCD:Start(dreadscale) -- (25H Lordaeron 2022/09/03) - 12
-				timerMoltenSpewCD:Start(21.4) -- (25H Lordaeron 2022/09/03 || 25H Lordaeron 2022/09/28 || 25N Lordaeron 2022/10/13) - 24 || 21.8 || 21.4
-				timerBurningBiteCD:Start(14.2) -- (25H Lordaeron 2022/09/03 || 25H Lordaeron 2022/09/28) - 19 || 14.2
+				timerSlimePoolCD:Start(9, dreadscale)
+				timerMoltenSpewCD:Start(18)
+				timerBurningBiteCD:Start(12)
 			else
-				timerSweepCD:Start(14.8, dreadscale) -- (25H Lordaeron 2022/09/03 || 25N Lordaeron 2022/10/21) - 17 || 14.8
-				timerBurningSprayCD:Start(13.4) -- (25H Lordaeron 2022/09/03 || 25H Lordaeron 2022/09/28) - 20 || 13.5
+				timerSweepCD:Start(13.4, dreadscale)
+				timerBurningSprayCD:Start(14.9)
 			end
 		end
 	end
