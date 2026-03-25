@@ -701,14 +701,16 @@ L:SetWarningLocalization({
 })
 
 L:SetTimerLocalization({
-	TimerPortalIn	= "Портал #%d" ,
+	TimerPortalIn	= "Портал #%d",
+	TimerAddsIn		= "Прибытие противников",
 })
 
 L:SetOptionLocalization({
 	WarningPortalNow		= "Предупреждение для нового портала",
 	WarningPortalSoon		= "Предварительное предупреждение для нового портала",
 	WarningBossNow			= "Предупреждение о появлении босса",
-	TimerPortalIn			= "Отсчет времени до следующего портала (после босса)",
+	TimerPortalIn			= "Отсчет времени до следующего портала",
+	TimerAddsIn				= "Отсчет времени до прибытия противников",
 	ShowAllPortalTimers		= "Отсчет времени для всех порталов (неточный)"
 })
 

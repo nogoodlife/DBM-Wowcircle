@@ -700,13 +700,15 @@ L:SetWarningLocalization({
 
 L:SetTimerLocalization({
 	TimerPortalIn	= "Portal #%d",
+	TimerAddsIn		= "New adds",
 })
 
 L:SetOptionLocalization({
 	WarningPortalNow		= "Show warning for new portal",
 	WarningPortalSoon		= "Show pre-warning for new portal",
 	WarningBossNow			= "Show warning for boss incoming",
-	TimerPortalIn			= "Show timer for next portal (after Boss)",
+	TimerPortalIn			= "Show timer for next portal",
+	TimerAddsIn				= "Show timer for new adds",
 	ShowAllPortalTimers		= "Show timers for all portals (inaccurate)"
 })
 
