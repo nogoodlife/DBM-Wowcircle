@@ -320,10 +320,13 @@ do
 		-- Check for variance format like "v30.5-40" or "dv30.5-40"
 		if type(timer) == "string" then
 			-- ^v matches starting character d (optional) or v
+				-- nope, ^v mathces only if starting character v, so it doesn't work with "dv10.5-20.5"
+				-- ^(d?v)	should work with starting character d (optional) or v
+				-- v		should work too
 			-- (%d+%.?%d*) matches any number of digits with optional decimal
 			-- %- matches literal character "-"
 			-- (%d+%.?%d*)$ matches any number of digits with optional decimal, at the end of the string
-			if not timer:match("^v(%d+%.?%d*)%-(%d+%.?%d*)$") then return end
+			if not timer:match("v(%d+%.?%d*)%-(%d+%.?%d*)$") then return end
 
 			local minTimer, maxTimer = timer:match("v(%d+%.?%d*)%-(%d+%.?%d*)")
 			minTimer, maxTimer = tonumber(minTimer), tonumber(maxTimer)

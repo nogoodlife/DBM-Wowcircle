@@ -5573,7 +5573,7 @@ do
 		end
 		if checkFunc and (autoLog or autoTLog) then
 			self:Unschedule(checkFunc)
-			self:Schedule(timer+75, checkFunc) -- if pull was canceled and we don't have a boss engaged within 75 seconds of pull timer ending, abort log
+			self:Schedule(timer+75, checkFunc)--But if pull was canceled and we don't have a boss engaged within 75 seconds of pull timer ending, abort log
 		end
 	end
 
@@ -6013,7 +6013,7 @@ do
 			else
 				PlaySound(path)
 				if not GetCVarBool("Sound_EnableSFX") then
-					self:AddMsg("No sound because SFX is disabled and DBM ingameSoundPath table does not have a sound path for " .. path .. ". Report the path (the numbers) to maintainer.")
+					self:AddMsg("No sound because SFX is disabled and DBM ingameSoundPath table does not have a sound path for " .. path .. ". Report the path (the numbers) to maintainer on Discord or Github.")
 				end
 			end
 		else
@@ -10161,12 +10161,19 @@ do
 		local isDelayed = type(timer) == "number" and (isNegativeZero(timer) or timer < 0)
 		local hasVariance = type(timer) == "number" and timer > 0 and false or not timer and self.hasVariance -- account for metavariant timers that were fired with a fixed timer start, like timer:Start(10). Does not account for timer:Start(-delay), which is parsed below after variance started timers
 		local timerStringWithVariance, maxTimer, minTimer
-		if type(timer) == "string" and timer:match("^v%d+%.?%d*-%d+%.?%d*$") then -- catch "timer variance" pattern, expressed like v10.5-20.5
+		if type(timer) == "string" and timer:match("^v%d+%.?%d*%-%d+%.?%d*$") then -- catch "timer variance" pattern, expressed like v10.5-20.5
 			hasVariance = true
 			timerStringWithVariance = timer -- cache timer string
 			maxTimer, minTimer = parseVarianceFromTimer(timer) -- use highest possible value as the actual End timer
 			timer = DBT.Options.VarianceEnabled and maxTimer or minTimer
-			end
+		--[[
+		elseif type(timer) == "string" and timer:match("dv%d+%.?%d*%-%d+%.?%d*$") then -- parse doubling and variance, e.g. "dv20.5-25.5" -- not needed cuz :Start("dv10-20") never used?, but still
+			hasVariance = true
+			timerStringWithVariance = timer
+			maxTimer, minTimer = parseVarianceFromTimer(timer)
+			timer = DBT.Options.VarianceEnabled and maxTimer or minTimer
+		]]
+		end
 		if isDelayed then -- catch metavariant timers with delay, expressed like timer:Start(-delay)
 			if self.hasVariance then
 				hasVariance = self.hasVariance

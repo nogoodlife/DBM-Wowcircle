@@ -15,17 +15,19 @@ mod:RegisterEventsInCombat(
 	"UNIT_HEALTH boss1"
 )
 
-local warningSplitSoon		= mod:NewAnnounce("WarningSplitSoon", 2)
+--local warningSplitSoon	= mod:NewAnnounce("WarningSplitSoon", 2)
+local warnRepellingWave		= mod:NewCastAnnounce(74509, 3, nil, nil)
 local warnWhirlwind			= mod:NewSpellAnnounce(75125, 3, nil, "Tank|Healer")
 local warningWarnBrand		= mod:NewTargetAnnounce(74505, 4)
 
-local specWarnBrand			= mod:NewSpecialWarningYou(74505, nil, nil, nil, 3, 2)
-local specWarnRepellingWave	= mod:NewSpecialWarningSpell(74509, nil, nil, nil, 2, 2)
+
+local specWarnBrand				= mod:NewSpecialWarningYou(74505, nil, nil, nil, 3, 2)
+local specWarnRepellingWaveSoon	= mod:NewSpecialWarningSoon(74509, nil, nil, nil, 2, 2)
 
 local timerWhirlwind		= mod:NewBuffActiveTimer(4, 75125, nil, "Tank|Healer", nil, 3)
-local timerRepellingWave	= mod:NewCastTimer(4, 74509, nil, nil, nil, 2)--1 second cast + 3 second stun
+local timerRepellingWave	= mod:NewCastTimer(1, 74509, nil, nil, nil, 2)--1 second cast + 3 second stun
 local timerBrand			= mod:NewBuffActiveTimer(10, 74505, nil, nil, nil, 5)
-local timerBladeTempest		= mod:NewCDCountTimer("d27", 75125, nil, nil, 5) -- String timer starting with "d" means "allowDouble". -- 28.45, 26.96, 27.01, 28.50
+local timerBladeTempest		= mod:NewVarCountTimer("dv24.0-29.0", 75125, nil, nil, 5) -- String timer starting with "d" means "allowDouble".
 
 mod:AddRangeFrameOption(12, 74505)
 mod:AddSetIconOption("SetIconOnBrand", 74505, false, false, {1, 2, 3, 4, 5, 6, 7, 8})
@@ -52,7 +54,7 @@ function mod:OnCombatStart(delay)
 	table.wipe(bossGUIDs)
 	self.vb.brandIcon = 8
 	self.vb.allClonesSpawned = false
-	timerBladeTempest:Start(16.6-delay, 1, UnitGUID("boss1")) -- pull+16.70 16.62
+	timerBladeTempest:Start(16.5-delay, 1, UnitGUID("boss1")) -- pull+16.70 16.62
 	if self.Options.RangeFrame then
 		DBM.RangeCheck:Show(12)
 	end
@@ -66,8 +68,8 @@ end
 
 function mod:SPELL_CAST_START(args)
 	if args.spellId == 74509 then
-		specWarnRepellingWave:Show()
-		specWarnRepellingWave:Play("carefly")
+		warnRepellingWave:Show()
+		warnRepellingWave:Play("carefly") -- remove?
 		timerRepellingWave:Start()
 	end
 end
@@ -80,6 +82,8 @@ function mod:SPELL_AURA_APPLIED(args)
 		warnWhirlwind:Show()
 		timerWhirlwind:Show()
 		timerBladeTempest:Start(nil, bossN, args.destGUID)
+		--if bossN then print("bossN = "..bossN) end
+		--if args.destGUID then print(args.destGUID) end
 	elseif spellId == 74505 and self:IsInCombat() then--Only do this when boss is actually engaged, otherwise it doesn't really matter and just spams.
 		brandTargets[#brandTargets + 1] = args.destName
 		if args:IsPlayer() then
@@ -98,7 +102,7 @@ function mod:SPELL_AURA_APPLIED(args)
 	end
 end
 
-function mod:INSTANCE_ENCOUNTER_ENGAGE_UNIT() -- there is no boss2/boss3 on circle
+function mod:INSTANCE_ENCOUNTER_ENGAGE_UNIT() -- there is no boss2/boss3 on circle, how we can find clones guids ? on name_plate_add_unit with awesome or what ?
 	if self.vb.allClonesSpawned then return end
 	if UnitExists("boss3") then
 		self.vb.allClonesSpawned = true
@@ -110,17 +114,20 @@ end
 
 function mod:UNIT_HEALTH(uId)
 	if self:IsDifficulty("normal25", "heroic25") then
-		if not self.vb.warnedSplit1 and self:GetUnitCreatureId(uId) == 39751 and UnitHealth(uId) / UnitHealthMax(uId) <= 0.70 then
+		if not self.vb.warnedSplit1 and self:GetUnitCreatureId(uId) == 39751 and UnitHealth(uId) / UnitHealthMax(uId) <= 0.70 then --cast start at 66% boss hp | 25 HC 2026.03.26
 			self.vb.warnedSplit1 = true
-			warningSplitSoon:Show()
-		elseif not self.vb.warnedSplit3 and self:GetUnitCreatureId(uId) == 39751 and UnitHealth(uId) / UnitHealthMax(uId) <= 0.37 then
+			specWarnRepellingWaveSoon:Show()
+			specWarnRepellingWaveSoon:Play("runout")
+		elseif not self.vb.warnedSplit3 and self:GetUnitCreatureId(uId) == 39751 and UnitHealth(uId) / UnitHealthMax(uId) <= 0.37 then --cast start at 33% boss hp | 25 HC 2026.03.26
 			self.vb.warnedSplit3 = true
-			warningSplitSoon:Show()
+			specWarnRepellingWaveSoon:Show()
+			specWarnRepellingWaveSoon:Play("runout")
 		end
 	else
 		if not self.vb.warnedSplit2 and self:GetUnitCreatureId(uId) == 39751 and UnitHealth(uId) / UnitHealthMax(uId) <= 0.54 then
 			self.vb.warnedSplit2 = true
-			warningSplitSoon:Show()
+			specWarnRepellingWaveSoon:Show()
+			specWarnRepellingWaveSoon:Play("runout")
 		end
 	end
 end

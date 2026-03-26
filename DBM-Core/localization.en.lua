@@ -536,7 +536,7 @@ L.AUTO_TIMER_OPTIONS = {
 	ai									= "Show AI timer for $spell:%s cooldown (%ss)",
 
 	cd									= "Show timer for $spell:%s cooldown (%ss)",
-	cdcount								= "Show timer for $spell:%s cooldown (%ss)",
+	cdcount								= "Show timer (with count) for $spell:%s cooldown (%ss)",
 	cdnp								= "Show nameplate only timer for $spell:%s cooldown (%ss)",
 	cdnpcount							= "Show nameplate only timer (with count) for $spell:%s cooldown (%ss)",
 	cdsource							= "Show timer (with source) for $spell:%s cooldown (%ss)",--Maybe better wording?
