@@ -762,7 +762,7 @@ function mod:UNIT_SPELLCAST_SUCCEEDED(_, spellName)
 --	if spellName == soulshriek and mod:LatencyCheck() then
 --		self:SendSync("SoulShriek", UnitGUID(uId))
 	if (spellName == GetSpellInfo(74361) or spellName == GetSpellInfo(69037)) and self:AntiSpam(5, 4) then -- Summon Val'kyr Periodic (10H, 25N, 25H) | Summon Val'kyr (10N)
-		print("WOWCIRCLE UNIT_SPELLCAST_SUCCEEDED 74361 69037 DETECTED! Plz report")
+		print("DBM: WOWCIRCLE UNIT_SPELLCAST_SUCCEEDED 74361 69037 DETECTED! Plz report")
 		--[[
 		table.wipe(valkyrTargets)	-- reset valkyr cache for next round
 		grabIcon = 2

@@ -321,7 +321,7 @@ do
 		if type(timer) == "string" then
 			-- ^v matches starting character d (optional) or v
 				-- nope, ^v mathces only if starting character v, so it doesn't work with "dv10.5-20.5"
-				-- ^(d?v)	should work with starting character d (optional) or v
+				-- ^(d?v)	should work with starting dv or v
 				-- v		should work too
 			-- (%d+%.?%d*) matches any number of digits with optional decimal
 			-- %- matches literal character "-"

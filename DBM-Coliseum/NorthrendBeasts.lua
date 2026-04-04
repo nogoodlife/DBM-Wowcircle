@@ -55,7 +55,7 @@ local WarningSnobold		= mod:NewAnnounce("WarningSnobold", 4)
 local specWarnImpale3		= mod:NewSpecialWarningStack(66331, nil, 3, nil, nil, 1, 6)
 local specWarnAnger3		= mod:NewSpecialWarningStack(66636, "Tank|Healer", 3, nil, nil, 1, 6)
 local specWarnGTFO			= mod:NewSpecialWarningGTFO(66317, nil, nil, nil, 1, 8)
-local specWarnSilence		= mod:NewSpecialWarningSpell(66330, "SpellCaster")
+--local specWarnSilence		= mod:NewSpecialWarningSpell(66330, "SpellCaster") --probably remake into spellannounce, bcz we don't need 2 specwarnings for the same spell ?
 local specWarnStompPreWarn	= mod:NewSpecialWarningPreWarn(66330, "SpellCaster", 3, nil, nil, 1, 2)
 
 local timerNextStomp		= mod:NewNextTimer(20, 66330, nil, nil, nil, 2, nil, DBM_COMMON_L.INTERRUPT_ICON, nil, mod:IsSpellCaster() and 3 or nil, 3) -- cd 20.06, 20.08
@@ -98,9 +98,9 @@ local specWarnChargeNear	= mod:NewSpecialWarningClose(52311, nil, nil, nil, 3, 2
 local specWarnFrothingRage	= mod:NewSpecialWarningDispel(66759, "RemoveEnrage", nil, nil, 1, 2)
 
 local timerBreath			= mod:NewCastTimer(5, 66689, nil, nil, nil, 3) -- 5s channel. is it random target or tank?
-local timerBreathCD			= mod:NewCDTimer(20, 66689, nil, nil, nil, 3)
+local timerBreathCD			= mod:NewCDTimer(20, 66689, nil, nil, nil, 3, nil, nil, true)
 local timerStaggeredDaze	= mod:NewBuffActiveTimer(15, 66758, nil, nil, nil, 5, nil, DBM_COMMON_L.DAMAGE_ICON)
-local timerNextCrash		= mod:NewCDTimer(54.2, 66683, nil, nil, nil, 2, nil, DBM_COMMON_L.MYTHIC_ICON) -- REVIEW! variance? -- 63.4(oldtimer)-9.14=54.26
+local timerNextCrash		= mod:NewCDTimer(53, 66683, nil, nil, nil, 2, nil, DBM_COMMON_L.MYTHIC_ICON, true) -- REVIEW! variance? v53-54.2 ?
 
 mod:AddSetIconOption("SetIconOnChargeTarget", 52311, true, 0, {8})
 mod:AddBoolOption("ClearIconsOnIceHowl", true)
@@ -193,7 +193,7 @@ function mod:SPELL_CAST_START(args)
 		warnFireBomb:Show()
 	elseif args:IsSpellID(66330, 67647, 67648, 67649) then		-- Staggering Stomp
 		timerNextStomp:Start()
-		specWarnSilence:Show()
+--		specWarnSilence:Show()
 		specWarnStompPreWarn:Schedule(17) -- prewarn 3 sec before next
 		if self.Options.soundConcAuraMastery and isBuffOwner("player", 19746) then -- Concentration Aura Mastery by a Paladin will negate the interrupt effect of Staggering Stomp
 			soundAuraMastery:Schedule(17, "Interface\\AddOns\\DBM-Core\\sounds\\PlayerAbilities\\AuraMastery.ogg")
@@ -443,11 +443,15 @@ function mod:INSTANCE_ENCOUNTER_ENGAGE_UNIT()
 			local cid = self:GetUnitCreatureId(unitID)
 			local bossName = UnitName(unitID)
 			if cid == 35144 and not acidmawEngaged then -- Acidmaw (stationary on engage)
+				--print("IEEU Acidmaw PHASE_MOBILE: " .. tostring(self.vb.AcidmawMobile))
+				DBM:Debug("Acidmaw PHASE_MOBILE: " .. tostring(self.vb.AcidmawMobile), 2)
 				acidmawEngaged = true
 				if acidmawEngaged and dreadscaleEngaged then
 					self:UnregisterShortTermEvents()
 				end
 			elseif cid == 34799 and not dreadscaleEngaged then -- Dreadscale (mobile on engage)
+				--print("IEEU Dreadscale PHASE_MOBILE: " .. tostring(self.vb.DreadscaleMobile))
+				DBM:Debug("Dreadscale PHASE_MOBILE: " .. tostring(self.vb.DreadscaleMobile), 2)
 				self:SetStage(2)
 				dreadscaleEngaged = true
 				timerSubmerge:Start(44.5, bossName)
@@ -464,7 +468,7 @@ function mod:INSTANCE_ENCOUNTER_ENGAGE_UNIT()
 			elseif cid == 34797 then -- Icehowl
 				self:SetStage(3)
 				timerBreathCD:Start(14.5)
-				timerNextCrash:Start(31.7)
+				timerNextCrash:Start(30)
 				self:UnregisterShortTermEvents()
 			end
 			--if unitID == "boss2" then
@@ -532,7 +536,8 @@ function mod:UNIT_SPELLCAST_SUCCEEDED(uId, spellName)
 			timerEmerge:Stop(acidmaw)
 			self.vb.AcidmawMobile = not self.vb.AcidmawMobile
 			--acidmawSubmerged = false
-			DBM:Debug("Acidmaw PHASE_STATIONARY: " .. tostring(self.vb.AcidmawMobile), 2)
+			--print("Acidmaw PHASE_MOBILE: " .. tostring(self.vb.AcidmawMobile))
+			DBM:Debug("Acidmaw PHASE_MOBILE: " .. tostring(self.vb.AcidmawMobile), 2)
 			timerSubmerge:Start(42, acidmaw)
 			self:ScheduleMethod(42, "acidmawSubmerge")
 			if self.vb.AcidmawMobile then
@@ -550,7 +555,8 @@ function mod:UNIT_SPELLCAST_SUCCEEDED(uId, spellName)
 		elseif npcId == 34799 then -- Dreadscale
 			timerEmerge:Stop(dreadscale)
 			self.vb.DreadscaleMobile = not self.vb.DreadscaleMobile
-			DBM:Debug("Dreadscale PHASE_STATIONARY: " .. tostring(self.vb.DreadscaleMobile), 2)
+			--print("Dreadscale PHASE_MOBILE: " .. tostring(self.vb.DreadscaleMobile))
+			DBM:Debug("Dreadscale PHASE_MOBILE: " .. tostring(self.vb.DreadscaleMobile), 2)
 			timerSubmerge:Start(42, dreadscale)
 			self:ScheduleMethod(42, "dreadscaleSubmerge")
 			if self.vb.DreadscaleMobile then
