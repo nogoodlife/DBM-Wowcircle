@@ -272,7 +272,7 @@ function mod:CHAT_MSG_MONSTER_YELL(msg)
 end
 
 --[[
-  - PullAlliance > [DBM_Debug] INSTANCE_ENCOUNTER_ENGAGE_UNIT = 100.5 | 100.66
+  - PullAlliance > [DBM_Debug] INSTANCE_ENCOUNTER_ENGAGE_UNIT = 100.5 | 100.66 | 100.55
     - PullAlliance RU	= "Все павшие воины Орды, все дохлые псы Альянса – все пополнят армию Короля-лича. Даже сейчас валь'киры воскрешают ваших покойников, чтобы те стали частью Плети!"
     - PullAlliance EN	= "For every Horde soldier that you killed -- for every Alliance dog that fell, the Lich King's armies grew. Even now the val'kyr work to raise your fallen as Scourge."
 		

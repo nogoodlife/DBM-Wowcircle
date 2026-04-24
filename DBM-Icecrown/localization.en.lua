@@ -25,7 +25,7 @@ L:SetTimerLocalization({
 L:SetWarningLocalization({
 	WarnReanimating				= "Add reviving",	-- Reanimating an adherent or fanatic
 	WarnAddsSoon				= "New adds soon",
-	SpecWarnVengefulShade		= "Vengeful Shade attacking you - Run Away",--creatureid 38222
+	SpecWarnVengefulShade		= "Vengeful Shade attacked you",--creatureid 38222 -- too late to run away, lol
 	WeaponsStatus				= "Auto Unequip/Equip weapons: %s (%s - %s)"
 })
 

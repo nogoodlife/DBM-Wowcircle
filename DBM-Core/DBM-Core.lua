@@ -10166,8 +10166,8 @@ do
 			timerStringWithVariance = timer -- cache timer string
 			maxTimer, minTimer = parseVarianceFromTimer(timer) -- use highest possible value as the actual End timer
 			timer = DBT.Options.VarianceEnabled and maxTimer or minTimer
-		--[[
-		elseif type(timer) == "string" and timer:match("dv%d+%.?%d*%-%d+%.?%d*$") then -- parse doubling and variance, e.g. "dv20.5-25.5" -- not needed cuz :Start("dv10-20") never used?, but still
+		--[[ -- not needed cuz :Start("dv10-20") never used?, but still
+		elseif type(timer) == "string" and timer:match("dv%d+%.?%d*%-%d+%.?%d*$") then -- parse doubling and variance, e.g. "dv20.5-25.5"
 			hasVariance = true
 			timerStringWithVariance = timer
 			maxTimer, minTimer = parseVarianceFromTimer(timer)

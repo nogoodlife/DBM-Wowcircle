@@ -384,7 +384,7 @@ do
 			if bgzone and currentBGzone ~= lastBGzone then
 				lastBGzone = GetCurrentMapAreaID()
 				if hasWarns then
-					DBM:AddMsg("DBM-PvP missing data, please report.")
+					DBM:AddMsg("DBM-PvP missing data, please report to our discord.")
 					DBM:AddMsg("Battleground: " .. (subscribedMapID or "Unknown"))
 					for k, v in pairs(warnAtEnd) do
 						DBM:AddMsg(v .. "x " .. k)
@@ -417,7 +417,7 @@ do
 		elseif bgzone then
 			bgzone = false
 			if hasWarns then
-				DBM:AddMsg("DBM-PvP missing data, please report.")
+				DBM:AddMsg("DBM-PvP missing data, please report to our discord.")
 				DBM:AddMsg("Battleground: " .. (subscribedMapID or "Unknown"))
 				for k, v in pairs(warnAtEnd) do
 					DBM:AddMsg(v .. "x " .. k)

@@ -114,11 +114,13 @@ end
 
 function mod:UNIT_HEALTH(uId)
 	if self:IsDifficulty("normal25", "heroic25") then
-		if not self.vb.warnedSplit1 and self:GetUnitCreatureId(uId) == 39751 and UnitHealth(uId) / UnitHealthMax(uId) <= 0.70 then --cast start at 66% boss hp | 25 HC 2026.03.26
+		if not self.vb.warnedSplit1 and self:GetUnitCreatureId(uId) == 39751 and UnitHealth(uId) / UnitHealthMax(uId) <= 0.70 then
+		--cast start at 66% boss hp | 25 HC
 			self.vb.warnedSplit1 = true
 			specWarnRepellingWaveSoon:Show()
 			specWarnRepellingWaveSoon:Play("runout")
-		elseif not self.vb.warnedSplit3 and self:GetUnitCreatureId(uId) == 39751 and UnitHealth(uId) / UnitHealthMax(uId) <= 0.37 then --cast start at 33% boss hp | 25 HC 2026.03.26
+		elseif not self.vb.warnedSplit3 and self:GetUnitCreatureId(uId) == 39751 and UnitHealth(uId) / UnitHealthMax(uId) <= 0.37 then
+		--cast start at 33% boss hp | 25 HC
 			self.vb.warnedSplit3 = true
 			specWarnRepellingWaveSoon:Show()
 			specWarnRepellingWaveSoon:Play("runout")

@@ -77,7 +77,7 @@ local warnTouchInsignificance		= mod:NewStackAnnounce(71204, 2, nil, "Tank|Heale
 local specWarnCurseTorpor			= mod:NewSpecialWarningYou(71237, nil, nil, nil, 1, 2)
 local specWarnTouchInsignificance	= mod:NewSpecialWarningStack(71204, nil, 3, nil, nil, 1, 6)
 local specWarnFrostbolt				= mod:NewSpecialWarningInterrupt(72007, "HasInterrupt", nil, 2, 1, 2)
-local specWarnVengefulShade			= mod:NewSpecialWarning("SpecWarnVengefulShade", true, nil, nil, nil, 1, 2, nil, 71426, 71426)
+local specWarnVengefulShade			= mod:NewSpecialWarning("SpecWarnVengefulShade", true, nil, nil, nil, 1, 2, nil, 71426, 71426) --when spirit already exploded
 local specWarnVengefulShadeOnYou	= mod:NewSpecialWarningRun(71426, nil, nil, nil, 4, 2)
 --local yellVengefulShadeOnMe			= mod:NewYellMe(71426)
 
@@ -426,7 +426,7 @@ function mod:SPELL_AURA_APPLIED(args)
 		end
 	elseif spellId == 71237 and args:IsPlayer() then
 		specWarnCurseTorpor:Show()
-		specWarnCurseTorpor:Play("targetyou")
+		specWarnCurseTorpor:Play("stopcast")
 	elseif spellId == 70674 and not args:IsDestTypePlayer() and UnitGUID("target") == args.destGUID then
 		specWarnVampricMight:Show(args.destName)
 		specWarnVampricMight:Play("helpdispel")
@@ -489,10 +489,10 @@ function mod:SPELL_SUMMON(args)
 	end
 end]]
 
-function mod:SWING_DAMAGE(sourceGUID, _, _, destGUID)
+function mod:SWING_DAMAGE(sourceGUID, _, _, destGUID) --what about swing missed ? spirit still explode
 	if destGUID == UnitGUID("player") and self:GetCIDFromGUID(sourceGUID) == 38222 then
 		specWarnVengefulShade:Show()
-		specWarnVengefulShade:Play("targetyou")
+		specWarnVengefulShade:Play("failed")
 	end
 end
 
@@ -546,5 +546,36 @@ function mod:UNIT_SPELLCAST_SUCCEEDED(_, spellName)
 			)
 			self:Schedule(0.1, unregisterShortTermEvents, self)
 		end
+	end
+end
+
+
+--[[
+03-17-12.940 UNIT_SPELLCAST_SUCCEEDED boss1 Призыв духов 
+03-17-12.941 UNIT_SPELLCAST_SUCCEEDED boss1 Призыв духов
+03-17-12.942 UNIT_SPELLCAST_SUCCEEDED boss1 Призыв духов
+03-17-15.378 UNIT_THREAT_SITUATION_UPDATE player 					+2.438
+03-17-15.378 UNIT_THREAT_SITUATION_UPDATE raid2 -- thats player too
+
+UNIT_SPELLCAST_SUCCEEDED	"Призыв духов-npc:36855-11 = 12.28"
+SPELL_SUMMON				"Призыв духа-71426-npc:36855-11 = 14.72" +2.44 --should be ok cuz spirit changes target to closer on actual summon ?
+]]
+function mod:UNIT_THREAT_SITUATION_UPDATE(unit)
+	if unit == "player" then
+		specWarnVengefulShadeOnYou:Show()
+		specWarnVengefulShadeOnYou:Play("runaway")
+--		yellVengefulShadeOnMe:Yell() -- disabled since live run proved to be ineffective to catch target without false positives
+		print("Experimental feature with spirit targeting, please share VOD if spirit was not on you.")
+		DBM:AddMsg("Experimental feature with spirit targeting, please share VOD if spirit was not on you.")
+	end
+	self:Unschedule(unregisterShortTermEvents)
+	self:UnregisterShortTermEvents()
+end
+
+function mod:SPELL_SUMMON(args) -- sometimes missing SPELL_SUMMON events because of... reasons ?
+	if args.spellId == 71426 then -- Summon Vengeful Shade
+		--print("looking for spirit aggro")
+		self:RegisterShortTermEvents("UNIT_THREAT_SITUATION_UPDATE")
+		self:Schedule(0.5, unregisterShortTermEvents, self)
 	end
 end

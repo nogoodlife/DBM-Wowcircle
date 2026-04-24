@@ -3,7 +3,7 @@ local L		= mod:GetLocalizedStrings()
 
 local sformat = string.format
 
-mod:SetRevision("20251101213650")
+mod:SetRevision("20260308121616")
 mod:SetCreatureID(36626)
 mod:SetEncounterID(849)
 mod:RegisterCombat("combat")
@@ -13,7 +13,7 @@ mod:SetMinSyncRevision(20230627000000)
 
 mod:RegisterEventsInCombat(
 	"SPELL_CAST_START 69195 71219 73031 73032",
-	"SPELL_CAST_SUCCESS 69278 71221",
+	"SPELL_CAST_SUCCESS 69278 71221 69240 71218 73019 73020",
 	"SPELL_AURA_APPLIED 69279 69166 71912 72219 72551 72552 72553 69240 71218 73019 73020 69291 72101 72102 72103",
 	"SPELL_AURA_APPLIED_DOSE 69166 71912 72219 72551 72552 72553 69291 72101 72102 72103",
 	"SPELL_AURA_REMOVED 69279",
@@ -36,12 +36,13 @@ local specWarnGoo			= mod:NewSpecialWarningDodge(72297, true, nil, nil, 1, 2) --
 
 local timerGasSpore			= mod:NewBuffFadesTimer(12, 69279, nil, nil, nil, 3)
 local timerVileGas			= mod:NewBuffFadesTimer(6, 69240, nil, "Ranged", nil, 3)
+local timerVileGasCD		= mod:NewCDTimer(30, 69240, nil, "Ranged", nil, 3, nil, nil, false) --false keep, cuz no idea how this timer works
 local timerGasSporeCD		= mod:NewVarTimer("v40.0-43.5", 69279, nil, nil, nil, 3, nil, nil, true)
-local timerPungentBlight	= mod:NewCDTimer(33.5, 69195, nil, nil, nil, 2)		-- Edited. ~34 seconds after 3rd stack of inhaled. REVIEW! (25H Lordaeron 2022/09/25) - pull:131.4 [33.5]
+local timerPungentBlight	= mod:NewCDTimer(30.3, 69195, nil, nil, nil, 2)		-- 30.34 | 31.44 | 30.8 from 3rd stack applied +3s cast time
 local timerInhaledBlight	= mod:NewVarTimer("v33.5-35.0", 69166, nil, nil, nil, 6, nil, nil, true)
 local timerGastricBloat		= mod:NewTargetTimer(100, 72219, nil, "Tank|Healer", nil, 5, nil, DBM_COMMON_L.TANK_ICON)	-- 100 Seconds until expired
 local timerGastricBloatCD	= mod:NewVarTimer("v12.0-13.0", 72219, nil, "Tank|Healer", nil, 5, nil, DBM_COMMON_L.TANK_ICON) -- REVIEW! variance 12.33, 12.03, 12.41, 12.20, 12.47, 12.33, 12.17
-local timerGooCD			= mod:NewCDTimer(10, 72297, nil, nil, nil, 3)
+local timerGooCD			= mod:NewVarTimer("v10.5-26.5", 72297, nil, nil, nil, 3, nil, nil, true) --true keep, cuz need logs
 
 local berserkTimer			= mod:NewBerserkTimer(300)
 
@@ -52,7 +53,8 @@ mod:AddBoolOption("AchievementCheck", false, "announce", nil, nil, nil, 4615, "a
 
 local gasSporeTargets = {}
 local vileGasTargets = {}
---mod.vb.gasSporeCast = 0
+mod.vb.gasSporeCast = 0
+mod.vb.vileGasCast = 0
 mod.vb.warnedfailed = false
 
 function mod:AnnounceSporeIcons(uId, icon)
@@ -76,17 +78,19 @@ end
 function mod:OnCombatStart(delay)
 	berserkTimer:Start(-delay)
 	timerInhaledBlight:Start(sformat("v%s-%s", 33.4-delay, 33.6-delay))
+	self.vb.vileGasCast = 0
+	timerVileGasCD:Start(9.95-delay)
 	timerGasSporeCD:Start(20-delay)
 	timerGastricBloatCD:Start(sformat("v%s-%s", 10.8-delay, 11.0-delay))
 	table.wipe(gasSporeTargets)
 	table.wipe(vileGasTargets)
---	self.vb.gasSporeCast = 0
+	self.vb.gasSporeCast = 0
 	self.vb.warnedfailed = false
 	if self.Options.RangeFrame then
-		DBM.RangeCheck:Show(10) -- 9.6y is the shortest distance that it doesn't spread (TC test 12/03/2023); set to 10 for safety
+		DBM.RangeCheck:Show(10) -- VileGas spread distance should be 8y, + char moves a bit ? so range 10 should be good enough
 	end
-	if self:IsHeroic() then
-		timerGooCD:Start(13-delay)
+	if self:IsHeroic() then --why only heroic ?
+		timerGooCD:Start(sformat("v%s-%s", 16.5-delay, 19.5-delay))
 	end
 end
 
@@ -103,14 +107,20 @@ function mod:SPELL_CAST_START(args)
 	end
 end
 
+local gastimers = {30, 40, 41, 20, 30, 40} -- sometimes {30,40,62,30} for no reason? plz explain to me how that works
+
 function mod:SPELL_CAST_SUCCESS(args)
 	if args:IsSpellID(69278, 71221) then	-- Gas Spore (10 man, 25 man)
---		self.vb.gasSporeCast = self.vb.gasSporeCast + 1
---		if self.vb.gasSporeCast == 6 then
---			timerGasSporeCD:Start(50) -- From all the 2023 logs I have, there was only one 50s instance, and it was on the 6->7th cast
---		else
+		self.vb.gasSporeCast = self.vb.gasSporeCast + 1
+		if self.vb.gasSporeCast == 3 then
+			timerGasSporeCD:Start("v50.0-51.5")
+		else
 			timerGasSporeCD:Start()
---		end
+		end
+	elseif args:IsSpellID(69240, 71218, 73019, 73020) and self:AntiSpam(1, 2) then	-- Vile Gas
+		self.vb.vileGasCast = self.vb.vileGasCast + 1
+		local gastimer = gastimers[self.vb.vileGasCast] or 30
+		timerVileGasCD:Start(gastimer)
 	end
 end
 
@@ -137,7 +147,7 @@ function mod:SPELL_AURA_APPLIED(args)
 		warnInhaledBlight:Show(args.destName, amount)
 		if amount >= 3 then
 			specWarnInhaled3:Show(amount)
-			specWarnInhaled3:Play("defensive")
+			specWarnInhaled3:Play("holdit")
 			timerPungentBlight:Start()
 			timerInhaledBlight:Cancel() -- added due to the "keep" arg
 		else	--Prevent timer from starting after 3rd stack since he won't cast it a 4th time, he does Pungent instead.
@@ -188,7 +198,7 @@ function mod:UNIT_SPELLCAST_SUCCEEDED(_, spellName)
 		if self:IsDifficulty("heroic25") then
 			timerGooCD:Start()
 		else
-			timerGooCD:Start(15)--30 seconds in between goos on 10 man heroic
+			timerGooCD:Start(30) -- what cd on 10nm/25nm/10hc ?
 		end
 	elseif spellName == GetSpellInfo(73032) then -- Pungent Blight
 		timerInhaledBlight:Start()

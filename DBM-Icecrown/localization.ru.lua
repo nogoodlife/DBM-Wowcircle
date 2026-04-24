@@ -27,7 +27,7 @@ L:SetTimerLocalization({
 L:SetWarningLocalization({
 	WarnReanimating				= "Помощник воскрешается",	-- Reanimating an adherent or fanatic
 	WarnAddsSoon				= "Скоро призыв помощников",
-	SpecWarnVengefulShade		= "Мстительный дух атакует вас - бегите", --creatureid 38222
+	SpecWarnVengefulShade		= "Вы взорвали Мстительного духа", --creatureid 38222 -- бежать уже поздно, вы все просрали
 	WeaponsStatus				= "Cнятие оружий включено: %s (%s - %s)"
 })
 
@@ -35,7 +35,7 @@ L:SetOptionLocalization({
 	WarnAddsSoon				= "Предупреждать заранее о призыве помощников",
 	WarnReanimating				= "Предупреждение при воскрешении помощников",	-- Reanimated Adherent/Fanatic spawning
 	TimerAdds					= "Отсчет времени до призыва помощников",
-	SpecWarnVengefulShade		= "Спец-предупреждение, когда вас атакует Мстительный дух",--creatureid 38222
+	SpecWarnVengefulShade		= "Спец-предупреждение, когда вы взорвали Мстительного духа",--creatureid 38222
 	WeaponsStatus				= "Спец-предупреждение в начале боя если включена функция снятия/надевания оружий",
 	ShieldHealthFrame			= "Показывать здоровье босса с индикатором здоровья для \n$spell:70842",
 	SoundWarnCountingMC			= "Проигрывать звуковой отсчет 5...1 до контроля разума",
