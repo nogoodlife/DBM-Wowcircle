@@ -48,19 +48,8 @@ local SOUNDKIT = {
 }
 
 --Hard code STANDARD_TEXT_FONT since skinning mods like to taint it (or worse, set it to nil, wtf?)
-local standardFont
+local standardFont = "Fonts\\FRIZQT__.TTF"
 local BBfont = nil -- keep Luacheck happy
-if LOCALE_koKR then
-	standardFont = "Fonts\\2002.TTF"
-elseif LOCALE_zhCN then
-	standardFont = "Fonts\\ARKai_T.ttf"
-elseif LOCALE_zhTW then
-	standardFont = "Fonts\\blei00d.TTF"
-elseif LOCALE_ruRU then
-	standardFont = "Fonts\\FRIZQT___CYR.TTF"
-else
-	standardFont = "Fonts\\FRIZQT__.TTF"
-end
 
 -- math toolkit
 local function round(value, dp)

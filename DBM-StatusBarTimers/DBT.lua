@@ -46,18 +46,7 @@ DBT = {
 }
 local DBT = DBT
 
-local standardFont
-if LOCALE_koKR then
-	standardFont = "Fonts\\2002.TTF"
-elseif LOCALE_zhCN then
-	standardFont = "Fonts\\ARKai_T.ttf"
-elseif LOCALE_zhTW then
-	standardFont = "Fonts\\blei00d.TTF"
-elseif LOCALE_ruRU then
-	standardFont = "Fonts\\FRIZQT___CYR.TTF"
-else
-	standardFont = "Fonts\\FRIZQT__.TTF"
-end
+local standardFont = "Fonts\\FRIZQT__.TTF"
 
 DBT.DefaultOptions = {
 	StartColorR = 1,
